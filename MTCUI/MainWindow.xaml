@@ -32,7 +32,7 @@
             
             <TextBlock Text="MTCUI"
                        VerticalAlignment="Center"
-                       Margin="30 0 0 0"/>
+                       Margin="32 0 0 0"/>
         </Grid>
         
         <StackPanel Grid.Row="1" Orientation="Horizontal">
