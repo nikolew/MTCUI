@@ -23,10 +23,11 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid x:Name="AppTitleBar">
-            <Image Source="/Assets/icon.ico" HorizontalAlignment="Left" 
+            <Image Source="/Assets/icon.ico" 
+                   HorizontalAlignment="Left" 
                    VerticalAlignment="Center"
-                   Width="18"
-                   Height="18"
+                   Width="20"
+                   Height="20"
                    Margin="8,0"/>
             
             <TextBlock Text="MTCUI"
