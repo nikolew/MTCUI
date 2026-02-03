@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MTCUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MTCUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MTCUI.Graph"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml">
+
+    <Style TargetType="local:NodeGraph" x:Key="nodeGraph">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:NodeGraph">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+
+                        <Canvas x:Name="PART_GraphControl" 
+                                           Visibility="Visible"
+                                           Width="{TemplateBinding ActualWidth}"
+                                           Height="{TemplateBinding ActualHeight}">
+                            
+
+                            <!--<local:GridControl Visibility="Visible">
+                                
+                            </local:GridControl>-->
+                        </Canvas>
+
+
+                      
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
