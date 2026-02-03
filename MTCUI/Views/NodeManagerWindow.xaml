@@ -16,8 +16,8 @@
 
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Padding="10 20 10 10">
             <ListView x:Name="MyList" ItemsSource="{x:Bind NodeManagerVM.Items}">
@@ -81,11 +81,13 @@
 
             </ListView>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-            <Button Content="Add Node" Width="100" Margin="5" />
-            <Button Content="Remove Node" Width="100" Margin="5" />
-            <Button Content="Load Nodes" Width="100" Margin="5" />
-            <Button Content="Save Nodes" Width="100" Margin="5" Command="{x:Bind NodeManagerVM.SaveCommand}"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" 
+                    HorizontalAlignment="Center" Margin="0,10,0,10" 
+                    VerticalAlignment="Bottom">
+            <Button Content="Add Node" Width="110" Margin="5" />
+            <Button Content="Remove Node" Width="110" Margin="5" />
+            <Button Content="Load Nodes" Width="110" Margin="5" />
+            <Button Content="Save Nodes" Width="110" Margin="5" Command="{x:Bind NodeManagerVM.SaveCommand}"/>
             
         </StackPanel>
 
