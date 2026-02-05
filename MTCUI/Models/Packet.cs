@@ -17,6 +17,7 @@ public enum CommandType {
     [ProtoEnum] CMD_NODEDEL = 9,
     [ProtoEnum] CMD_PROVON = 10,
     [ProtoEnum] CMD_PROVOFF = 11,
+    [ProtoEnum] CMD_NODEEVENT = 12,
 
     [ProtoEnum] CMD_ERROR    = 100
 }
@@ -54,6 +55,15 @@ public class NodeStatus
     [ProtoMember(5)] public int BattState { get; set; }
 }
  
+[ProtoContract]
+public class NodeEvent
+{
+    [ProtoMember(1)] public int Id { get; set; }
+    [ProtoMember(2)] public bool Online { get; set; }
+    [ProtoMember(3)] public int MissedFrames { get; set; }
+    [ProtoMember(4)] public int LastSeenMs { get; set; }
+}
+
 [ProtoContract] 
 public class Packet
 {
@@ -63,4 +73,5 @@ public class Packet
     [ProtoMember(4)] public Response Response { get; set; }
     [ProtoMember(5)] public NodeList NodeList { get; set; }
     [ProtoMember(6)] public NodeStatus NodeStatus { get; set; }
+    [ProtoMember(7)] public NodeEvent NodeEvent { get; set; }
 }

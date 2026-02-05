@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using MTCCore.Enums;
 using MTCCore.Models;
 using MTCUI.Messages;
+using MTCUI.Models;
 using MTCUI.Services;
 using MTCUI.Views;
 using System;
@@ -61,11 +62,30 @@ namespace MTCUI.ViewModels
 
             WeakReferenceMessenger.Default.Register<AddNodeToViewGraphMessage>(this, (r, m) => AddNodeToGraph(m.Value));
             WeakReferenceMessenger.Default.Register<UpdateNodeStatusMessage>(this, (r, m) => UpdateNodeStatus(m.Value));
-
+            WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.Value));
 
             await ConnectBluetoothAsync();
         }
 
+        private void OnNodeEvent(NodeEvent value)
+        {
+            Debug.WriteLine($"Online: {value.Online}");
+            var n = CurrentView as GraphViewModel;
+            foreach (var node in n.NodesViewModel)
+            {
+
+                var id = Convert.ToString(value.Id);
+                if (node.Node.TargetId == id)
+                {
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        node.Node.State = TargetState.TargetOffline;
+                        node.InitTemplateView();
+                    });
+                    break;
+                }
+            }
+        }
 
         private void UpdateNodeStatus(NodeModel value)
         {

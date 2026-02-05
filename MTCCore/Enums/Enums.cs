@@ -26,6 +26,7 @@ namespace MTCCore.Enums
         TargetRaisedHit,
         TargetFolding,
         TargetFoldedHit,
-        TargetHit
+        TargetHit,
+        TargetOffline
     }
 }

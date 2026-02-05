@@ -1,16 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
 using MTCCore.Enums;
 using MTCCore.Models;
 using MTCCore.Services;
+using MTCUI.Messages;
 using MTCUI.Models;
 using MTCUI.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,6 +54,8 @@ namespace MTCUI.ViewModels
         {
             try
             {
+                WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.Value));
+
                 _nodeService.GetAllNodes().ForEach(node => {
                     dispatcher.TryEnqueue(() =>
                     {
@@ -61,7 +66,8 @@ namespace MTCUI.ViewModels
                             TargetType = node.TargetType, 
                             Position=node.Position, 
                             TargetId=node.TargetId,
-                            Distance = node.Distance
+                            Distance = node.Distance,
+                            Status = "offline"
                         });
                         
                     });
@@ -72,6 +78,19 @@ namespace MTCUI.ViewModels
                 // Log exception
                 System.Diagnostics.Trace.WriteLine($"Error initializing NodeManagerViewModel: {ex.Message}");
             }
+        }
+
+        private void OnNodeEvent(NodeEvent value)
+        {
+            var id = Convert.ToString(value.Id);
+            var node = Items.Where(x => x.TargetId == id).SingleOrDefault();
+
+            if (node == null)
+            {
+                return;
+            }
+
+            node.Status = value.Online ? "online" : "offline";
         }
 
         [RelayCommand]

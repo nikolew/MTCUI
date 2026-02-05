@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Padding="10 20 10 10">
             <ListView x:Name="MyList" ItemsSource="{x:Bind NodeManagerVM.Items}">
-
+                
                 <!-- HEADER -->
                 <ListView.Header>
                     <Grid Padding="10,0,0,8">
@@ -32,6 +32,7 @@
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="160"/>
                             <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Text="Node ID" Grid.Column="0" FontWeight="Bold" TextAlignment="Center"/>
@@ -40,6 +41,8 @@
                         <TextBlock Text="Y" Grid.Column="3" FontWeight="Bold" TextAlignment="Center"/>
                         <TextBlock Text="Вид цел" Grid.Column="4" FontWeight="Bold" TextAlignment="Center"/>
                         <TextBlock Text="Разстояние" Grid.Column="5" FontWeight="Bold" TextAlignment="Center"/>
+                        <TextBlock Text="Status" Grid.Column="6" FontWeight="Bold" TextAlignment="Center"/>
+                        
                     </Grid>
                 </ListView.Header>
 
@@ -54,6 +57,7 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
                             </Grid.ColumnDefinitions>
 
@@ -74,6 +78,7 @@
                                 SelectedItem="{x:Bind TargetType, Mode=TwoWay}"
                                 Width="150" />
                             <TextBox Text="{x:Bind Distance, Mode=TwoWay}" Grid.Column="5" TextAlignment="Center"/>
+                            <TextBlock Text="{x:Bind Status}" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
 
                     </DataTemplate>

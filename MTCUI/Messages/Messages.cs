@@ -17,4 +17,6 @@ namespace MTCUI.Messages
 
     public class UpdateNodeStatusMessage(NodeModel node) : ValueChangedMessage<NodeModel>(node) { }
 
+    public class NodeEventMessage(NodeEvent node) : ValueChangedMessage<NodeEvent>(node) { }
+
 }

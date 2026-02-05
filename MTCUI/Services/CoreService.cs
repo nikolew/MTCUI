@@ -131,6 +131,12 @@ namespace MTCUI.Services
                     }
 
                     break;
+                case CommandType.CMD_NODEEVENT:
+                    var nodeEvent = packet.NodeEvent;
+                   
+                    WeakReferenceMessenger.Default.Send(new NodeEventMessage(nodeEvent));
+                    break;
+                
             }
         }
 
