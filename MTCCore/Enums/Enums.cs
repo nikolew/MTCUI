@@ -29,4 +29,16 @@ namespace MTCCore.Enums
         TargetHit,
         TargetOffline
     }
+
+    public enum Group
+    {
+        Group1,
+        Group2,
+        Group3,
+        Group4,
+        Group5,
+        Group6,
+        Group7,
+        Group8
+    }   
 }

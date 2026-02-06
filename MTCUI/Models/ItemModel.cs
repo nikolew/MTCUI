@@ -26,6 +26,14 @@ namespace MTCUI.Models
 
         [ObservableProperty]
         private string _status;
+
+        [ObservableProperty]
+        private Group _group;
+
+        [ObservableProperty]
+        private int _rssi;
+        [ObservableProperty]
+        private int _snr;
     }
 
 }

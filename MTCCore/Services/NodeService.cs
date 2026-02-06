@@ -89,7 +89,8 @@ namespace MTCCore.Services
                     Position = new Point(node.Position.X, node.Position.Y),
                     TargetType = node.TargetType,
                     State = Enums.TargetState.TargetRaised,
-                    Distance = node.Distance
+                    Distance = node.Distance,
+                    Group = node.TargetGroup
                 };
                 nodeModels.Add(newNode);
             }
@@ -107,7 +108,7 @@ namespace MTCCore.Services
                     nodeEntity.Position.Y = (int)node.Position.Y;
                     nodeEntity.TargetType = node.TargetType;
                     nodeEntity.Distance = node.Distance;
-
+                    nodeEntity.TargetGroup = node.Group;
                     _nodeRepository.Update(nodeEntity);
                 }
             }

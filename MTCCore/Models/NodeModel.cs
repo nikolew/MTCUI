@@ -1,4 +1,5 @@
 ﻿using MTCCore.Enums;
+using System.Net.NetworkInformation;
 using Windows.Foundation;
 
 namespace MTCCore.Models
@@ -9,6 +10,9 @@ namespace MTCCore.Models
         public string TargetId { get; set; }
         public string Distance { get; set; }
         public Point Position { get; set; }
+        public Group Group { get; set; }
+        public int Rssi { get; set; }
+        public int Snr { get; set; }
         public TargetType TargetType { get; set; }
         public TargetState State { get; set; }
     }

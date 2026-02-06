@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTCCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260201201611_initial")]
+    [Migration("20260205184437_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -33,6 +33,9 @@ namespace MTCCore.Migrations
 
                     b.Property<string>("NodeUniqueId")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("TargetGroup")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("TargetType")
                         .HasColumnType("INTEGER");

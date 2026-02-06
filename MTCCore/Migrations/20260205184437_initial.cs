@@ -19,6 +19,7 @@ namespace MTCCore.Migrations
                     NodeIdentity = table.Column<int>(type: "INTEGER", nullable: false),
                     NodeUniqueId = table.Column<string>(type: "TEXT", nullable: true),
                     Distance = table.Column<string>(type: "TEXT", nullable: true),
+                    TargetGroup = table.Column<int>(type: "INTEGER", nullable: false),
                     TargetType = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

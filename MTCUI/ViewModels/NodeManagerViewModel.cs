@@ -8,13 +8,11 @@ using MTCCore.Models;
 using MTCCore.Services;
 using MTCUI.Messages;
 using MTCUI.Models;
-using MTCUI.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MTCUI.ViewModels
@@ -22,12 +20,9 @@ namespace MTCUI.ViewModels
     public partial class NodeManagerViewModel : ViewModel
     {
         private readonly INodeService _nodeService;
-
-        [ObservableProperty]
-        private ObservableCollection<NodeModel> _nodes = new ObservableCollection<NodeModel>();
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public Array TargetTypes { get; } = Enum.GetValues(typeof(TargetType));
-
         private TargetType _selectedTarget;
         public TargetType SelectedTarget
         {
@@ -39,27 +34,36 @@ namespace MTCUI.ViewModels
             }
         }
 
-        public ObservableCollection<ItemModel> Items { get; } = new();
+        public Array TargetGroups { get; } = Enum.GetValues(typeof(Group));
+        private Group _selectedGroup;
+        public Group SelectedTargetGroup 
+        {
+            get => _selectedGroup;
+            set
+            {
+                _selectedGroup = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedTargetGroup)));
+            }
+        }
+
+        private static readonly ObservableCollection<ItemModel> itemModels = new();
+        [ObservableProperty]
+        private ObservableCollection<ItemModel> _items = itemModels;
       
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
 
         public NodeManagerViewModel()
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
+            WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.Value));
         }
 
         internal async Task InitializeAsync(DispatcherQueue dispatcher)
         {
             try
             {
-                WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.Value));
-
                 _nodeService.GetAllNodes().ForEach(node => {
                     dispatcher.TryEnqueue(() =>
-                    {
-                        //Nodes.Add(node);
+                    {                    
                         Items.Add(new ItemModel 
                         { 
                             UniqueId = node.UniqueId,
@@ -67,9 +71,9 @@ namespace MTCUI.ViewModels
                             Position=node.Position, 
                             TargetId=node.TargetId,
                             Distance = node.Distance,
+                            Group = node.Group,
                             Status = "offline"
-                        });
-                        
+                        });                      
                     });
                 });
             }
@@ -90,6 +94,7 @@ namespace MTCUI.ViewModels
                 return;
             }
 
+            
             node.Status = value.Online ? "online" : "offline";
         }
 
@@ -105,7 +110,8 @@ namespace MTCUI.ViewModels
                     TargetType = node.TargetType,
                     Position = node.Position,
                     TargetId = node.TargetId,
-                    Distance = node.Distance
+                    Distance = node.Distance,
+                    Group = node.Group
                 });
             }
 

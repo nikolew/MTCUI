@@ -137,6 +137,10 @@ namespace MTCUI.ViewModels
         [RelayCommand]
         void Load()
         {
+            if (CurrentView is GraphViewModel graphVM)
+            {
+                graphVM.ClearNodes();
+            }
             WeakReferenceMessenger.Default.Send(new CommandMessage(1));
         }
 
@@ -158,41 +162,7 @@ namespace MTCUI.ViewModels
 
                 graphVM.AddNode(nodeViewModel);
 
-                //var node2 = new NodeModel
-                //{
-                //    Position = new Windows.Foundation.Point(200, 100),
-                //    TargetType = TargetType.Target10,
-                //    State = TargetState.TargetFolded,
-                //    TargetId = "1"
-                //};
-
-                //var nodeViewModel2 = new NodeViewModel() { Node = node2 };
-                //nodeViewModel2.InitTemplateView();
-                //graphVM.AddNode(nodeViewModel2);
-
-                //var node3 = new NodeModel
-                //{
-                //    Position = new Windows.Foundation.Point(300, 100),
-                //    TargetType = TargetType.Target10A,
-                //    State = TargetState.TargetRaised,
-                //    TargetId = "2"
-                //};
-
-                //var nodeViewModel3 = new NodeViewModel() { Node = node3 };
-                //nodeViewModel3.InitTemplateView();
-                //graphVM.AddNode(nodeViewModel3);
-
-                //var node4 = new NodeModel
-                //{
-                //    Position = new Windows.Foundation.Point(400, 100),
-                //    TargetType = TargetType.Default,
-                //    State = TargetState.TargetRaised,
-                //    TargetId = "3"
-                //};
-
-                //var nodeViewModel4 = new NodeViewModel() { Node = node4 };
-                //nodeViewModel4.InitTemplateView();
-                //graphVM.AddNode(nodeViewModel4);
+                
             }
         }
 

@@ -32,6 +32,9 @@
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="160"/>
                             <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
 
@@ -41,7 +44,10 @@
                         <TextBlock Text="Y" Grid.Column="3" FontWeight="Bold" TextAlignment="Center"/>
                         <TextBlock Text="Вид цел" Grid.Column="4" FontWeight="Bold" TextAlignment="Center"/>
                         <TextBlock Text="Разстояние" Grid.Column="5" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Status" Grid.Column="6" FontWeight="Bold" TextAlignment="Center"/>
+                        <TextBlock Text="Група" Grid.Column="6" FontWeight="Bold" TextAlignment="Center"/>
+                        <TextBlock Text="Rssi" Grid.Column="7" FontWeight="Bold" TextAlignment="Center"/>
+                        <TextBlock Text="Snr" Grid.Column="8" FontWeight="Bold" TextAlignment="Center"/>
+                        <TextBlock Text="Status" Grid.Column="9" FontWeight="Bold" TextAlignment="Center"/>
                         
                     </Grid>
                 </ListView.Header>
@@ -58,6 +64,9 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="160"/>
                                 <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="100"/>
                             </Grid.ColumnDefinitions>
 
@@ -77,8 +86,18 @@
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetTypes}"
                                 SelectedItem="{x:Bind TargetType, Mode=TwoWay}"
                                 Width="150" />
-                            <TextBox Text="{x:Bind Distance, Mode=TwoWay}" Grid.Column="5" TextAlignment="Center"/>
-                            <TextBlock Text="{x:Bind Status}" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBox Text="{x:Bind Distance, Mode=TwoWay}" Grid.Column="5" TextAlignment="Center" Margin="0 0 10 0"/>
+                            <ComboBox Grid.Column="6"
+                                ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetGroups}"
+                                SelectedItem="{x:Bind Group, Mode=TwoWay}"
+                                Width="150" />
+                            <StackPanel Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="{x:Bind Rssi, Mode=TwoWay}"  TextAlignment="Center" Margin="0 0 10 0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="{x:Bind Snr, Mode=TwoWay}"  TextAlignment="Center" Margin="0 0 10 0"/>
+                            </StackPanel>
+                            <TextBlock Text="{x:Bind Status}" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
 
                     </DataTemplate>

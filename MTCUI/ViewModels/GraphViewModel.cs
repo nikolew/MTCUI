@@ -11,12 +11,17 @@ namespace MTCUI.ViewModels
 
         public GraphViewModel()
         {
-            _nodesViewModel = [];       
+            _nodesViewModel = [];
         }
 
         public void AddNode(NodeViewModel nodeViewModel)
         {
             _nodesViewModel.Add(nodeViewModel);
+        }
+
+        public void ClearNodes()
+        {
+            _nodesViewModel.Clear();
         }
     }
 }

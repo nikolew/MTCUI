@@ -53,6 +53,8 @@ public class NodeStatus
     [ProtoMember(3)] public int State { get; set; }
     [ProtoMember(4)] public int BattVoltage { get; set; }
     [ProtoMember(5)] public int BattState { get; set; }
+    [ProtoMember(6)] public int Rssi { get; set; }
+    [ProtoMember(7)] public int Snr { get; set; }
 }
  
 [ProtoContract]
