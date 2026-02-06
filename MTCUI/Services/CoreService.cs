@@ -1,11 +1,12 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿
+using CommunityToolkit.Mvvm.Messaging;
 using MTCCore.Enums;
+using MTCCore.Messages.Bluetooth;
+using MTCCore.Messages.Master;
+using MTCCore.Messages.Nodes;
 using MTCCore.Models;
-using MTCCore.Repositories;
 using MTCCore.Services;
-using MTCUI.Messages;
 using MTCUI.Models;
-using MTCUI.Utilities;
 using MTCUI.ViewModels;
 using ProtoBuf;
 using System;
@@ -24,23 +25,28 @@ namespace MTCUI.Services
         private readonly ClientSocketService _clientSocket;
         private readonly BluetoothLEService _bluetoothService;
         private readonly INodeService _nodeService;
+        private readonly SchedulerService _scheduler;
 
-        public CoreService(ClientSocketService clientSocket, BluetoothLEService bluetoothService, INodeService nodeService)
+        public Action<TimeSpan> OnTimerTick;
+
+        public CoreService(ClientSocketService clientSocket, BluetoothLEService bluetoothService, 
+            INodeService nodeService, SchedulerService scheduler)
         {
             _clientSocket = clientSocket;
             _bluetoothService = bluetoothService;
             _nodeService = nodeService;
+            _scheduler = scheduler;
 
-            _bluetoothService.StatusChanged += s =>
+            WeakReferenceMessenger.Default.Register<NodeSendCommandMessage>(this, (r, m) => { OnNodeClick(m.Id); });
+            WeakReferenceMessenger.Default.Register<MasterCommandMessage>(this, (r, m) => { OnCommand(m.Command); });
+            WeakReferenceMessenger.Default.Register<BluetoothConnectMessage>(this, (r, m) => { OnTryClientConnect(); });
+            WeakReferenceMessenger.Default.Register<BluetoothResponseMessage>(this, (r, m) => { OnBluetoothResponse(m.Response); });
+
+            _scheduler.OnTimeTick += timeSpan =>
             {
-                OnClientStatusChanged?.Invoke(s);
+               OnTimerTick?.Invoke(timeSpan);
             };
-
-            _bluetoothService.ResponseReceived += BluetoothService_ResponseReceived;
-
-            WeakReferenceMessenger.Default.Register<ClientConnectMessage>(this, (r, m) => { OnTryClientConnect(m.Value); });
-            WeakReferenceMessenger.Default.Register<NodeClickMessage>(this, (r, m) => { OnNodeClick(m.Value); });
-            WeakReferenceMessenger.Default.Register<CommandMessage>(this, (r, m) => { OnCommand(m.Value); });
+           
         }
 
         private async void OnCommand(int value)
@@ -48,7 +54,6 @@ namespace MTCUI.Services
             var packet = new Packet
             {
                 CommandType = CommandType.CMD_GETNODES,
-                
             };
             await _bluetoothService.Send(packet);
         }
@@ -67,12 +72,12 @@ namespace MTCUI.Services
             await _bluetoothService.Send(packet);
         }
 
-        private void OnTryClientConnect(string value)
+        private void OnTryClientConnect()
         {
             _bluetoothService.StartDiscovery();
         }
 
-        private void BluetoothService_ResponseReceived(byte[] data)
+        private void OnBluetoothResponse(byte[] data)
         {
             var packet = Serializer.Deserialize<Packet>(new MemoryStream(data));
 
@@ -95,7 +100,7 @@ namespace MTCUI.Services
                         state = TargetState.TargetFolded;
                     }
 
-                    WeakReferenceMessenger.Default.Send(new UpdateNodeStatusMessage(new NodeModel
+                    WeakReferenceMessenger.Default.Send(new NodeUpdateStatusMessage(new NodeModel
                     {
                         TargetId = Convert.ToString(status.Id),
                         State = state
@@ -112,7 +117,7 @@ namespace MTCUI.Services
 
                         if (node != null)
                         {
-                            WeakReferenceMessenger.Default.Send(new AddNodeToViewGraphMessage(node));
+                            WeakReferenceMessenger.Default.Send(new NodeAddToViewGraphMessage(node));
                         }
                         else
                         {
@@ -126,7 +131,7 @@ namespace MTCUI.Services
                             });
 
                             var node2 = _nodeService.GetNodeByUniqueId(nuid);
-                            WeakReferenceMessenger.Default.Send(new AddNodeToViewGraphMessage(node2));
+                            WeakReferenceMessenger.Default.Send(new NodeAddToViewGraphMessage(node2));
                         }               
                     }
 
@@ -134,7 +139,14 @@ namespace MTCUI.Services
                 case CommandType.CMD_NODEEVENT:
                     var nodeEvent = packet.NodeEvent;
                    
-                    WeakReferenceMessenger.Default.Send(new NodeEventMessage(nodeEvent));
+                    var nodeEventModel = new NodeEventModel
+                    {
+                        Id = nodeEvent.Id,
+                        Online = nodeEvent.Online,
+                        MissedFrames = nodeEvent.MissedFrames,
+                        LastSeenMs = nodeEvent.LastSeenMs
+                    };
+                    WeakReferenceMessenger.Default.Send(new NodeEventMessage(nodeEventModel));
                     break;
                 
             }
@@ -156,6 +168,16 @@ namespace MTCUI.Services
             }).ToList();
 
             _nodeService.UpdateNodes(listNodes);
+        }
+
+        public void StartTimer()
+        {
+            _scheduler.Start();
+        }
+
+        public void StopTimer()
+        {
+            _scheduler.Stop();
         }
     }
 }

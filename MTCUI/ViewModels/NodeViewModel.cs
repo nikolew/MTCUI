@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
+using MTCCore.Messages.Nodes;
 using MTCCore.Models;
-using MTCUI.Messages;
 
 namespace MTCUI.ViewModels
 {
@@ -37,7 +37,7 @@ namespace MTCUI.ViewModels
         {
             var id = Node.TargetId;
 
-            WeakReferenceMessenger.Default.Send(new NodeClickMessage(id));
+            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(id));
         }
     }
 }

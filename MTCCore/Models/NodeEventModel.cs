@@ -1,9 +1,6 @@
-﻿using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
-namespace MTCUI.Models
+namespace MTCCore.Models
 {
     public class NodeEventModel
     {

@@ -4,9 +4,9 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
 using MTCCore.Enums;
+using MTCCore.Messages.Nodes;
 using MTCCore.Models;
 using MTCCore.Services;
-using MTCUI.Messages;
 using MTCUI.Models;
 using System;
 using System.Collections.Generic;
@@ -54,7 +54,7 @@ namespace MTCUI.ViewModels
         public NodeManagerViewModel()
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
-            WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.Value));
+            WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
         }
 
         internal async Task InitializeAsync(DispatcherQueue dispatcher)
@@ -84,7 +84,7 @@ namespace MTCUI.ViewModels
             }
         }
 
-        private void OnNodeEvent(NodeEvent value)
+        private void OnNodeEvent(NodeEventModel value)
         {
             var id = Convert.ToString(value.Id);
             var node = Items.Where(x => x.TargetId == id).SingleOrDefault();
@@ -94,7 +94,6 @@ namespace MTCUI.ViewModels
                 return;
             }
 
-            
             node.Status = value.Online ? "online" : "offline";
         }
 

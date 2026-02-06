@@ -51,26 +51,46 @@
                 Margin="10,10,0,0"
                 Command="{x:Bind  MainViewModel.ConfigNodeCommand}"/>
             <Button Content="Load" 
-        Width="100" 
-        Height="30" 
-        HorizontalAlignment="Left" 
-        VerticalAlignment="Top" 
-        Margin="10,10,0,0"
-        Command="{x:Bind  MainViewModel.LoadCommand}"/>
+                Width="100" 
+                Height="30" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Top" 
+                Margin="10,10,0,0"
+                Command="{x:Bind  MainViewModel.LoadCommand}"/>
             <Button Content="Save" 
-        Width="100" 
-        Height="30" 
-        HorizontalAlignment="Left" 
-        VerticalAlignment="Top" 
-        Margin="10,10,0,0"
-        Command="{x:Bind  MainViewModel.SaveCommand}"/>
-
-            <TextBlock Text="{Binding ConnectionStatus}" 
-           HorizontalAlignment="Left"
-           VerticalAlignment="Top" 
-           Margin="10 15 0 0"/>
-
+                Width="100" 
+                Height="30" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Top" 
+                Margin="10,10,0,0"
+                Command="{x:Bind  MainViewModel.SaveCommand}"/>
             
+
+            <TextBlock Text="{Binding ConnectionStatus}"    
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" 
+                Margin="10 15 0 0"/>
+
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Content="Start" 
+                    Width="100" 
+                    Height="30" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Margin="10,10,0,0" Command="{x:Bind MainViewModel.StartTimerCommand}"
+                    />
+                <Button Content="Stop" 
+                    Width="100" 
+                    Height="30" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Margin="10,10,0,0" Command="{x:Bind MainViewModel.StopTimerCommand}"
+                    />
+                <TextBlock Text="{Binding TimerText}" FontSize="24"   
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" 
+                    Margin="10 15 0 0"/>
+            </StackPanel>
         </StackPanel>
         <ContentControl Grid.Row="2" Content="{Binding CurrentView}" 
             ContentTemplate="{StaticResource garphTemplate}"/>  

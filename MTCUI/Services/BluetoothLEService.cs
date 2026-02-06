@@ -9,6 +9,9 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Storage.Streams;
 using MTCUI.Models;
 using ProtoBuf;
+using CommunityToolkit.Mvvm.Messaging;
+using MTCCore.Messages.Bluetooth;
+
 
 namespace MTCUI.Services;
 
@@ -31,13 +34,10 @@ public class BluetoothLEService
     private DateTime _lastHeartbeatResponse = DateTime.MinValue;
     private CancellationTokenSource _heartbeatCts;
 
-    public event Action<string> StatusChanged;
-    public event Action<byte[]> ResponseReceived;
-    public event Action<bool> ConnectionChanged; // true = connected, false = disconnected
 
     public void StartDiscovery()
     {
-        StatusChanged?.Invoke("Scanning for MTC-01...");
+        WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Scanning for MTC-01..."));
 
         _watcher = new BluetoothLEAdvertisementWatcher
         {
@@ -56,7 +56,6 @@ public class BluetoothLEService
             _watcher.Received -= OnAdvertisement;
             _lastAddress = args.BluetoothAddress;
 
-            //StatusChanged?.Invoke("Found MTC-01");
             await ConnectAsync(_lastAddress);
         }
     }
@@ -68,28 +67,25 @@ public class BluetoothLEService
             _device = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
             if (_device == null)
             {
-                StatusChanged?.Invoke("Failed to connect.");
-                ConnectionChanged?.Invoke(false);
+                WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Failed to connect."));  
                 return;
             }
 
             _device.ConnectionStatusChanged += OnConnectionStatusChanged;
 
-            StatusChanged?.Invoke("Connected. Discovering services...");
+            WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Connected. Discovering services..."));
 
             var servicesResult = await _device.GetGattServicesAsync();
             if (servicesResult.Status != GattCommunicationStatus.Success)
             {
-                StatusChanged?.Invoke("Service discovery failed.");
-                ConnectionChanged?.Invoke(false);
+                WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Service discovery failed."));
                 return;
             }
 
             var service = servicesResult.Services.FirstOrDefault(s => s.Uuid == ServiceUuid);
             if (service == null)
             {
-                StatusChanged?.Invoke("Service not found.");
-                ConnectionChanged?.Invoke(false);
+                WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Service not found."));
                 return;
             }
 
@@ -98,8 +94,7 @@ public class BluetoothLEService
 
             if (_characteristic == null)
             {
-                StatusChanged?.Invoke("Characteristic not found.");
-                ConnectionChanged?.Invoke(false);
+                WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Characteristic not found."));
                 return;
             }
 
@@ -108,15 +103,12 @@ public class BluetoothLEService
             await _characteristic.WriteClientCharacteristicConfigurationDescriptorAsync(
                 GattClientCharacteristicConfigurationDescriptorValue.Notify);
 
-            StatusChanged?.Invoke("Ready.");
-            ConnectionChanged?.Invoke(true);
-
+            WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Ready."));
             StartHeartbeatLoop();
         }
         catch (Exception ex)
         {
-            StatusChanged?.Invoke("Connect error: " + ex.Message);
-            ConnectionChanged?.Invoke(false);
+            WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Connect error: " + ex.Message));
         }
     }
 
@@ -124,8 +116,8 @@ public class BluetoothLEService
     {
         if (sender.ConnectionStatus == BluetoothConnectionStatus.Disconnected)
         {
-            StatusChanged?.Invoke("Disconnected.");
-            ConnectionChanged?.Invoke(false);
+            WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Disconnected."));   
+
             StopHeartbeatLoop();
 
             if (_isReconnecting)
@@ -138,13 +130,13 @@ public class BluetoothLEService
             {
                 try
                 {
-                    StatusChanged?.Invoke("Trying to reconnect...");
+                    WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Trying to reconnect..."));
                     await ConnectAsync(_lastAddress);
 
                     if (_device != null &&
                         _device.ConnectionStatus == BluetoothConnectionStatus.Connected)
                     {
-                        StatusChanged?.Invoke("Reconnected.");
+                        WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Reconnected."));
                         _isReconnecting = false;
                         return;
                     }
@@ -164,7 +156,7 @@ public class BluetoothLEService
 
         _lastHeartbeatResponse = DateTime.Now;
         
-        ResponseReceived?.Invoke(data);
+        WeakReferenceMessenger.Default.Send(new BluetoothResponseMessage(data));
     }
 
     public async Task SendPingAsync(uint id, string payload)
@@ -214,14 +206,13 @@ public class BluetoothLEService
 
                 if (DateTime.Now - _lastHeartbeatResponse > _heartbeatTimeout)
                 {
-                    StatusChanged?.Invoke("Heartbeat timeout. Forcing reconnect...");
+                    WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Heartbeat timeout. Forcing reconnect..."));
                     // ще задейства reconnect през ConnectionStatusChanged, ако disconnect-неш
                     try
                     {
                         _device?.Dispose();
                     }
                     catch { }
-                    ConnectionChanged?.Invoke(false);
                     return;
                 }
             }
