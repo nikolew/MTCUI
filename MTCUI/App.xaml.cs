@@ -35,8 +35,6 @@ namespace MTCUI
                 .AddTransient<NodeManagerWindow>()
                 .AddSingleton<MainWindow>()
                 .AddSingleton<CoreService>()
-                .AddSingleton<ClientSocketService>()
-                .AddSingleton<ITimerWorker, TimerWorker>()
                 .AddSingleton<BluetoothLEService>()
                 .AddSingleton<IWindowService, WindowService>()
 

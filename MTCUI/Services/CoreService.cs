@@ -20,18 +20,15 @@ namespace MTCUI.Services
 {
     public class CoreService
     {
-        public event Action<string> OnClientStatusChanged;
-
-        private readonly ClientSocketService _clientSocket;
         private readonly BluetoothLEService _bluetoothService;
         private readonly INodeService _nodeService;
         private readonly SchedulerService _scheduler;
         
 
-        public CoreService(ClientSocketService clientSocket, BluetoothLEService bluetoothService, 
+        public CoreService(BluetoothLEService bluetoothService, 
             INodeService nodeService, SchedulerService scheduler)
         {
-            _clientSocket = clientSocket;
+           
             _bluetoothService = bluetoothService;
             _nodeService = nodeService;
             _scheduler = scheduler;
