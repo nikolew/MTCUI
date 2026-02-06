@@ -91,8 +91,6 @@ namespace MTCUI.ViewModels
             await ConnectBluetoothAsync();
         }
 
-     
-
         private void OnNodeEvent(NodeEventModel value)
         {
             Debug.WriteLine($"Online: {value.Online}");
@@ -144,7 +142,6 @@ namespace MTCUI.ViewModels
             });
         }
 
-
         private async Task ConnectBluetoothAsync()
         {
             ConnectionStatus = "Опит за свързване...";
@@ -179,8 +176,6 @@ namespace MTCUI.ViewModels
                 nodeViewModel.InitTemplateView();
 
                 graphVM.AddNode(nodeViewModel);
-
-
             }
         }
 

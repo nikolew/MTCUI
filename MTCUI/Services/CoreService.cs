@@ -26,8 +26,7 @@ namespace MTCUI.Services
         private readonly BluetoothLEService _bluetoothService;
         private readonly INodeService _nodeService;
         private readonly SchedulerService _scheduler;
-
-        public Action<TimeSpan> OnTimerTick;
+        
 
         public CoreService(ClientSocketService clientSocket, BluetoothLEService bluetoothService, 
             INodeService nodeService, SchedulerService scheduler)
@@ -41,12 +40,6 @@ namespace MTCUI.Services
             WeakReferenceMessenger.Default.Register<MasterCommandMessage>(this, (r, m) => { OnCommand(m.Command); });
             WeakReferenceMessenger.Default.Register<BluetoothConnectMessage>(this, (r, m) => { OnTryClientConnect(); });
             WeakReferenceMessenger.Default.Register<BluetoothResponseMessage>(this, (r, m) => { OnBluetoothResponse(m.Response); });
-
-            _scheduler.OnTimeTick += timeSpan =>
-            {
-               OnTimerTick?.Invoke(timeSpan);
-            };
-           
         }
 
         private async void OnCommand(int value)
