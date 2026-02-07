@@ -2,6 +2,8 @@
 using MTCCore.Models;
 using MTCCore.Repositories;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace MTCCore.Services
@@ -13,6 +15,7 @@ namespace MTCCore.Services
         NodeModel GetNodeByUniqueId(string uniqueId);
         List<NodeModel> GetAllNodes();
         void UpdateNodes(IEnumerable<NodeModel> nodes);
+        Task UpdateNode(NodeModel node);
     }
 
     public class NodeService : INodeService
@@ -27,10 +30,7 @@ namespace MTCCore.Services
         public bool NodeExists(string uniqueId)
         {
             var node = _nodeRepository.GetNodeByUniqueId(uniqueId).Result;
-            if (node != null)
-                return true;
-
-            return false;
+            return node != null;
         }
 
         public void AddNode(NodeModel node)
@@ -78,11 +78,7 @@ namespace MTCCore.Services
         {
             var nodes = _nodeRepository.GetAll().Result;
 
-            var nodeModels = new List<NodeModel>();
-
-            foreach (var node in nodes)
-            {
-                var newNode = new NodeModel
+            return nodes.Select(node => new NodeModel
                 {
                     UniqueId = node.NodeUniqueId,
                     TargetId = node.NodeIdentity.ToString(),
@@ -91,10 +87,8 @@ namespace MTCCore.Services
                     State = Enums.TargetState.TargetRaised,
                     Distance = node.Distance,
                     Group = node.TargetGroup
-                };
-                nodeModels.Add(newNode);
-            }
-            return nodeModels;
+                })
+                .ToList();
         }
 
         public void UpdateNodes(IEnumerable<NodeModel> nodes)
@@ -102,17 +96,33 @@ namespace MTCCore.Services
             foreach (var node in nodes)
             {
                 var nodeEntity = _nodeRepository.GetNodeByUniqueId(node.UniqueId).Result;
-                if (nodeEntity != null)
-                {
-                    nodeEntity.Position.X = (int)node.Position.X;
-                    nodeEntity.Position.Y = (int)node.Position.Y;
-                    nodeEntity.TargetType = node.TargetType;
-                    nodeEntity.Distance = node.Distance;
-                    nodeEntity.TargetGroup = node.Group;
-                    _nodeRepository.Update(nodeEntity);
-                }
+                if (nodeEntity == null) 
+                    continue;
+                
+                nodeEntity.Position.X = (int)node.Position.X;
+                nodeEntity.Position.Y = (int)node.Position.Y;
+                nodeEntity.TargetType = node.TargetType;
+                nodeEntity.Distance = node.Distance;
+                nodeEntity.TargetGroup = node.Group;
+                _nodeRepository.Update(nodeEntity);
             }
 
+        }
+
+        public async Task UpdateNode(NodeModel node)
+        {
+            var nodeEntity = _nodeRepository.GetNodeByUniqueId(node.UniqueId).Result;
+            if (nodeEntity == null) 
+                return;
+            
+            nodeEntity.Position.X = (int)node.Position.X;
+            nodeEntity.Position.Y = (int)node.Position.Y;
+            nodeEntity.TargetType = node.TargetType;
+            nodeEntity.Distance = node.Distance;
+            nodeEntity.TargetGroup = node.Group;
+            await _nodeRepository.Update(nodeEntity);
+            
+            
         }
     }
 }

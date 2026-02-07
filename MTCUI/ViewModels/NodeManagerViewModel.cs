@@ -23,16 +23,7 @@ namespace MTCUI.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Array TargetTypes { get; } = Enum.GetValues(typeof(TargetType));
-        private TargetType _selectedTarget;
-        public TargetType SelectedTarget
-        {
-            get => _selectedTarget;
-            set
-            {
-                _selectedTarget = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedTarget)));
-            }
-        }
+        
 
         public Array TargetGroups { get; } = Enum.GetValues(typeof(Group));
         private Group _selectedGroup;
@@ -63,17 +54,20 @@ namespace MTCUI.ViewModels
             {
                 _nodeService.GetAllNodes().ForEach(node => {
                     dispatcher.TryEnqueue(() =>
-                    {                    
-                        Items.Add(new ItemModel 
-                        { 
+                    {
+                        var item = new ItemModel
+                        {
                             UniqueId = node.UniqueId,
-                            TargetType = node.TargetType, 
-                            Position=node.Position, 
-                            TargetId=node.TargetId,
+                            TargetType = node.TargetType,
+                            Position = node.Position,
+                            TargetId = node.TargetId,
                             Distance = node.Distance,
                             Group = node.Group,
                             Status = "offline"
-                        });                      
+                        };
+                        item.SaveAction += OnSaveAction;
+                        
+                        Items.Add(item);                      
                     });
                 });
             }
@@ -83,6 +77,8 @@ namespace MTCUI.ViewModels
                 System.Diagnostics.Trace.WriteLine($"Error initializing NodeManagerViewModel: {ex.Message}");
             }
         }
+
+       
 
         private void OnNodeEvent(NodeEventModel value)
         {
@@ -120,6 +116,23 @@ namespace MTCUI.ViewModels
         internal void Clear()
         {
             Items.Clear();
+        }
+
+        private void OnSaveAction(ItemModel node)
+        {
+            var updateNode = new NodeModel
+            {
+                UniqueId = node.UniqueId,
+                TargetType = node.TargetType,
+                Position = node.Position,
+                TargetId = node.TargetId,
+                Distance = node.Distance,
+                Group = node.Group
+            };
+            
+            _nodeService.UpdateNode(updateNode);
+            
+            WeakReferenceMessenger.Default.Send(new NodeUpdateMessage(updateNode.UniqueId));
         }
     }
 }

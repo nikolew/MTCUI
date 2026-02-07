@@ -1,11 +1,15 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MTCCore.Enums;
 using Windows.Foundation;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MTCUI.Models
 {
     public partial class ItemModel : ObservableObject
     {
+        public Action<ItemModel> SaveAction;
+        
         [ObservableProperty]
         private string _uniqueId;
 
@@ -34,6 +38,12 @@ namespace MTCUI.Models
         private int _rssi;
         [ObservableProperty]
         private int _snr;
+
+        [RelayCommand]
+        void SaveNode()
+        {
+            SaveAction.Invoke(this);
+        }
     }
 
 }

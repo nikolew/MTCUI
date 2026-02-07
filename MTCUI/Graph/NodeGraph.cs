@@ -284,9 +284,12 @@ namespace MTCUI.Graph
                 _pressedMouseToSelect = true;
 
                 var node = sender as NodeBase;
-                node.CaptureDragStartPosition();
-                _selectedNode = node;
-                VisualStateManager.GoToState(node, "Selected", true);
+                if (node != null)
+                {
+                    node.CaptureDragStartPosition();
+                    _selectedNode = node;
+                    VisualStateManager.GoToState(node, "Selected", true);
+                }
 
                 _dragStartPointToMoveNode = e.GetCurrentPoint(Canvas).Position;
             }

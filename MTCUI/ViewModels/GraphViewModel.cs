@@ -19,6 +19,11 @@ namespace MTCUI.ViewModels
             _nodesViewModel.Add(nodeViewModel);
         }
 
+        public void RemoveNode(NodeViewModel nodeViewModel)
+        {
+            _nodesViewModel.Remove(nodeViewModel);
+        }
+
         public void ClearNodes()
         {
             _nodesViewModel.Clear();

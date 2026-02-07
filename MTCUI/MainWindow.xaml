@@ -71,7 +71,7 @@
                 VerticalAlignment="Top" 
                 Margin="10 15 0 0"/>
 
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="200 0 0 0">
                 <Button Content="Start" 
                     Width="100" 
                     Height="30" 

@@ -1,9 +1,11 @@
-﻿using MTCCore.Models;
+﻿using MTCCore.Enums;
+using MTCCore.Models;
 
 namespace MTCCore.Messages.Nodes
 {
     public record NodeSendCommandMessage(string Id);
     public record NodeAddToViewGraphMessage(NodeModel Node);
     public record NodeUpdateStatusMessage(NodeModel Node);
+    public record NodeUpdateMessage(string Id);
     public record NodeEventMessage(NodeEventModel NodeEvent);
 }

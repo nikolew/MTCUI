@@ -12,7 +12,7 @@ namespace MTCCore.Repositories
         Task<NodeEntity> GetByIdAsync(int id);
         Task<List<NodeEntity>> GetAll();
         Task<NodeEntity> GetNodeByUniqueId(string uniqueId);
-        void Update(NodeEntity nodeEntity);
+        Task Update(NodeEntity nodeEntity);
     }
 
     public class NodeRepository : INodeRepository
@@ -45,10 +45,10 @@ namespace MTCCore.Repositories
             return _dbContext.Nodes.Include(a => a.Position).SingleOrDefaultAsync(x => x.NodeUniqueId == uniqueId);
         }
 
-        public void Update(NodeEntity nodeEntity)
+        public async Task Update(NodeEntity nodeEntity)
         {
-            _dbContext.Nodes.Update(nodeEntity);
-            _dbContext.SaveChanges();
+             _dbContext.Nodes.Update(nodeEntity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

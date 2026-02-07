@@ -39,9 +39,7 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
     public NodeManagerWindow()
     {
         InitializeComponent();
-
-       
-
+        
         this.Activated += MainWindow_Activated;
 
         NodeManagerVM = Ioc.Default.GetRequiredService<NodeManagerViewModel>();
@@ -56,6 +54,8 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
+        
+        
         if (this.centered is false)
         {
             Center(this);
@@ -71,6 +71,7 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
         if (AppWindow.GetFromWindowId(windowId) is AppWindow appWindow &&
             DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest) is DisplayArea displayArea)
         {
+            appWindow.Resize(new SizeInt32(1700, 800));
             PointInt32 CenteredPosition = appWindow.Position;
             CenteredPosition.X = (displayArea.WorkArea.Width - appWindow.Size.Width) / 2;
             CenteredPosition.Y = (displayArea.WorkArea.Height - appWindow.Size.Height) / 2;

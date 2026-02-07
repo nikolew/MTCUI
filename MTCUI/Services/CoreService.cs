@@ -23,7 +23,6 @@ namespace MTCUI.Services
         private readonly BluetoothLEService _bluetoothService;
         private readonly INodeService _nodeService;
         private readonly SchedulerService _scheduler;
-        
 
         public CoreService(BluetoothLEService bluetoothService, 
             INodeService nodeService, SchedulerService scheduler)
@@ -168,6 +167,12 @@ namespace MTCUI.Services
         public void StopTimer()
         {
             _scheduler.Stop();
+        }
+        
+        public NodeModel GetNodebyUniqueId(string uniqueId)
+        {
+            var node = _nodeService.GetNodeByUniqueId(uniqueId);
+            return node ?? null;
         }
     }
 }

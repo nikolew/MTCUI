@@ -15,6 +15,7 @@ using MTCUI.Views;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using MTCCore.Services;
 using WinRT.MTCUIVtableClasses;
 
 namespace MTCUI.ViewModels
@@ -51,6 +52,8 @@ namespace MTCUI.ViewModels
             IWindowService windowService, NodeManagerViewModel nodeManagerViewModel)
         {
             _core = core;
+           
+
 
             CurrentView = graphViewModel;
 
@@ -87,8 +90,32 @@ namespace MTCUI.ViewModels
                 });
             });
 
-
+            WeakReferenceMessenger.Default.Register<NodeUpdateMessage>(this, (r, m) => UpdateNode(m.Id));
+          
             await ConnectBluetoothAsync();
+        }
+
+        private void UpdateNode(string id)
+        {
+            var nodeModel = _core.GetNodebyUniqueId(id);
+            if (CurrentView is not GraphViewModel graphVM) 
+                return;
+            
+            foreach (var nodeVm in graphVM.NodesViewModel)
+            {
+                if (nodeVm.Node.UniqueId != id) 
+                    continue;
+                
+                graphVM.RemoveNode(nodeVm);
+                
+                _dispatcher.TryEnqueue(() =>
+                {
+                    var nodeViewModel = new NodeViewModel() { Node = nodeModel };
+                    nodeViewModel.InitTemplateView();
+                    graphVM.AddNode(nodeViewModel);
+                });
+                break;
+            }
         }
 
         private void OnNodeEvent(NodeEventModel value)
@@ -113,11 +140,14 @@ namespace MTCUI.ViewModels
 
         private void UpdateNodeStatus(NodeModel value)
         {
-            var n = CurrentView as GraphViewModel;
+            if (CurrentView is not GraphViewModel n) 
+                return;
+            
             foreach (var node in n.NodesViewModel)
             {
                 if (node.Node.TargetId == value.TargetId)
                 {
+                    
                     _dispatcher.TryEnqueue(() =>
                     {
                         node.Node.State = value.State;
@@ -127,6 +157,8 @@ namespace MTCUI.ViewModels
                 }
             }
         }
+        
+        
 
         private async Task AddNodeToGraph(NodeModel node)
         {
