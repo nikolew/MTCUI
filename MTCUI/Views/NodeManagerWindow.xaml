@@ -20,7 +20,7 @@
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Padding="10 20 10 10">
-            <ListView x:Name="MyList" ItemsSource="{x:Bind NodeManagerVM.Items}">
+            <ListView x:Name="MyList" ItemsSource="{x:Bind NodeManagerVm.Items}">
                 
                 <!-- HEADER -->
                 <ListView.Header>
@@ -88,7 +88,8 @@
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetTypes}"
                                 SelectedItem="{x:Bind TargetType, Mode=TwoWay}"
                                 Width="150" />
-                            <TextBox Text="{x:Bind Distance, Mode=TwoWay}" Grid.Column="5" TextAlignment="Center" Margin="0 0 10 0"/>
+                            <TextBox Text="{x:Bind Distance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="5" 
+                                     TextAlignment="Center" Margin="0 0 10 0"/>
                             <ComboBox Grid.Column="6"
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetGroups}"
                                 SelectedItem="{x:Bind Group, Mode=TwoWay}"
@@ -102,7 +103,10 @@
                             <TextBlock Text="{x:Bind Status}" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             
                             <StackPanel Grid.Column="10" HorizontalAlignment="Right" Orientation="Horizontal">
-                                <Button  Content="Save" Command="{x:Bind SaveNodeCommand}"/>
+                                <Button  Content="Save" 
+                                         Command="{x:Bind SaveCommand}" 
+                                         IsEnabled="{x:Bind IsDirty, Mode=OneWay}" 
+                                         ToolTipService.ToolTip="No changes to save"/>
                             </StackPanel>
                         </Grid>
 
@@ -117,9 +121,10 @@
             <Button Content="Add Node" Width="110" Margin="5" />
             <Button Content="Remove Node" Width="110" Margin="5" />
             <Button Content="Load Nodes" Width="110" Margin="5" />
-            <Button Content="Save Nodes" Width="110" Margin="5" Command="{x:Bind NodeManagerVM.SaveCommand}"/>
+            <Button Content="Save Nodes" Width="110" Margin="5" Command="{x:Bind NodeManagerVm.SaveCommand}"/>
             
         </StackPanel>
 
+        
     </Grid>
 </Window>

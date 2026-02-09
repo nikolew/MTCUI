@@ -33,8 +33,10 @@ namespace MTCUI.Views;
 /// </summary>
 public sealed partial class NodeManagerWindow : Window, IInitializableWindow
 {
-    private bool centered;
-    public NodeManagerViewModel NodeManagerVM;
+    private bool _centered;
+    public readonly NodeManagerViewModel NodeManagerVm;
+    
+    private readonly AppWindow _appWindow;
 
     public NodeManagerWindow()
     {
@@ -42,24 +44,62 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
         
         this.Activated += MainWindow_Activated;
 
-        NodeManagerVM = Ioc.Default.GetRequiredService<NodeManagerViewModel>();
+        NodeManagerVm = Ioc.Default.GetRequiredService<NodeManagerViewModel>();
 
-        RootGrid.DataContext = NodeManagerVM;
+        RootGrid.DataContext = NodeManagerVm;
 
+        var hwnd = WindowNative.GetWindowHandle(this);
+        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+        _appWindow = AppWindow.GetFromWindowId(windowId);
+
+        _appWindow.Closing += AppWindow_Closing;
+        
         Closed += (s, e) =>
         {
-            NodeManagerVM.Clear();
+            NodeManagerVm.Clear();
         };
+    }
+
+    private async void AppWindow_Closing(AppWindow sender, AppWindowClosingEventArgs args)
+    {
+        try
+        {
+            if (NodeManagerVm.Items.Any(item => !item.IsDirty))
+            {
+                return;
+            }
+
+            try
+            {
+                args.Cancel = true; // спираме затварянето, докато потребителя избере
+
+                var dlg = new ContentDialog
+                {
+                    Title = "Имате незапазени промени",
+                    Content = "Запазите промените преди затваряне.",
+                    CloseButtonText = "Ok",
+                    XamlRoot = Content.XamlRoot // важно в WinUI 3
+                };
+
+                await dlg.ShowAsync();
+            }
+            finally
+            {
+          
+            }
+        }
+        catch (Exception e)
+        {
+            
+        }
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        
-        
-        if (this.centered is false)
+        if (this._centered is false)
         {
             Center(this);
-            centered = true;
+            _centered = true;
         }
     }
 
@@ -68,19 +108,20 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
         IntPtr hWnd = WindowNative.GetWindowHandle(window);
         WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
 
-        if (AppWindow.GetFromWindowId(windowId) is AppWindow appWindow &&
-            DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest) is DisplayArea displayArea)
-        {
-            appWindow.Resize(new SizeInt32(1700, 800));
-            PointInt32 CenteredPosition = appWindow.Position;
-            CenteredPosition.X = (displayArea.WorkArea.Width - appWindow.Size.Width) / 2;
-            CenteredPosition.Y = (displayArea.WorkArea.Height - appWindow.Size.Height) / 2;
-            appWindow.Move(CenteredPosition);
-        }
+        var appWindow = AppWindow.GetFromWindowId(windowId);
+        if (appWindow is null ||
+            DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest) is not { } displayArea) 
+            return;
+        
+        appWindow.Resize(new SizeInt32(1700, 800));
+        var centeredPosition = appWindow.Position;
+        centeredPosition.X = (displayArea.WorkArea.Width - appWindow.Size.Width) / 2;
+        centeredPosition.Y = (displayArea.WorkArea.Height - appWindow.Size.Height) / 2;
+        appWindow.Move(centeredPosition);
     }
 
     public Task InitializeAsync(DispatcherQueue dispatcher)
     {
-        return NodeManagerVM.InitializeAsync(dispatcher);
+        return NodeManagerVm.InitializeAsync(dispatcher);
     }
 }

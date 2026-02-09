@@ -13,5 +13,9 @@ namespace MTCCore.Entities
         public TargetType TargetType { get; set; }
 
         public PositionEntity Position { get; set; }
+
+
+        public int GroupEnttityId { get; set; }
+        public GroupEntity GroupEnttity { get; set; }
     }
 }

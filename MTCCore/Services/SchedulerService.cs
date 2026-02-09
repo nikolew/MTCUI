@@ -9,16 +9,14 @@ namespace MTCCore.Services
     public class SchedulerService : IDisposable
     {
         public delegate void TimerEventHandler(TimeSpan timeSpan);
-        public event TimerEventHandler? OnTimeTick;
+        public event TimerEventHandler OnTimeTick;
         private TimeSpan _time;
 
-        private PeriodicTimer? _timer;
-        private CancellationTokenSource? _cts;
+        private PeriodicTimer _timer;
+        private CancellationTokenSource _cts;
 
         public bool IsRunning { get; private set; }
 
-
-        // ▶ START
         public void Start()
         {
             if (IsRunning)
@@ -31,7 +29,6 @@ namespace MTCCore.Services
             _ = RunAsync();
         }
 
-        // ⏹ STOP
         public void Stop()
         {
             if (!IsRunning)
@@ -71,7 +68,7 @@ namespace MTCCore.Services
             var step = TimeSpan.FromMilliseconds(1000);
             _time += step;
 
-            OnTimeTick?.Invoke(_time);
+            //OnTimeTick?.Invoke(_time);
 
             WeakReferenceMessenger.Default.Send(new TimerTickMessage(_time));
         }
@@ -84,6 +81,7 @@ namespace MTCCore.Services
         public void Reset()
         {
             _time = TimeSpan.Zero;
+            WeakReferenceMessenger.Default.Send(new TimerTickMessage(_time));
         }
     }
 }

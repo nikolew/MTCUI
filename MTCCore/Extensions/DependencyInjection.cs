@@ -14,6 +14,8 @@ namespace MTCCore.Extensions
             services.AddSingleton<ApplicationDbContext>();
             services.AddSingleton<INodeService, NodeService>();
             services.AddSingleton<INodeRepository, NodeRepository>();
+            services.AddSingleton<ITimeRepository, TimeRepository>();
+            services.AddSingleton<IGroupRepository, GroupRepository>();
             services.AddSingleton<SchedulerService>();
             return services;
         }

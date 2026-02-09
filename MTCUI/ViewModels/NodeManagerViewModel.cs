@@ -24,6 +24,11 @@ namespace MTCUI.ViewModels
 
         public Array TargetTypes { get; } = Enum.GetValues(typeof(TargetType));
         
+        [ObservableProperty]
+        private bool _isDirty;
+        
+        [ObservableProperty]
+        private bool _buttonSaveEnabled;
 
         public Array TargetGroups { get; } = Enum.GetValues(typeof(Group));
         private Group _selectedGroup;
@@ -38,6 +43,7 @@ namespace MTCUI.ViewModels
         }
 
         private static readonly ObservableCollection<ItemModel> itemModels = new();
+        
         [ObservableProperty]
         private ObservableCollection<ItemModel> _items = itemModels;
       
@@ -45,6 +51,7 @@ namespace MTCUI.ViewModels
         public NodeManagerViewModel()
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
+            
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
         }
 
@@ -52,20 +59,20 @@ namespace MTCUI.ViewModels
         {
             try
             {
+                ButtonSaveEnabled = false;
+                
                 _nodeService.GetAllNodes().ForEach(node => {
                     dispatcher.TryEnqueue(() =>
                     {
                         var item = new ItemModel
                         {
                             UniqueId = node.UniqueId,
-                            TargetType = node.TargetType,
                             Position = node.Position,
                             TargetId = node.TargetId,
-                            Distance = node.Distance,
-                            Group = node.Group,
                             Status = "offline"
                         };
                         item.SaveAction += OnSaveAction;
+                        item.Load(node.TargetType, node.Group, node.Distance);
                         
                         Items.Add(item);                      
                     });

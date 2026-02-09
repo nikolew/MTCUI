@@ -37,7 +37,7 @@ namespace MTCCore.Repositories
 
         public Task<List<NodeEntity>> GetAll()
         {
-            return _dbContext.Nodes.Include(a => a.Position).ToListAsync();
+            return _dbContext.Nodes.Include(a => a.Position).Include(g => g.GroupEnttity).ToListAsync();
         }
 
         public Task<NodeEntity> GetNodeByUniqueId(string uniqueId)

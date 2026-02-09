@@ -3,6 +3,7 @@ using MTCCore.Models;
 using MTCCore.Repositories;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
@@ -21,10 +22,12 @@ namespace MTCCore.Services
     public class NodeService : INodeService
     {
         private readonly INodeRepository _nodeRepository;
+        private readonly IGroupRepository _groupRepository;
 
-        public NodeService( INodeRepository nodeRepository)
+        public NodeService( INodeRepository nodeRepository, IGroupRepository groupRepository)
         {
             _nodeRepository = nodeRepository;
+            _groupRepository = groupRepository;
         }
 
         public bool NodeExists(string uniqueId)
@@ -41,14 +44,16 @@ namespace MTCCore.Services
                 Y = (int)node.Position.Y
             };
 
+            var gr = _groupRepository.GetAll().Where(g => g.Id == 1).FirstOrDefault();
+
             var nodeEntity = new NodeEntity
             {
                 NodeUniqueId = node.UniqueId,
                 NodeIdentity = int.Parse(node.TargetId),
                 Distance = "0",
                 Position = positionEntity,
-                TargetType = Enums.TargetType.Default
-
+                TargetType = Enums.TargetType.Default,
+                GroupEnttity = gr
             };
 
             _nodeRepository.AddNode(nodeEntity);
@@ -84,7 +89,7 @@ namespace MTCCore.Services
                     TargetId = node.NodeIdentity.ToString(),
                     Position = new Point(node.Position.X, node.Position.Y),
                     TargetType = node.TargetType,
-                    State = Enums.TargetState.TargetRaised,
+                    State = Enums.TargetState.TargetOffline,
                     Distance = node.Distance,
                     Group = node.TargetGroup
                 })
