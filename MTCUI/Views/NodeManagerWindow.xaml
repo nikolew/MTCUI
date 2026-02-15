@@ -7,7 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    xmlns:models="using:MTCUI.Models"
+    xmlns:models="using:MTCUI.Models" 
+    xmlns:tv="using:WinUI.TableView"
     Title="NodeManagerWindow" >
 
     <Window.SystemBackdrop>
@@ -24,31 +25,35 @@
                 
                 <!-- HEADER -->
                 <ListView.Header>
-                    <Grid Padding="10,0,0,8">
+                    <Grid Padding="15,0,0,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="140"/>
                             <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="160"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="140"/>
                             <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Node ID" Grid.Column="0" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Unique ID" Grid.Column="1" FontWeight="Bold" Margin="20 0 0 0" TextAlignment="Center"/>
-                        <TextBlock Text="X" Grid.Column="2" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Y" Grid.Column="3" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Вид цел" Grid.Column="4" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Разстояние" Grid.Column="5" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Група" Grid.Column="6" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Rssi" Grid.Column="7" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Snr" Grid.Column="8" FontWeight="Bold" TextAlignment="Center"/>
-                        <TextBlock Text="Status" Grid.Column="9" FontWeight="Bold" TextAlignment="Center"/>
+                        <TextBlock Text="ID" Grid.Column="0" FontWeight="Bold" TextAlignment="Center"/>
+                        <TextBlock Text="Unique ID" Grid.Column="1" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="X" Grid.Column="2" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Y" Grid.Column="3" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Вид цел" Grid.Column="4" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Разстояние" Grid.Column="5" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Група" Grid.Column="6" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Rssi" Grid.Column="7" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Snr" Grid.Column="8" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Voltage" Grid.Column="9" FontWeight="Bold" TextAlignment="Left"/>
+                        <TextBlock Text="Status" Grid.Column="10" FontWeight="Bold" TextAlignment="Left"/>
                         
                     </Grid>
                 </ListView.Header>
@@ -57,56 +62,70 @@
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:ItemModel">
 
-                        <Grid Padding="0,4">
+                        <Grid Padding="0 0 0 0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="40"/>
                                 <ColumnDefinition Width="200"/>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="140"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="160"/>
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="140"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="{x:Bind TargetId}" HorizontalAlignment="Center"/>
+                            <StackPanel Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind TargetId}" />
                             </StackPanel>
-                            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="{x:Bind UniqueId}" HorizontalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind UniqueId}" />
                             </StackPanel>
-                            <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="{x:Bind Position.X}" HorizontalAlignment="Center"/>
+                            <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind Position.X}" />
                             </StackPanel>
-                            <StackPanel Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="{x:Bind Position.Y}" HorizontalAlignment="Center"/>
+                            <StackPanel Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind Position.Y}" />
                             </StackPanel>
                             <ComboBox Grid.Column="4"
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetTypes}"
                                 SelectedItem="{x:Bind TargetType, Mode=TwoWay}"
-                                Width="150" />
+                                Width="120" />
                             <TextBox Text="{x:Bind Distance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="5" 
                                      TextAlignment="Center" Margin="0 0 10 0"/>
                             <ComboBox Grid.Column="6"
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetGroups}"
                                 SelectedItem="{x:Bind Group, Mode=TwoWay}"
-                                Width="150" />
-                            <StackPanel Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock Text="{x:Bind Rssi, Mode=TwoWay}"  TextAlignment="Center" Margin="0 0 10 0"/>
+                                Width="100" />
+                            <StackPanel Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <TextBlock Text="{x:Bind Rssi, Mode=TwoWay}"  />
                             </StackPanel>
-                            <StackPanel Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock Text="{x:Bind Snr, Mode=TwoWay}"  TextAlignment="Center" Margin="0 0 10 0"/>
+                            <StackPanel Grid.Column="8" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <TextBlock Text="{x:Bind Snr, Mode=TwoWay}" />
                             </StackPanel>
-                            <TextBlock Text="{x:Bind Status}" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             
-                            <StackPanel Grid.Column="10" HorizontalAlignment="Right" Orientation="Horizontal">
+                            <TextBlock Text="{x:Bind BattVoltage, Mode=OneWay}" Grid.Column="9" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            
+                            <TextBlock Text="{x:Bind Status}" Grid.Column="10" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                            <ComboBox Grid.Column="11"
+                                ItemsSource="{Binding ElementName=MyList, Path=DataContext.LightMode}"
+                                SelectedItem="{x:Bind Light, Mode=TwoWay}"
+                                Width="100" />
+                            <StackPanel Grid.Column="12" HorizontalAlignment="Right" Orientation="Horizontal">
                                 <Button  Content="Save" 
                                          Command="{x:Bind SaveCommand}" 
                                          IsEnabled="{x:Bind IsDirty, Mode=OneWay}" 
                                          ToolTipService.ToolTip="No changes to save"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="13" HorizontalAlignment="Right" Orientation="Horizontal">
+                                <Button Content="Edit" IsEnabled="True"
+                                    Command="{Binding EditCommand}"/>
                             </StackPanel>
                         </Grid>
 
@@ -127,4 +146,6 @@
 
         
     </Grid>
+
+    
 </Window>

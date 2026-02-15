@@ -223,13 +223,19 @@ namespace MTCUI.ViewModels
         }
 
         [RelayCommand]
-        void Save()
+        void SaveScene()
         {
             var gr = CurrentView as GraphViewModel;
             var nodes = gr.NodesViewModel;
 
             _core.Save(nodes);
         }
+
+        [RelayCommand]
+        void ResetNodes() 
+        { 
+            _core.ResetNodes();
+        }       
 
         #region Timer
         [RelayCommand]

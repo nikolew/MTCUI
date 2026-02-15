@@ -11,7 +11,6 @@ using MTCUI.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,49 +19,54 @@ namespace MTCUI.ViewModels
     public partial class NodeManagerViewModel : ViewModel
     {
         private readonly INodeService _nodeService;
-        public event PropertyChangedEventHandler PropertyChanged;
+        private DispatcherQueue _dispatcher;
 
         public Array TargetTypes { get; } = Enum.GetValues(typeof(TargetType));
-        
+        public Array TargetGroups { get; } = Enum.GetValues(typeof(Group));
+        public Array LightMode { get; } = Enum.GetValues(typeof(LightMode));
+
         [ObservableProperty]
         private bool _isDirty;
         
         [ObservableProperty]
         private bool _buttonSaveEnabled;
 
-        public Array TargetGroups { get; } = Enum.GetValues(typeof(Group));
-        private Group _selectedGroup;
-        public Group SelectedTargetGroup 
-        {
-            get => _selectedGroup;
-            set
-            {
-                _selectedGroup = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedTargetGroup)));
-            }
-        }
-
         private static readonly ObservableCollection<ItemModel> itemModels = new();
         
         [ObservableProperty]
         private ObservableCollection<ItemModel> _items = itemModels;
-      
 
         public NodeManagerViewModel()
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
             
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
+            WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
+            {
+                var node = Items.SingleOrDefault(x => x.TargetId == m.Node.TargetId);
+                if (node != null)
+                {
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        node.Snr = $"{m.Node.Snr} dB";
+                        node.Rssi = $"{m.Node.Rssi} dBm";
+                        node.Status = "online";
+                        node.BattVoltage = $"{m.Node.BattVoltage} V";
+                    });
+                }
+            });
         }
 
         internal async Task InitializeAsync(DispatcherQueue dispatcher)
         {
             try
             {
+                _dispatcher = dispatcher;
+
                 ButtonSaveEnabled = false;
                 
                 _nodeService.GetAllNodes().ForEach(node => {
-                    dispatcher.TryEnqueue(() =>
+                    _dispatcher.TryEnqueue(() =>
                     {
                         var item = new ItemModel
                         {
@@ -80,12 +84,9 @@ namespace MTCUI.ViewModels
             }
             catch(Exception ex)
             {
-                // Log exception
                 System.Diagnostics.Trace.WriteLine($"Error initializing NodeManagerViewModel: {ex.Message}");
             }
         }
-
-       
 
         private void OnNodeEvent(NodeEventModel value)
         {
@@ -118,6 +119,12 @@ namespace MTCUI.ViewModels
             }
 
             _nodeService.UpdateNodes(nodesToSave);
+        }
+
+        [RelayCommand]
+        void Edit()
+        {
+            
         }
 
         internal void Clear()

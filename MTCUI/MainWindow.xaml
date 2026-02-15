@@ -39,8 +39,8 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="450"/>
-                    <ColumnDefinition Width="630"/>
+                    <ColumnDefinition Width="550"/>
+                    <ColumnDefinition Width="530"/>
                     <ColumnDefinition Width="450"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
@@ -71,16 +71,22 @@
                             HorizontalAlignment="Left" 
                             VerticalAlignment="Top" 
                             Margin="10,5,0,0"
-                            Command="{x:Bind  MainViewModel.SaveCommand}"/>
+                            Command="{x:Bind  MainViewModel.SaveSceneCommand}"/>
+                    <Button Content="Нулиране" FontSize="13"
+                            Width="100" 
+                            Height="30" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Top" 
+                            Margin="10,5,0,0"
+                            Command="{x:Bind  MainViewModel.ResetNodesCommand}"/>
 
 
-                    
                 </StackPanel>
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <TextBlock Text="{Binding ConnectionStatus}"    
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Top" 
-                        Margin="10 15 0 0"/>
+                        VerticalAlignment="Center" 
+                        Margin="10 0 0 0"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Border BorderThickness="1" BorderBrush="LightGray" HorizontalAlignment="Right">

@@ -40,5 +40,13 @@ namespace MTCCore.Enums
         Group6,
         Group7,
         Group8
-    }   
+    }
+
+    public enum LightMode
+    {
+        Off,
+        On,
+        Blink1,
+        Blink2
+    }
 }

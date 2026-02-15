@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using MTCCore.Enums;
 using Windows.Foundation;
 using CommunityToolkit.Mvvm.Input;
+using Windows.Services.Store;
 
 namespace MTCUI.Models
 {
@@ -13,6 +14,7 @@ namespace MTCUI.Models
         private TargetType _origTargetType;
         private Group _origGroup;  
         private string _origDistance = "";
+        private LightMode _originalLight;
         
         [ObservableProperty]
         private string _uniqueId;
@@ -45,17 +47,26 @@ namespace MTCUI.Models
         private Group _group;
 
         [ObservableProperty]
-        private int _rssi;
+        private string _rssi;
+
         [ObservableProperty]
-        private int _snr;
-        
-        
+        private string _snr;
+
+        [ObservableProperty]
+        private string _battVoltage;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsDirty))]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        private LightMode _light;
+
         private static string Norm(string? s) => (s ?? "").Trim();
         
         public bool IsDirty =>
             TargetType != _origTargetType ||
             Group  != _origGroup ||
-            Norm(Distance) != _origDistance;
+            Norm(Distance) != _origDistance ||
+            Light != _originalLight;
         
         
         public void Load(TargetType target, Group group, string? distance)
@@ -80,6 +91,7 @@ namespace MTCUI.Models
             _origTargetType = TargetType;
             _origGroup  = Group;
             _origDistance = Norm(Distance);
+            _originalLight = Light;
             
             Distance = _origDistance;
 

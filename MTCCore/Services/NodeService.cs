@@ -92,8 +92,7 @@ namespace MTCCore.Services
                     State = Enums.TargetState.TargetOffline,
                     Distance = node.Distance,
                     Group = node.TargetGroup
-                })
-                .ToList();
+                }).ToList();
         }
 
         public void UpdateNodes(IEnumerable<NodeModel> nodes)
@@ -109,6 +108,7 @@ namespace MTCCore.Services
                 nodeEntity.TargetType = node.TargetType;
                 nodeEntity.Distance = node.Distance;
                 nodeEntity.TargetGroup = node.Group;
+
                 _nodeRepository.Update(nodeEntity);
             }
 

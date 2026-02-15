@@ -58,6 +58,9 @@ namespace MTCUI.Services
             if (g != null)
             {
                 var n = _nodeService.GetAllNodes();
+
+                var t = n.FirstOrDefault().TargetId;
+                OnNodeClick(t);
             }
         }
 
@@ -102,20 +105,31 @@ namespace MTCUI.Services
                 case CommandType.CMD_STATUS:
                   
                     var status = packet.NodeStatus;
-                    TargetState state;
+                    TargetState state = TargetState.TargetFolded;
 
-                    if (status.Position == 0)
+                    if (status.Position == 0 && status.State == 0)
                     {
                         state = TargetState.TargetRaised;
                     }
-                    else                     {
+                    else if(status.Position == 1 && status.State == 0)                 
+                    {
                         state = TargetState.TargetFolded;
                     }
+                    else if(status.State == 1)
+                    {
+                        state = TargetState.TargetHit;
+                    }
+
+                    ushort raw = (ushort)(status.BattVoltage[0] | (status.BattVoltage[1] << 8));
+                    float voltage = raw / 100.0f;
 
                     WeakReferenceMessenger.Default.Send(new NodeUpdateStatusMessage(new NodeModel
                     {
                         TargetId = Convert.ToString(status.Id),
-                        State = state
+                        State = state,
+                        Rssi = status.Rssi,
+                        Snr = status.Snr,
+                        BattVoltage = voltage
                     }));
                     break;
 
@@ -141,8 +155,7 @@ namespace MTCUI.Services
                                 Position = new Point(100, 100),
                                 TargetType = TargetType.Default,
                                 State = TargetState.TargetFolded
-                                
-
+                               
                             });
 
                             var node2 = _nodeService.GetNodeByUniqueId(nuid);
@@ -208,6 +221,18 @@ namespace MTCUI.Services
             return node ?? null;
         }
 
-       
+        public async void ResetNodes()
+        {
+            var packet = new Packet
+            {
+                CommandType = CommandType.CMD_NODERST,
+                Node = new Node
+                {
+                    NodeId = Convert.ToInt32(1)
+                }
+            };
+
+            await _bluetoothService.Send(packet);
+        }
     }
 }

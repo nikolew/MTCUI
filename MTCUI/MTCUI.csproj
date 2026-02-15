@@ -57,6 +57,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7463" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260101001" />
     <PackageReference Include="protobuf-net" Version="3.2.56" />
+    <PackageReference Include="WinUI.TableView" Version="1.3.4" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\GraphViewControl.xaml">
