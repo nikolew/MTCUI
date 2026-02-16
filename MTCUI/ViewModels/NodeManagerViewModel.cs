@@ -7,7 +7,10 @@ using MTCCore.Enums;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
 using MTCCore.Services;
+using MTCUI.Controls;
 using MTCUI.Models;
+using MTCUI.Services;
+using MTCUI.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +21,7 @@ namespace MTCUI.ViewModels
 {
     public partial class NodeManagerViewModel : ViewModel
     {
+        private readonly IWindowService _windowService;
         private readonly INodeService _nodeService;
         private DispatcherQueue _dispatcher;
 
@@ -39,7 +43,8 @@ namespace MTCUI.ViewModels
         public NodeManagerViewModel()
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
-            
+            _windowService = Ioc.Default.GetRequiredService<IWindowService>();
+
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
             {
@@ -76,6 +81,7 @@ namespace MTCUI.ViewModels
                             Status = "offline"
                         };
                         item.SaveAction += OnSaveAction;
+                        item.EditAction += OnEditAction;
                         item.Load(node.TargetType, node.Group, node.Distance);
                         
                         Items.Add(item);                      
@@ -86,6 +92,11 @@ namespace MTCUI.ViewModels
             {
                 System.Diagnostics.Trace.WriteLine($"Error initializing NodeManagerViewModel: {ex.Message}");
             }
+        }
+
+        private void OnEditAction(ItemModel model)
+        {
+            _windowService.OpenWindow<NodeEditWindow>(model);
         }
 
         private void OnNodeEvent(NodeEventModel value)
@@ -119,12 +130,6 @@ namespace MTCUI.ViewModels
             }
 
             _nodeService.UpdateNodes(nodesToSave);
-        }
-
-        [RelayCommand]
-        void Edit()
-        {
-            
         }
 
         internal void Clear()

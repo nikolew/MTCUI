@@ -8,7 +8,7 @@ namespace MTCUI.Services
 {
     public interface IInitializableWindow
     {
-        Task InitializeAsync(DispatcherQueue dispatcher);
+        Task InitializeAsync(DispatcherQueue dispatcher, object o);
     }
 
 }

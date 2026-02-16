@@ -10,7 +10,8 @@ namespace MTCUI.Models
     public partial class ItemModel : ObservableObject
     {
         public Action<ItemModel> SaveAction;
-        
+        public Action<ItemModel> EditAction;
+
         private TargetType _origTargetType;
         private Group _origGroup;  
         private string _origDistance = "";
@@ -100,7 +101,11 @@ namespace MTCUI.Models
         }
 
         private bool CanSave() => IsDirty;
-        
-    }
 
+        [RelayCommand]
+        void Edit()
+        {
+            EditAction.Invoke(this);
+        } 
+    }
 }

@@ -29,12 +29,14 @@ namespace MTCUI.Services
         private readonly INodeService _nodeService;
         private readonly SchedulerService _scheduler;
         private readonly IGroupRepository _groupRepository;
+
         private List<TimeEntity> _times;
+        private List<GroupEntity> _groups;
 
         public CoreService(BluetoothLEService bluetoothService, ITimeRepository timeRepository,
             INodeService nodeService, SchedulerService scheduler, IGroupRepository groupRepository)
         {
-           
+
             _bluetoothService = bluetoothService;
             _timeRepository = timeRepository;
             _nodeService = nodeService;
@@ -52,15 +54,11 @@ namespace MTCUI.Services
         private void OnTimerTick(System.TimeSpan timeSpan)
         {
             var time = timeSpan.ToString(@"mm\:ss");
+            var group = _groups.SingleOrDefault(g => g.Times.Any(t => t.Time == time));
 
-            var g = _times.Where(t => t.Time == time).SingleOrDefault();
-
-            if (g != null)
+            if (group != null)
             {
-                var n = _nodeService.GetAllNodes();
-
-                var t = n.FirstOrDefault().TargetId;
-                OnNodeClick(t);
+                SendGroupCommand(group.Id);
             }
         }
 
@@ -99,11 +97,11 @@ namespace MTCUI.Services
             switch (packet.CommandType)
             {
                 case CommandType.CMD_PING:
-                   Trace.WriteLine($"Ping response received from MTC-01 {DateTime.Now.TimeOfDay}");
-                   break;
+                    Trace.WriteLine($"Ping response received from MTC-01 {DateTime.Now.TimeOfDay}");
+                    break;
 
                 case CommandType.CMD_STATUS:
-                  
+
                     var status = packet.NodeStatus;
                     TargetState state = TargetState.TargetFolded;
 
@@ -111,11 +109,11 @@ namespace MTCUI.Services
                     {
                         state = TargetState.TargetRaised;
                     }
-                    else if(status.Position == 1 && status.State == 0)                 
+                    else if (status.Position == 1 && status.State == 0)
                     {
                         state = TargetState.TargetFolded;
                     }
-                    else if(status.State == 1)
+                    else if (status.State == 1)
                     {
                         state = TargetState.TargetHit;
                     }
@@ -135,8 +133,8 @@ namespace MTCUI.Services
 
                 case CommandType.CMD_GETNODES:
                     var nodes = packet.NodeList.Nodes;
-                    
-                    foreach(Node item in nodes)
+
+                    foreach (Node item in nodes)
                     {
                         var nuid = Convert.ToHexString(item.UniqueId);
                         var node = _nodeService.GetNodeByUniqueId(nuid);
@@ -147,7 +145,7 @@ namespace MTCUI.Services
                         }
                         else
                         {
-                            
+
                             _nodeService.AddNode(new NodeModel
                             {
                                 UniqueId = nuid,
@@ -155,18 +153,18 @@ namespace MTCUI.Services
                                 Position = new Point(100, 100),
                                 TargetType = TargetType.Default,
                                 State = TargetState.TargetFolded
-                               
+
                             });
 
                             var node2 = _nodeService.GetNodeByUniqueId(nuid);
                             WeakReferenceMessenger.Default.Send(new NodeAddToViewGraphMessage(node2));
-                        }               
+                        }
                     }
 
                     break;
                 case CommandType.CMD_NODEEVENT:
                     var nodeEvent = packet.NodeEvent;
-                   
+
                     var nodeEventModel = new NodeEventModel
                     {
                         Id = nodeEvent.Id,
@@ -176,7 +174,7 @@ namespace MTCUI.Services
                     };
                     WeakReferenceMessenger.Default.Send(new NodeEventMessage(nodeEventModel));
                     break;
-                
+
             }
         }
 
@@ -192,6 +190,7 @@ namespace MTCUI.Services
                 TargetId = n.Node.TargetId,
                 Position = n.Node.Position,
                 TargetType = n.Node.TargetType,
+                Distance = n.Node.Distance,
                 State = n.Node.State
             }).ToList();
 
@@ -200,15 +199,13 @@ namespace MTCUI.Services
 
         public void StartTimer()
         {
-            _times = _timeRepository.GetAll();
+            //_times = _timeRepository.GetAll();
+            _groups = _groupRepository.GetAll();
 
             _scheduler.Start();
         }
 
-        public void StopTimer()
-        {
-            _scheduler.Stop();
-        }
+        public void StopTimer() => _scheduler.Stop();
 
         public void ResetTimer()
         {
@@ -221,7 +218,7 @@ namespace MTCUI.Services
             return node ?? null;
         }
 
-        public async void ResetNodes()
+        public async void SendResetNodes()
         {
             var packet = new Packet
             {
@@ -232,6 +229,19 @@ namespace MTCUI.Services
                 }
             };
 
+            await _bluetoothService.Send(packet);
+        }
+
+        public async void SendGroupCommand(int groupId)
+        {
+            var packet = new Packet
+            {
+                CommandType = CommandType.CMD_GROUPCMD,
+                TargetGroup = new TargetGroup
+                {
+                    TargetGroupId = groupId
+                }
+            };
             await _bluetoothService.Send(packet);
         }
     }

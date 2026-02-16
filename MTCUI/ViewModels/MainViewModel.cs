@@ -9,14 +9,12 @@ using MTCCore.Messages.Master;
 using MTCCore.Messages.Nodes;
 using MTCCore.Messages.Timer;
 using MTCCore.Models;
-using MTCUI.Models;
 using MTCUI.Services;
 using MTCUI.Views;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using MTCCore.Services;
-using WinRT.MTCUIVtableClasses;
+
 
 namespace MTCUI.ViewModels
 {
@@ -53,16 +51,13 @@ namespace MTCUI.ViewModels
         {
             _core = core;
 
-
-
             CurrentView = graphViewModel;
-
 
             _windowService = windowService;
             _nodeManagerViewModel = nodeManagerViewModel;
         }
 
-        public async Task InitializeAsync(DispatcherQueue dispatcherQueue)
+        public async Task InitializeAsync(DispatcherQueue dispatcherQueue, object o)
         {
             if (_initialized)
                 return;
@@ -163,8 +158,6 @@ namespace MTCUI.ViewModels
             }
         }
 
-
-
         private async Task AddNodeToGraph(NodeModel node)
         {
             if (CurrentView is not GraphViewModel graphVM)
@@ -219,7 +212,7 @@ namespace MTCUI.ViewModels
         [RelayCommand]
         void ConfigNode()
         {
-            _windowService.OpenWindow<NodeManagerWindow>();
+            _windowService.OpenWindow<NodeManagerWindow>(null);
         }
 
         [RelayCommand]
@@ -234,7 +227,7 @@ namespace MTCUI.ViewModels
         [RelayCommand]
         void ResetNodes() 
         { 
-            _core.ResetNodes();
+            _core.SendResetNodes();
         }       
 
         #region Timer

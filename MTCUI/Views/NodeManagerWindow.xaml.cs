@@ -41,7 +41,10 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
     public NodeManagerWindow()
     {
         InitializeComponent();
-        
+
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(AppTitleBar);
+
         this.Activated += MainWindow_Activated;
 
         NodeManagerVm = Ioc.Default.GetRequiredService<NodeManagerViewModel>();
@@ -120,7 +123,7 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
         appWindow.Move(centeredPosition);
     }
 
-    public Task InitializeAsync(DispatcherQueue dispatcher)
+    public Task InitializeAsync(DispatcherQueue dispatcher, object o)
     {
         return NodeManagerVm.InitializeAsync(dispatcher);
     }

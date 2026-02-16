@@ -15,11 +15,13 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Controls\GraphViewControl.xaml" />
+    <None Remove="Controls\NodeEditControl.xaml" />
     <None Remove="Graph\DefaultNode.xaml" />
     <None Remove="Graph\GridControl.xaml" />
     <None Remove="Graph\NodeGraph.xaml" />
     <None Remove="Styles\DataTemplate.xaml" />
     <None Remove="Styles\TargetStyles.xaml" />
+    <None Remove="Views\NodeEditWindow.xaml" />
     <None Remove="Views\NodeManagerWindow.xaml" />
   </ItemGroup>
 
@@ -74,6 +76,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MTCCore\MTCCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\NodeEditControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\NodeEditWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\NodeManagerWindow.xaml">

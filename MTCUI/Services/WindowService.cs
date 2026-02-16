@@ -3,21 +3,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using MTCUI.ViewModels;
-using MTCUI.Views;
-using ProtoBuf.Meta;
+using MTCUI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WinRT.Interop;
 
 namespace MTCUI.Services
 {
+
     public interface IWindowService
     {
         void CloseAll();
-        T OpenWindow<T>() where T : Window;
+        T OpenWindow<T>(object model) where T : Window;
+        
     }
 
     public class WindowService : IWindowService
@@ -30,7 +29,7 @@ namespace MTCUI.Services
             _services = services;
         }
 
-        public T OpenWindow<T>() where T : Window
+        public T OpenWindow<T>(object o) where T : Window
         {
             // 1) Проверка за съществуващ прозорец
             if (_windows.TryGetValue(typeof(T), out var existing))
@@ -66,12 +65,13 @@ namespace MTCUI.Services
 
                 _ = dispatcher.EnqueueAsync(async () =>
                 {
-                    await init.InitializeAsync(dispatcher);
+                    await init.InitializeAsync(dispatcher, o);
                 });
             }
 
             return window;
         }
+
 
         private bool IsWindowAlive(Window window)
         {
@@ -104,10 +104,6 @@ namespace MTCUI.Services
             {
                 presenter.IsAlwaysOnTop = true;
             }
-        }
-
+        }  
     }
-
-
-
 }

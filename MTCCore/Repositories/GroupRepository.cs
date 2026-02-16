@@ -1,4 +1,5 @@
-﻿using MTCCore.DataBase;
+﻿using Microsoft.EntityFrameworkCore;
+using MTCCore.DataBase;
 using MTCCore.Entities;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,10 @@ namespace MTCCore.Repositories
         {
             _dbContext = dbContext;
         }
+
         public List<GroupEntity> GetAll()
         {
-            return _dbContext.Groups.ToList();
+            return [.. _dbContext.Groups.Include(t => t.Times)];
         }
     }
 }

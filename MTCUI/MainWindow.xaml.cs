@@ -57,7 +57,7 @@ namespace MTCUI
             var presenter = appWindow.Presenter as OverlappedPresenter;
             presenter.Maximize();
 
-            this.Closed += (s, e) => _windowService.CloseAll();
+            Closed += (s, e) => _windowService.CloseAll();
         }
 
         public static AppWindow GetAppWindow(Window window)
@@ -67,9 +67,9 @@ namespace MTCUI
             return AppWindow.GetFromWindowId(windowId);
         }
 
-        public Task InitializeAsync(DispatcherQueue dispatcher)
+        public Task InitializeAsync(DispatcherQueue dispatcher, object o)
         {
-            return MainViewModel.InitializeAsync(dispatcher);
+            return MainViewModel.InitializeAsync(dispatcher, o);
         }
     }
 }

@@ -34,14 +34,15 @@ namespace MTCUI
                 .AddSingleton<NodeManagerViewModel>()
                 .AddTransient<NodeManagerWindow>()
                 .AddSingleton<MainWindow>()
+                .AddSingleton<NodeEditWindow>()
+                .AddSingleton<NodeEditViewModel>()
                 .AddSingleton<CoreService>()
                 .AddSingleton<BluetoothLEService>()
                 .AddSingleton<IWindowService, WindowService>()
 
                 .AddDependencyInjection(Configuration)
                 .BuildServiceProvider());
-
-            
+   
         }
 
 
@@ -53,7 +54,7 @@ namespace MTCUI
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             var windowService = Ioc.Default.GetRequiredService<IWindowService>();
-            windowService.OpenWindow<MainWindow>();
+            windowService.OpenWindow<MainWindow>(null);
 
         }
     }

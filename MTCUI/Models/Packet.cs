@@ -19,7 +19,7 @@ public enum CommandType {
     [ProtoEnum] CMD_PROVOFF   = 11,
     [ProtoEnum] CMD_NODEEVENT = 12,
     [ProtoEnum] CMD_NODERST   = 13,
-
+    [ProtoEnum] CMD_GROUPCMD  = 14,
     [ProtoEnum] CMD_ERROR     = 100
 }
  
@@ -27,6 +27,12 @@ public enum CommandType {
 public class Node {
     [ProtoMember(1)]public byte[] UniqueId { get ; set; }
     [ProtoMember(2)]public int NodeId { get; set; }
+}
+
+[ProtoContract]
+public class TargetGroup
+{
+    [ProtoMember(1)] public int TargetGroupId { get; set; }
 }
 
 [ProtoContract]
@@ -77,4 +83,5 @@ public class Packet
     [ProtoMember(5)] public NodeList NodeList { get; set; }
     [ProtoMember(6)] public NodeStatus NodeStatus { get; set; }
     [ProtoMember(7)] public NodeEvent NodeEvent { get; set; }
+    [ProtoMember(8)] public TargetGroup TargetGroup { get; set; }
 }
