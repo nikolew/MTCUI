@@ -42,26 +42,27 @@
                 <ComboBox Grid.Column="4"
                     ItemsSource="{Binding TargetTypes}"
                     SelectedItem="{Binding TargetType, Mode=TwoWay}"
-                    Width="120" />
+                    Width="120" IsEnabled="{Binding Enabled}"/>
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="10 5 0 5">
                 <TextBlock Text="Group" Margin="5 0 0 0"/>
                 <ComboBox Grid.Column="4"
                     ItemsSource="{Binding TargetGroups}"
                     SelectedItem="{Binding Group, Mode=TwoWay}"
-                    Width="120" />
+                    Width="120" IsEnabled="{Binding Enabled}"/>
             </StackPanel>
             <StackPanel Grid.Row="3" Margin="10 5 0 5">
                 <TextBlock Text="Light Mode" Margin="5 0 0 0"/>
                 <ComboBox Grid.Column="4"
                     ItemsSource="{Binding LightModes}"
                     SelectedItem="{Binding LightMode, Mode=TwoWay}"
-                    Width="120" />
+                    Width="120" IsEnabled="{Binding Enabled}"/>
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
+            <Button Content="Load" Width="100" Margin="0 0 50 0" Command="{Binding GetConfigCommand}"/>
             <Button Content="Save" Width="100"  Margin="0 0 10 0" Command="{Binding SaveCommand}"/>
-            <Button Content="Close" Width="100" Margin="0 0 10 0"/>
+            <Button Content="Close" Width="100" Margin="0 0 10 0" Click="Button_Click"/>
         </StackPanel>
     </Grid>
 </Window>

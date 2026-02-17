@@ -8,4 +8,6 @@ namespace MTCCore.Messages.Nodes
     public record NodeUpdateStatusMessage(NodeModel Node);
     public record NodeUpdateMessage(string Id);
     public record NodeEventMessage(NodeEventModel NodeEvent);
+    public record NodeSetConfigMessage(NodeConfigModel NodeConfig);
+    public record NodeGetConfigMessage(NodeConfigModel NodeConfig);
 }

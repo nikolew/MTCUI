@@ -99,7 +99,7 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        if (this._centered is false)
+        if (_centered is false)
         {
             Center(this);
             _centered = true;

@@ -1,6 +1,4 @@
-﻿
-using ABI.System;
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using MTCCore.Entities;
 using MTCCore.Enums;
 using MTCCore.Messages.Bluetooth;
@@ -18,6 +16,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace MTCUI.Services
@@ -48,17 +47,17 @@ namespace MTCUI.Services
             WeakReferenceMessenger.Default.Register<BluetoothConnectMessage>(this, (r, m) => { OnTryClientConnect(); });
             WeakReferenceMessenger.Default.Register<BluetoothResponseMessage>(this, (r, m) => { OnBluetoothResponse(m.Response); });
             WeakReferenceMessenger.Default.Register<TimerTickMessage>(this, (r, m) => { OnTimerTick(m.Time); });
-
+            WeakReferenceMessenger.Default.Register<NodeSetConfigMessage>(this, (r, m) => { SendNodeConfiguration(m.NodeConfig); });
         }
 
-        private void OnTimerTick(System.TimeSpan timeSpan)
+        private async void OnTimerTick(System.TimeSpan timeSpan)
         {
             var time = timeSpan.ToString(@"mm\:ss");
             var group = _groups.SingleOrDefault(g => g.Times.Any(t => t.Time == time));
 
             if (group != null)
             {
-                SendGroupCommand(group.Id);
+                await SendGroupCommand(group.Id);
             }
         }
 
@@ -163,18 +162,29 @@ namespace MTCUI.Services
 
                     break;
                 case CommandType.CMD_NODEEVENT:
-                    var nodeEvent = packet.NodeEvent;
-
-                    var nodeEventModel = new NodeEventModel
                     {
-                        Id = nodeEvent.Id,
-                        Online = nodeEvent.Online,
-                        MissedFrames = nodeEvent.MissedFrames,
-                        LastSeenMs = nodeEvent.LastSeenMs
-                    };
-                    WeakReferenceMessenger.Default.Send(new NodeEventMessage(nodeEventModel));
-                    break;
+                        var nodeEvent = packet.NodeEvent;
 
+                        var nodeEventModel = new NodeEventModel
+                        {
+                            Id = nodeEvent.Id,
+                            Online = nodeEvent.Online,
+                            MissedFrames = nodeEvent.MissedFrames,
+                            LastSeenMs = nodeEvent.LastSeenMs
+                        };
+                        WeakReferenceMessenger.Default.Send(new NodeEventMessage(nodeEventModel));
+                        break;
+                    }
+
+                 case CommandType.CMD_NODEREADCONFIG:
+                    var nodeConfig = packet.NodeConfig;
+                    WeakReferenceMessenger.Default.Send(new NodeGetConfigMessage(new NodeConfigModel
+                    {
+                        Id = nodeConfig.Id,
+                        Light = (LightMode)nodeConfig.LightMode,
+                        Group = (Group)nodeConfig.GroupId
+                    }));
+                    break;
             }
         }
 
@@ -199,9 +209,7 @@ namespace MTCUI.Services
 
         public void StartTimer()
         {
-            //_times = _timeRepository.GetAll();
             _groups = _groupRepository.GetAll();
-
             _scheduler.Start();
         }
 
@@ -218,7 +226,7 @@ namespace MTCUI.Services
             return node ?? null;
         }
 
-        public async void SendResetNodes()
+        public async Task SendResetNodes()
         {
             var packet = new Packet
             {
@@ -232,7 +240,7 @@ namespace MTCUI.Services
             await _bluetoothService.Send(packet);
         }
 
-        public async void SendGroupCommand(int groupId)
+        public async Task SendGroupCommand(int groupId)
         {
             var packet = new Packet
             {
@@ -240,6 +248,34 @@ namespace MTCUI.Services
                 TargetGroup = new TargetGroup
                 {
                     TargetGroupId = groupId
+                }
+            };
+            await _bluetoothService.Send(packet);
+        }
+
+        public async Task SendNodeConfiguration(NodeConfigModel node)
+        {
+            var packet = new Packet
+            {
+                CommandType = CommandType.CMD_NODESETCONFIG,
+                NodeConfig = new NodeConfig
+                {
+                    Id = node.Id,
+                    LightMode = (int)node.Light,
+                    GroupId = (int)node.Group
+                }
+            };
+            await _bluetoothService.Send(packet);
+        }
+
+        public async Task SendNodeReadConfig(int nodeId)
+        {
+            var packet = new Packet
+            {
+                CommandType = CommandType.CMD_NODEREADCONFIG,
+                NodeConfig = new NodeConfig
+                {
+                    Id = nodeId
                 }
             };
             await _bluetoothService.Send(packet);

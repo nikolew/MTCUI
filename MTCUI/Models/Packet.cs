@@ -4,23 +4,26 @@ namespace MTCUI.Models;
 
 [ProtoContract]
 public enum CommandType {
-    [ProtoEnum] CMD_UNDEFINED = 0,
-
-    [ProtoEnum] CMD_PING      = 1,
-    [ProtoEnum] CMD_STATUS    = 2,
-    [ProtoEnum] CMD_CONTROL   = 3,
-    [ProtoEnum] CMD_ADDNODE   = 4,
-    [ProtoEnum] CMD_GETNODE   = 5,
-    [ProtoEnum] CMD_GETNODES  = 6,
-    [ProtoEnum] CMD_SERVER    = 7,
-    [ProtoEnum] CMD_NODECMD   = 8,
-    [ProtoEnum] CMD_NODEDEL   = 9,
-    [ProtoEnum] CMD_PROVON    = 10,
-    [ProtoEnum] CMD_PROVOFF   = 11,
-    [ProtoEnum] CMD_NODEEVENT = 12,
-    [ProtoEnum] CMD_NODERST   = 13,
-    [ProtoEnum] CMD_GROUPCMD  = 14,
-    [ProtoEnum] CMD_ERROR     = 100
+    [ProtoEnum] CMD_UNDEFINED       = 0,
+    [ProtoEnum] CMD_PING            = 1,
+    [ProtoEnum] CMD_STATUS          = 2,
+    [ProtoEnum] CMD_CONTROL         = 3,
+    [ProtoEnum] CMD_ADDNODE         = 4,
+    [ProtoEnum] CMD_GETNODE         = 5,
+    [ProtoEnum] CMD_GETNODES        = 6,
+    [ProtoEnum] CMD_SERVER          = 7,
+    [ProtoEnum] CMD_NODECMD         = 8,
+    [ProtoEnum] CMD_NODEDEL         = 9,
+    [ProtoEnum] CMD_PROVON          = 10,
+    [ProtoEnum] CMD_PROVOFF         = 11,
+    [ProtoEnum] CMD_NODEEVENT       = 12,
+    [ProtoEnum] CMD_NODERST         = 13,
+    [ProtoEnum] CMD_GROUPCMD        = 14,
+    [ProtoEnum] CMD_NODESETCONFIG   = 15,
+    [ProtoEnum] CMD_NODEREADCONFIG  = 16,
+   
+    [ProtoEnum] CMD_ERROR           = 100,
+    
 }
  
 [ProtoContract]
@@ -73,6 +76,14 @@ public class NodeEvent
     [ProtoMember(4)] public int LastSeenMs { get; set; }
 }
 
+[ProtoContract]
+public class NodeConfig
+{
+    [ProtoMember(1)] public int Id { get; set; }
+    [ProtoMember(2)] public int GroupId { get; set; }
+    [ProtoMember(3)] public int LightMode { get; set; }
+}
+
 [ProtoContract] 
 public class Packet
 {
@@ -84,4 +95,5 @@ public class Packet
     [ProtoMember(6)] public NodeStatus NodeStatus { get; set; }
     [ProtoMember(7)] public NodeEvent NodeEvent { get; set; }
     [ProtoMember(8)] public TargetGroup TargetGroup { get; set; }
+    [ProtoMember(9)] public NodeConfig NodeConfig { get; set; }
 }

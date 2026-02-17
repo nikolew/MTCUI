@@ -21,6 +21,7 @@
     <None Remove="Graph\NodeGraph.xaml" />
     <None Remove="Styles\DataTemplate.xaml" />
     <None Remove="Styles\TargetStyles.xaml" />
+    <None Remove="Views\GroupManagerWindow.xaml" />
     <None Remove="Views\NodeEditWindow.xaml" />
     <None Remove="Views\NodeManagerWindow.xaml" />
   </ItemGroup>
@@ -76,6 +77,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MTCCore\MTCCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\GroupManagerWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\NodeEditControl.xaml">

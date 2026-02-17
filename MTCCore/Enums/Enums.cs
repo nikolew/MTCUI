@@ -32,6 +32,7 @@ namespace MTCCore.Enums
 
     public enum Group
     {
+        None,
         Group1,
         Group2,
         Group3,

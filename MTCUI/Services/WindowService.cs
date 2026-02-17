@@ -11,18 +11,16 @@ using WinRT.Interop;
 
 namespace MTCUI.Services
 {
-
     public interface IWindowService
     {
         void CloseAll();
         T OpenWindow<T>(object model) where T : Window;
-        
     }
 
     public class WindowService : IWindowService
     {
         private readonly IServiceProvider _services;
-        private readonly Dictionary<Type, Window> _windows = new();
+        private readonly Dictionary<Type, Window> _windows = [];
 
         public WindowService(IServiceProvider services)
         {

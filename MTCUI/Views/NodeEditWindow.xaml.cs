@@ -63,7 +63,7 @@ namespace MTCUI.Views
 
         private void NodeEditWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
-            if (this._centered is false)
+            if (_centered is false)
             {
                 Center(this);
                 _centered = true;
@@ -89,7 +89,12 @@ namespace MTCUI.Views
 
         public async Task InitializeAsync(DispatcherQueue dispatcher, object o)
         {
-            NodeEditVm.InitializeAsync(dispatcher, o);
+            await NodeEditVm.InitializeAsync(dispatcher, o);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
