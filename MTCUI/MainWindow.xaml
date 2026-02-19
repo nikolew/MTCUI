@@ -39,8 +39,8 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="550"/>
-                    <ColumnDefinition Width="530"/>
+                    <ColumnDefinition Width="680"/>
+                    <ColumnDefinition Width="400"/>
                     <ColumnDefinition Width="450"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Column="0">
@@ -58,6 +58,13 @@
                             VerticalAlignment="Top" 
                             Margin="10,5,0,0"
                             Command="{x:Bind  MainViewModel.ConfigNodeCommand}"/>
+                    <Button Content="Scheduler" FontSize="13"
+                            Width="100" 
+                            Height="30" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Top" 
+                            Margin="10,5,0,0"
+                            Command="{x:Bind  MainViewModel.SchedulerCommand}"/>
                     <Button Content="Load" FontSize="13"
                             Width="100" 
                             Height="30" 

@@ -1,5 +1,4 @@
-﻿using MTCCore.Enums;
-using MTCCore.Models;
+﻿using MTCCore.Models;
 
 namespace MTCCore.Messages.Nodes
 {

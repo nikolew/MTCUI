@@ -1,4 +1,4 @@
-﻿using MTCCore.Enums;
+﻿using MTCCore.Domain.Enums;
 using System.Net.NetworkInformation;
 using Windows.Foundation;
 

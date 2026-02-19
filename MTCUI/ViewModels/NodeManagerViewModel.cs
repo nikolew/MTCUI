@@ -3,11 +3,11 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
-using MTCCore.Enums;
+using MTCCore.Domain.Enums;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
-using MTCCore.Services;
-using MTCUI.Controls;
+using MTCCore.Services.Groups;
+using MTCCore.Services.Nodes;
 using MTCUI.Models;
 using MTCUI.Services;
 using MTCUI.Views;
@@ -36,14 +36,18 @@ namespace MTCUI.ViewModels
         private bool _buttonSaveEnabled;
 
         private static readonly ObservableCollection<ItemModel> itemModels = new();
-        
+        private readonly IGroupService _groupService;
         [ObservableProperty]
         private ObservableCollection<ItemModel> _items = itemModels;
 
-        public NodeManagerViewModel()
+        [ObservableProperty]
+        private List<string> _groups = new();
+
+        public NodeManagerViewModel(IGroupService groupService)
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
             _windowService = Ioc.Default.GetRequiredService<IWindowService>();
+            _groupService = groupService;
 
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
@@ -60,6 +64,7 @@ namespace MTCUI.ViewModels
                     });
                 }
             });
+            
         }
 
         internal async Task InitializeAsync(DispatcherQueue dispatcher)
@@ -69,7 +74,14 @@ namespace MTCUI.ViewModels
                 _dispatcher = dispatcher;
 
                 ButtonSaveEnabled = false;
-                
+
+                _dispatcher.TryEnqueue(() =>
+                {
+                    var t  = _groupService.GetAllGroupsAsync().Result;
+                    var te = t.Select(x=>x.GroupName).ToList();
+                    Groups = te;
+                });
+
                 _nodeService.GetAllNodes().ForEach(node => {
                     _dispatcher.TryEnqueue(() =>
                     {

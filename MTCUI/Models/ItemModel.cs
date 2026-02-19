@@ -1,9 +1,8 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MTCCore.Enums;
 using Windows.Foundation;
 using CommunityToolkit.Mvvm.Input;
-using Windows.Services.Store;
+using MTCCore.Domain.Enums;
 
 namespace MTCUI.Models
 {
@@ -43,8 +42,8 @@ namespace MTCUI.Models
         private string _status;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsDirty))]
-        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+        //[NotifyPropertyChangedFor(nameof(IsDirty))]
+        //[NotifyCanExecuteChangedFor(nameof(SaveCommand))]
         private Group _group;
 
         [ObservableProperty]
@@ -60,6 +59,9 @@ namespace MTCUI.Models
         [NotifyPropertyChangedFor(nameof(IsDirty))]
         [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
         private LightMode _light;
+
+        [ObservableProperty]
+        private string _groupContent;
 
         private static string Norm(string? s) => (s ?? "").Trim();
         
@@ -79,6 +81,8 @@ namespace MTCUI.Models
             TargetType = _origTargetType;
             Group  = _origGroup;
             Distance = _origDistance;
+
+            GroupContent = Enum.GetName(typeof(Group), Group);
 
             OnPropertyChanged(nameof(IsDirty));
             SaveCommand.NotifyCanExecuteChanged();

@@ -4,9 +4,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MTCCore.Services
+namespace MTCCore.Services.Common
 {
-    public class SchedulerService : IDisposable
+    public class Clock : IDisposable
     {
         public delegate void TimerEventHandler(TimeSpan timeSpan);
         public event TimerEventHandler OnTimeTick;

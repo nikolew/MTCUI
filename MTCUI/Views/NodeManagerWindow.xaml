@@ -106,10 +106,16 @@
                                 Width="120" />
                             <TextBox Text="{x:Bind Distance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="5" 
                                      TextAlignment="Center" Margin="0 0 10 0"/>
-                            <ComboBox Grid.Column="6"
+                            
+                            <!--<ComboBox Grid.Column="6"
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetGroups}"
                                 SelectedItem="{x:Bind Group, Mode=TwoWay}"
-                                Width="100" />
+                                Width="100" />-->
+                            <ComboBox Grid.Column="6" 
+                                      ItemsSource="{Binding ElementName=MyList, Path=DataContext.Groups, Mode=TwoWay}" 
+                                      Width="100" />
+                            <!--<TextBlock Text="{x:Bind GroupContent}" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
+                            
                             <StackPanel Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Left">
                                 <TextBlock Text="{x:Bind Rssi, Mode=TwoWay}"  />
                             </StackPanel>
@@ -149,7 +155,6 @@
             <Button Content="Remove Node" Width="110" Margin="5" />
             <Button Content="Load Nodes" Width="110" Margin="5" />
             <Button Content="Save Nodes" Width="110" Margin="5" Command="{x:Bind NodeManagerVm.SaveCommand}"/>
-            
         </StackPanel>
 
         

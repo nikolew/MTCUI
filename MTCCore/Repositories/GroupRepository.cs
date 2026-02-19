@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MTCCore.DataBase;
-using MTCCore.Entities;
+using MTCCore.Data;
+using MTCCore.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,7 @@ namespace MTCCore.Repositories
     public interface IGroupRepository
     {
         List<GroupEntity> GetAll();
+        List<string> GetTimes(string groupName);
     }
 
     public class GroupRepository : IGroupRepository
@@ -25,6 +26,13 @@ namespace MTCCore.Repositories
         public List<GroupEntity> GetAll()
         {
             return [.. _dbContext.Groups.Include(t => t.Times)];
+        }
+
+        public List<string>GetTimes(string groupName)
+        {
+            var times = _dbContext.Groups.Where(g => g.GroupName == groupName).SelectMany(m => m.Times).Select(t => t.Time).ToList();
+
+            return times;
         }
     }
 }

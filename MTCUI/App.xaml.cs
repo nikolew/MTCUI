@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
-using MTCCore.Extensions;
+using MTCCore.Infrastructure;
 using MTCUI.Services;
 using MTCUI.ViewModels;
 using MTCUI.Views;
@@ -37,12 +37,13 @@ namespace MTCUI
                 .AddTransient<NodeEditWindow>()
                 .AddSingleton<NodeEditViewModel>()
                 .AddSingleton<GroupManagerViewModel>()
-                .AddSingleton<GroupManagerWindow>()
+                .AddTransient<SchedulerWindow>()
+                .AddSingleton<SchedulerViewModel>()
                 .AddSingleton<CoreService>()
                 .AddSingleton<BluetoothLEService>()
                 .AddSingleton<IWindowService, WindowService>()
 
-                .AddDependencyInjection(Configuration)
+                .RegisterService(Configuration)
                 .BuildServiceProvider());
    
         }

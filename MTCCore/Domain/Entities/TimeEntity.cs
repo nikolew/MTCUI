@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MTCCore.Entities
+namespace MTCCore.Domain.Entities
 {
     [Table("Time")]
     public class TimeEntity

@@ -18,6 +18,7 @@ namespace MTCCore.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    GroupName = table.Column<string>(type: "TEXT", nullable: true),
                     Color = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -92,12 +93,12 @@ namespace MTCCore.Migrations
 
             migrationBuilder.InsertData(
                 table: "Groups",
-                columns: new[] { "Id", "Color" },
+                columns: new[] { "Id", "Color", "GroupName" },
                 values: new object[,]
                 {
-                    { 1, "#FF0000" },
-                    { 2, "#00FF00" },
-                    { 3, "#0000FF" }
+                    { 1, "#FF0000", null },
+                    { 2, "#00FF00", null },
+                    { 3, "#0000FF", null }
                 });
 
             migrationBuilder.InsertData(

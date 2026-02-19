@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MTCCore.Enums
+namespace MTCCore.Domain.Enums
 {
     public enum TargetType
     {

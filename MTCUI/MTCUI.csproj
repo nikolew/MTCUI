@@ -79,7 +79,7 @@
     <ProjectReference Include="..\MTCCore\MTCCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\GroupManagerWindow.xaml">
+    <Page Update="Views\SchedulerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

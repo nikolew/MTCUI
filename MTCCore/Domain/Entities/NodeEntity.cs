@@ -1,7 +1,6 @@
-﻿
-using MTCCore.Enums;
+﻿using MTCCore.Domain.Enums;
 
-namespace MTCCore.Entities
+namespace MTCCore.Domain.Entities
 {
     public class NodeEntity
     {

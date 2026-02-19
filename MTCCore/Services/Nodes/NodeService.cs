@@ -1,38 +1,30 @@
-﻿using MTCCore.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MTCCore.Data;
+using MTCCore.Domain.Entities;
+using MTCCore.Domain.Enums;
 using MTCCore.Models;
-using MTCCore.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
-namespace MTCCore.Services
+namespace MTCCore.Services.Nodes
 {
-    public interface INodeService
-    {
-        void AddNode(NodeModel node);
-        bool NodeExists(string uniqueId);
-        NodeModel GetNodeByUniqueId(string uniqueId);
-        List<NodeModel> GetAllNodes();
-        void UpdateNodes(IEnumerable<NodeModel> nodes);
-        Task UpdateNode(NodeModel node);
-    }
-
     public class NodeService : INodeService
     {
-        private readonly INodeRepository _nodeRepository;
-        private readonly IGroupRepository _groupRepository;
+        private ApplicationDbContext _dbContext;
 
-        public NodeService( INodeRepository nodeRepository, IGroupRepository groupRepository)
+        public NodeService(ApplicationDbContext dbContext)
         {
-            _nodeRepository = nodeRepository;
-            _groupRepository = groupRepository;
+            _dbContext = dbContext;
         }
 
         public bool NodeExists(string uniqueId)
         {
-            var node = _nodeRepository.GetNodeByUniqueId(uniqueId).Result;
+            var node = _dbContext.Nodes
+                .Include(a => a.Position)
+                .SingleOrDefaultAsync(x => x.NodeUniqueId == uniqueId);
             return node != null;
         }
 
@@ -44,26 +36,54 @@ namespace MTCCore.Services
                 Y = (int)node.Position.Y
             };
 
-            var gr = _groupRepository.GetAll().Where(g => g.Id == 1).FirstOrDefault();
-
             var nodeEntity = new NodeEntity
             {
                 NodeUniqueId = node.UniqueId,
                 NodeIdentity = int.Parse(node.TargetId),
                 Distance = "0",
                 Position = positionEntity,
-                TargetType = Enums.TargetType.Default,
-                GroupEnttity = gr
+                TargetType = TargetType.Default
             };
 
-            _nodeRepository.AddNode(nodeEntity);
+            _dbContext.Nodes.Add(nodeEntity);
+        }
+
+        public async Task AddNodeAsync(int groupId, NodeModel node)
+        {
+            var groupExists =  _dbContext.Groups.Where(g => g.Id == groupId).SingleOrDefault();
+            
+            if (groupExists is null)
+                throw new InvalidOperationException("Group not found.");
+
+            var positionEntity = new PositionEntity
+            {
+                X = (int)node.Position.X,
+                Y = (int)node.Position.Y
+            };
+
+            var newnode = new NodeEntity
+            {
+                GroupEnttityId = groupId,
+                GroupEnttity = groupExists,
+                NodeUniqueId = node.UniqueId,
+                NodeIdentity = int.Parse(node.TargetId),
+                Distance = "0",
+                Position = positionEntity,
+                TargetType = TargetType.Default
+            };
+
+            _dbContext.Nodes.Add(newnode);
+            await _dbContext.SaveChangesAsync();
+            return ;
         }
 
         public NodeModel GetNodeByUniqueId(string uniqueId)
         { 
-            var node = _nodeRepository.GetNodeByUniqueId(uniqueId).Result;
+            var node = _dbContext.Nodes
+                .Include(a => a.Position)
+                .SingleOrDefaultAsync(x => x.NodeUniqueId == uniqueId).Result;
 
-            if(node == null)
+            if (node == null)
                 return null;
 
             var newNode = new NodeModel
@@ -72,7 +92,7 @@ namespace MTCCore.Services
                 TargetId = node.NodeIdentity.ToString(),
                 Position = new Point(node.Position.X, node.Position.Y),
                 TargetType = node.TargetType,
-                State = Enums.TargetState.TargetRaised,
+                State = TargetState.TargetRaised,
                 Distance = node.Distance
             };
 
@@ -81,7 +101,7 @@ namespace MTCCore.Services
 
         public List<NodeModel> GetAllNodes()
         {
-            var nodes = _nodeRepository.GetAll().Result;
+            var nodes = _dbContext.Nodes;
 
             return nodes.Select(node => new NodeModel
                 {
@@ -89,17 +109,20 @@ namespace MTCCore.Services
                     TargetId = node.NodeIdentity.ToString(),
                     Position = new Point(node.Position.X, node.Position.Y),
                     TargetType = node.TargetType,
-                    State = Enums.TargetState.TargetOffline,
+                    State = TargetState.TargetOffline,
                     Distance = node.Distance,
                     Group = node.TargetGroup
                 }).ToList();
         }
 
-        public void UpdateNodes(IEnumerable<NodeModel> nodes)
+        public async Task UpdateNodes(IEnumerable<NodeModel> nodes)
         {
             foreach (var node in nodes)
             {
-                var nodeEntity = _nodeRepository.GetNodeByUniqueId(node.UniqueId).Result;
+                var nodeEntity = _dbContext.Nodes
+                    .Include(a => a.Position)
+                    .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueId).Result;
+
                 if (nodeEntity == null) 
                     continue;
                 
@@ -107,16 +130,20 @@ namespace MTCCore.Services
                 nodeEntity.Position.Y = (int)node.Position.Y;
                 nodeEntity.TargetType = node.TargetType;
                 nodeEntity.Distance = node.Distance;
-                nodeEntity.TargetGroup = node.Group;
+                //nodeEntity.TargetGroup = node.Group;
 
-                _nodeRepository.Update(nodeEntity);
+                _dbContext.Update(nodeEntity);
+                await _dbContext.SaveChangesAsync();
             }
 
         }
 
         public async Task UpdateNode(NodeModel node)
         {
-            var nodeEntity = _nodeRepository.GetNodeByUniqueId(node.UniqueId).Result;
+            var nodeEntity = _dbContext.Nodes
+                .Include(a => a.Position)
+                .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueId).Result;
+
             if (nodeEntity == null) 
                 return;
             
@@ -125,9 +152,9 @@ namespace MTCCore.Services
             nodeEntity.TargetType = node.TargetType;
             nodeEntity.Distance = node.Distance;
             nodeEntity.TargetGroup = node.Group;
-            await _nodeRepository.Update(nodeEntity);
-            
-            
+
+            _dbContext.Update(nodeEntity);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using MTCCore.Entities;
-using MTCCore.Enums;
+using MTCCore.Domain.Entities;
+using MTCCore.Domain.Enums;
 using MTCCore.Messages.Bluetooth;
 using MTCCore.Messages.Master;
 using MTCCore.Messages.Nodes;
 using MTCCore.Messages.Timer;
 using MTCCore.Models;
 using MTCCore.Repositories;
-using MTCCore.Services;
+using MTCCore.Services.Common;
+using MTCCore.Services.Nodes;
 using MTCUI.Models;
 using MTCUI.ViewModels;
 using ProtoBuf;
@@ -26,14 +27,14 @@ namespace MTCUI.Services
         private readonly BluetoothLEService _bluetoothService;
         private readonly ITimeRepository _timeRepository;
         private readonly INodeService _nodeService;
-        private readonly SchedulerService _scheduler;
+        private readonly Clock _scheduler;
         private readonly IGroupRepository _groupRepository;
 
         private List<TimeEntity> _times;
         private List<GroupEntity> _groups;
 
         public CoreService(BluetoothLEService bluetoothService, ITimeRepository timeRepository,
-            INodeService nodeService, SchedulerService scheduler, IGroupRepository groupRepository)
+            INodeService nodeService, Clock scheduler, IGroupRepository groupRepository)
         {
 
             _bluetoothService = bluetoothService;
@@ -145,7 +146,7 @@ namespace MTCUI.Services
                         else
                         {
 
-                            _nodeService.AddNode(new NodeModel
+                            _nodeService.AddNodeAsync(1, new NodeModel
                             {
                                 UniqueId = nuid,
                                 TargetId = Convert.ToString(item.NodeId),
@@ -176,7 +177,7 @@ namespace MTCUI.Services
                         break;
                     }
 
-                 case CommandType.CMD_NODEREADCONFIG:
+                case CommandType.CMD_NODEREADCONFIG:
                     var nodeConfig = packet.NodeConfig;
                     WeakReferenceMessenger.Default.Send(new NodeGetConfigMessage(new NodeConfigModel
                     {
@@ -197,11 +198,12 @@ namespace MTCUI.Services
             listNodes = nodes.Select(n => new NodeModel
             {
                 UniqueId = n.Node.UniqueId,
-                TargetId = n.Node.TargetId,
+                //TargetId = n.Node.TargetId,
                 Position = n.Node.Position,
                 TargetType = n.Node.TargetType,
                 Distance = n.Node.Distance,
-                State = n.Node.State
+                //Group = n.Node.Group
+                //State = n.Node.State
             }).ToList();
 
             _nodeService.UpdateNodes(listNodes);
@@ -279,6 +281,11 @@ namespace MTCUI.Services
                 }
             };
             await _bluetoothService.Send(packet);
+        }
+
+        public void UpdateNode(NodeModel node)
+        {
+            _nodeService.UpdateNode(node);
         }
     }
 }

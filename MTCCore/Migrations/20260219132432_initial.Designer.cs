@@ -2,6 +2,7 @@
 using MTCCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTCCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260219132432_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
@@ -36,20 +39,17 @@ namespace MTCCore.Migrations
                         new
                         {
                             Id = 1,
-                            Color = "#FF0000",
-                            GroupName = "None"
+                            Color = "#FF0000"
                         },
                         new
                         {
                             Id = 2,
-                            Color = "#00FF00",
-                            GroupName = "Група 1"
+                            Color = "#00FF00"
                         },
                         new
                         {
                             Id = 3,
-                            Color = "#0000FF",
-                            GroupName = "Група 2"
+                            Color = "#0000FF"
                         });
                 });
 

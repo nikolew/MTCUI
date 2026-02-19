@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
-using MTCCore.Enums;
+using MTCCore.Domain.Enums;
 using MTCCore.Messages.Bluetooth;
 using MTCCore.Messages.Master;
 using MTCCore.Messages.Nodes;
@@ -228,8 +228,14 @@ namespace MTCUI.ViewModels
         void ResetNodes() 
         { 
             _core.SendResetNodes();
-        }       
+        }
 
+        [RelayCommand]
+        void Scheduler()
+        {
+            _windowService.OpenWindow<SchedulerWindow>(null);
+        }
+        
         #region Timer
         [RelayCommand]
         void StartTimer()

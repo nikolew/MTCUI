@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MTCCore.Entities
+namespace MTCCore.Domain.Entities
 {
     public class PositionEntity
     {

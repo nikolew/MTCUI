@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MTCCore.Entities;
+using MTCCore.Domain.Entities;
 using MTCCore.Repositories;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MTCCore.DataBase
+namespace MTCCore.Data
 {
     public class ApplicationDbContext : DbContext, IUnitOfWork
     {
@@ -29,17 +29,14 @@ namespace MTCCore.DataBase
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<NodeEntity>()
-                .HasOne(e => e.Position)
-                .WithOne(ed => ed.Node)
-                .HasForeignKey<PositionEntity>(ed => ed.NodeId);
+            
 
-            modelBuilder.Entity<GroupEntity>().HasData(new[]
-            {
-                new GroupEntity{ Id = 1,  Color = "#FF0000"},
-                new GroupEntity{ Id = 2,  Color = "#00FF00"},
-                new GroupEntity{ Id = 3,  Color = "#0000FF"}
-            });
+            modelBuilder.Entity<GroupEntity>().HasData(
+            [
+                new GroupEntity{ Id = 1, GroupName = "None", Color = "#FF0000"},
+                new GroupEntity{ Id = 2, GroupName = "Група 1", Color = "#00FF00"},
+                new GroupEntity{ Id = 3, GroupName = "Група 2", Color = "#0000FF"}
+            ]);
 
             var times = new[]
             {
@@ -51,6 +48,24 @@ namespace MTCCore.DataBase
 
             modelBuilder.Entity<TimeEntity>()
                .HasData(times);
+
+            modelBuilder.Entity<NodeEntity>()
+                .HasOne(e => e.Position)
+                .WithOne(ed => ed.Node)
+                .HasForeignKey<PositionEntity>(ed => ed.NodeId)
+                .OnDelete(DeleteBehavior.Cascade); ;
+
+            modelBuilder.Entity<GroupEntity>()
+                .HasMany(g => g.Times)
+                .WithOne(t => t.GroupEntity)
+                .HasForeignKey(t => t.GroupEntityId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GroupEntity>()
+                .HasMany(g => g.Nodes)
+                .WithOne(n => n.GroupEnttity)
+                .HasForeignKey(n => n.GroupEnttityId)
+                .OnDelete(DeleteBehavior.Cascade);   // ако искаш при delete на Group да трие Nodes
         }
 
         public DbSet<NodeEntity> Nodes { get; set; }

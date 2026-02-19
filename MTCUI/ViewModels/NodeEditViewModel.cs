@@ -3,14 +3,17 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
-using MTCCore.Enums;
+using MTCCore.Domain.Enums;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
+using MTCCore.Services.Groups;
 using MTCUI.Models;
 using MTCUI.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Windows.Gaming.XboxLive.Storage;
+using Group = MTCCore.Domain.Enums.Group;
 
 namespace MTCUI.ViewModels
 {
@@ -34,9 +37,20 @@ namespace MTCUI.ViewModels
         [ObservableProperty]
         private bool _enabled;
 
-        public Array TargetTypes { get; } = Enum.GetValues<TargetType>();
+
+        private readonly IGroupService _groupService;
+
+        public Array TargetTypes { get; }= Enum.GetValues<TargetType>();
         public Array TargetGroups { get; } = Enum.GetValues<Group>();
         public Array LightModes { get; } = Enum.GetValues<LightMode>();
+
+        [ObservableProperty]
+        private List<string> _groups = new();
+
+        public NodeEditViewModel(IGroupService groupService)
+        {
+            _groupService = groupService;
+        }
 
         internal async Task InitializeAsync(DispatcherQueue dispatcher, object o)
         {
@@ -50,7 +64,12 @@ namespace MTCUI.ViewModels
 
             TargetType = Item.TargetType;
 
-
+            _dispatcher.TryEnqueue(() =>
+            {
+                var t = _groupService.GetAllGroupsAsync().Result;
+                var te = t.Select(x => x.GroupName).ToList();
+                Groups = te;
+            });
 
             WeakReferenceMessenger.Default.Register<NodeGetConfigMessage>(this, (r, m) => { OnNodeConfigReceived(m.NodeConfig); });
         }
@@ -66,6 +85,18 @@ namespace MTCUI.ViewModels
                 LightMode = nodeConfig.Light;
 
             });
+
+            var node = new NodeModel
+            {
+                UniqueId = Item.UniqueId,
+                TargetId = Item.TargetId,
+                Group = nodeConfig.Group,
+                TargetType = Item.TargetType,
+                Distance = Item.Distance,
+                Position = Item.Position
+                
+            };
+            _core.UpdateNode(node);
         }
 
         [RelayCommand]

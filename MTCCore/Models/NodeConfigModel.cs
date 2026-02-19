@@ -1,5 +1,5 @@
-﻿using MTCCore.Enums;
-using Group = MTCCore.Enums.Group;
+﻿using MTCCore.Domain.Enums;
+using Group = MTCCore.Domain.Enums.Group;
 
 namespace MTCCore.Models
 {
