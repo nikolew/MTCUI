@@ -67,9 +67,7 @@ namespace MTCCore.Services.Scheduling
 
         public async Task<List<string>> GetAllTimes()
         {
-            var all =  _dbContext.Groups
-                
-                .SelectMany(g => g.Times.Select(t => t.Time).ToList());
+            var all =  _dbContext.Groups.SelectMany(g => g.Times.Select(t => t.Time)).ToList();
 
             return all.ToList();
         }

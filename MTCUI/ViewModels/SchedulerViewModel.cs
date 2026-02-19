@@ -63,6 +63,8 @@ public partial class SchedulerViewModel  : ViewModel
         BtnDeleteEnabled = false;
 
         Groups.Clear();
+        Times.Clear();
+        AllTimes.Clear();
 
         var groups = await _groupService.GetAllGroupsAsync();
 
@@ -75,7 +77,9 @@ public partial class SchedulerViewModel  : ViewModel
             });
         }
 
-        var all = await _schedulingService.GetAllTimes();
+        
+
+        var all =  _schedulingService.GetAllTimes().Result.OrderBy(t => t);
         foreach (var time in all)
         {
             AllTimes.Add(time);
@@ -107,6 +111,8 @@ public partial class SchedulerViewModel  : ViewModel
         // ако t е List<string>
         foreach (var item in t)
             Times.Add(item);
+
+        Times = new ObservableCollection<string>(Times.OrderBy(t => t));
     }
 
     partial void OnNewTimeChanged(string value)
@@ -144,9 +150,12 @@ public partial class SchedulerViewModel  : ViewModel
         _schedulingService.AddTimeToGroupAsync(SelectedGroup.GroupName, time);
 
         Times.Add(time);
+        Times = new ObservableCollection<string>(Times.OrderBy(t => t));
+
         NewTime = string.Empty;
 
         AllTimes.Add(time);
+        AllTimes = new ObservableCollection<string>(AllTimes.OrderBy(t => t));
     }
 
     [RelayCommand]
@@ -161,8 +170,9 @@ public partial class SchedulerViewModel  : ViewModel
         BtnDeleteEnabled = false;
 
         AllTimes.Clear();
-        var all =  _schedulingService.GetAllTimes();
-        foreach (var time in all.Result)
+
+        var all =  _schedulingService.GetAllTimes().Result.OrderBy(t => t);
+        foreach (var time in all)
         {
             AllTimes.Add(time);
         }
