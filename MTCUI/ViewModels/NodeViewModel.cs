@@ -35,7 +35,7 @@ namespace MTCUI.ViewModels
 
         public void MouseDoubleClick()
         {
-            var id = Node.TargetId;
+            var id = Node.NodeId;
             WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(id));
         }
     }

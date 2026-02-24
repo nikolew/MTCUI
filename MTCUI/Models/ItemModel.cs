@@ -12,7 +12,7 @@ namespace MTCUI.Models
         public Action<ItemModel> EditAction;
 
         private TargetType _origTargetType;
-        private Group _origGroup;  
+        private int _origGroup;  
         private string _origDistance = "";
         private LightMode _originalLight;
         
@@ -42,9 +42,7 @@ namespace MTCUI.Models
         private string _status;
 
         [ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(IsDirty))]
-        //[NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-        private Group _group;
+        private int _groupId;
 
         [ObservableProperty]
         private string _rssi;
@@ -67,22 +65,22 @@ namespace MTCUI.Models
         
         public bool IsDirty =>
             TargetType != _origTargetType ||
-            Group  != _origGroup ||
+            GroupId  != _origGroup ||
             Norm(Distance) != _origDistance ||
             Light != _originalLight;
         
         
-        public void Load(TargetType target, Group group, string? distance)
+        public void Load(TargetType target, int group, string? distance)
         {
             _origTargetType = target;
             _origGroup  = group;
             _origDistance = Norm(distance);
             
             TargetType = _origTargetType;
-            Group  = _origGroup;
+            GroupId = _origGroup;
             Distance = _origDistance;
 
-            GroupContent = Enum.GetName(typeof(Group), Group);
+            GroupContent = Enum.GetName(typeof(Group), GroupId);
 
             OnPropertyChanged(nameof(IsDirty));
             SaveCommand.NotifyCanExecuteChanged();
@@ -94,7 +92,7 @@ namespace MTCUI.Models
             SaveAction.Invoke(this);
             
             _origTargetType = TargetType;
-            _origGroup  = Group;
+            _origGroup  = GroupId;
             _origDistance = Norm(Distance);
             _originalLight = Light;
             

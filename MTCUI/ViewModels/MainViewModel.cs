@@ -103,7 +103,7 @@ namespace MTCUI.ViewModels
 
             foreach (var nodeVm in graphVM.NodesViewModel)
             {
-                if (nodeVm.Node.UniqueId != id)
+                if (nodeVm.Node.UniqueNodeId != id)
                     continue;
 
                 graphVM.RemoveNode(nodeVm);
@@ -126,7 +126,7 @@ namespace MTCUI.ViewModels
             {
 
                 var id = Convert.ToString(value.Id);
-                if (node.Node.TargetId == id)
+                if (node.Node.NodeId == id)
                 {
                     _dispatcher.TryEnqueue(() =>
                     {
@@ -145,7 +145,7 @@ namespace MTCUI.ViewModels
 
             foreach (var node in n.NodesViewModel)
             {
-                if (node.Node.TargetId == value.TargetId)
+                if (node.Node.NodeId == value.NodeId)
                 {
 
                     _dispatcher.TryEnqueue(() =>
@@ -199,7 +199,7 @@ namespace MTCUI.ViewModels
                     Position = new Windows.Foundation.Point(100, 100),
                     TargetType = TargetType.Target8,
                     State = TargetState.TargetFolded,
-                    TargetId = "4"
+                    NodeId = "4"
                 };
 
                 var nodeViewModel = new NodeViewModel() { Node = node };

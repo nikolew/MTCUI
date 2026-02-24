@@ -52,7 +52,7 @@ namespace MTCUI.ViewModels
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
             {
-                var node = Items.SingleOrDefault(x => x.TargetId == m.Node.TargetId);
+                var node = Items.SingleOrDefault(x => x.TargetId == m.Node.NodeId);
                 if (node != null)
                 {
                     _dispatcher.TryEnqueue(() =>
@@ -87,14 +87,14 @@ namespace MTCUI.ViewModels
                     {
                         var item = new ItemModel
                         {
-                            UniqueId = node.UniqueId,
+                            UniqueId = node.UniqueNodeId,
                             Position = node.Position,
-                            TargetId = node.TargetId,
+                            TargetId = node.NodeId,
                             Status = "offline"
                         };
                         item.SaveAction += OnSaveAction;
                         item.EditAction += OnEditAction;
-                        item.Load(node.TargetType, node.Group, node.Distance);
+                        item.Load(node.TargetType, node.GroupId, node.Distance);
                         
                         Items.Add(item);                      
                     });
@@ -132,12 +132,12 @@ namespace MTCUI.ViewModels
             
                 nodesToSave.Add(new NodeModel
                 {
-                    UniqueId = node.UniqueId,
+                    UniqueNodeId = node.UniqueId,
                     TargetType = node.TargetType,
                     Position = node.Position,
-                    TargetId = node.TargetId,
+                    NodeId = node.TargetId,
                     Distance = node.Distance,
-                    Group = node.Group
+                    GroupId = node.GroupId
                 });
             }
 
@@ -153,17 +153,17 @@ namespace MTCUI.ViewModels
         {
             var updateNode = new NodeModel
             {
-                UniqueId = node.UniqueId,
+                UniqueNodeId = node.UniqueId,
                 TargetType = node.TargetType,
                 Position = node.Position,
-                TargetId = node.TargetId,
+                NodeId = node.TargetId,
                 Distance = node.Distance,
-                Group = node.Group
+                GroupId = node.GroupId
             };
             
             _nodeService.UpdateNode(updateNode);
             
-            WeakReferenceMessenger.Default.Send(new NodeUpdateMessage(updateNode.UniqueId));
+            WeakReferenceMessenger.Default.Send(new NodeUpdateMessage(updateNode.UniqueNodeId));
         }
     }
 }

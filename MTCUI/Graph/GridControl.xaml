@@ -9,8 +9,11 @@
     mc:Ignorable="d"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml">
 
-    <canvas:CanvasControl x:Name="GridCanvas"
-                          Draw="GridCanvas_Draw"
-                          ClearColor="Red"/>
+    <Grid >
+        <canvas:CanvasControl x:Name="GridCanvas"
+                      Draw="GridCanvas_Draw"
+                      ClearColor="Transparent"
+                      />
+    </Grid>
 
 </UserControl>

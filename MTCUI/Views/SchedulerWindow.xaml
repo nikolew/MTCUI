@@ -29,7 +29,7 @@
                 SelectedItem="{Binding SelectedGroup, Mode=TwoWay}" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding GroupName}" />
+                        <TextBlock Text="{Binding Name}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

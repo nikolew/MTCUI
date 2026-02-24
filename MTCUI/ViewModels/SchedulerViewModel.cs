@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
+using MTCCore.DTO.Grups;
+using MTCCore.DTO.Times;
 using MTCCore.Models;
 using MTCCore.Repositories;
 using MTCCore.Services.Groups;
 using MTCCore.Services.Scheduling;
 using MTCUI.Graph;
+using MTCUI.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -66,24 +69,11 @@ public partial class SchedulerViewModel  : ViewModel
         Times.Clear();
         AllTimes.Clear();
 
-        var groups = await _groupService.GetAllGroupsAsync();
+        var data = await _groupService.GetAllAsync();
+        foreach (var dto in data)
+            Groups.Add(new GroupModel(dto));
 
-        foreach (var group in groups)
-        {
-            Groups.Add(new GroupModel
-            {
-                GroupName = group.GroupName,
-                Color = group.Color,
-            });
-        }
-
-        
-
-        var all =  _schedulingService.GetAllTimes().Result.OrderBy(t => t);
-        foreach (var time in all)
-        {
-            AllTimes.Add(time);
-        }
+        await LoadAllTimes();
     }
 
     partial void OnSelectedGroupChanged(GroupModel value)
@@ -91,28 +81,29 @@ public partial class SchedulerViewModel  : ViewModel
         _ = LoadTimesAsync(value);
     }
 
-    private async Task LoadTimesAsync(GroupModel value)
+    private Task LoadTimesAsync(GroupModel group)
     {
-        if (value is null)
-            return;
+        if (group is null)
+            return Task.CompletedTask;
 
-        if (value.GroupName == "None")
+        if (group.Name == "None")
         {
             ControlEnabled = false;
             Times.Clear();
-            return;
+            return Task.CompletedTask;
         }
 
         ControlEnabled = true;
         Times.Clear();
 
-        var t = await _schedulingService.GetTimesForGroupAsync(value.GroupName);
-
-        // ако t е List<string>
-        foreach (var item in t)
+        var data =  _groupService.GetAllAsync().Result;
+        var t = data.FirstOrDefault(g => g.Id == group.Id);
+        
+        foreach (var item in t.Times)
             Times.Add(item);
 
         Times = new ObservableCollection<string>(Times.OrderBy(t => t));
+        return Task.CompletedTask;
     }
 
     partial void OnNewTimeChanged(string value)
@@ -139,60 +130,68 @@ public partial class SchedulerViewModel  : ViewModel
         BtnDeleteEnabled = true;
     }
 
-    [RelayCommand]
-    public void AddTimeAsync()
+    private async Task LoadAllTimes()
     {
-        if (string.IsNullOrWhiteSpace(NewTime) || SelectedGroup is null)
-            return;
+        var data = await _groupService.GetAllAsync();
+        var times = data.SelectMany(g => g.Times).Distinct().OrderBy(t => t);
+        foreach (var item in times)
+        {
+            AllTimes.Add(item);
+        }
+    }
+    
+    [RelayCommand]
+    async void AddTimeAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewTime))
+           return;
 
         var time = NewTime.Trim();
 
-        _schedulingService.AddTimeToGroupAsync(SelectedGroup.GroupName, time);
+        if (string.IsNullOrWhiteSpace(NewTime))
+            return;
+
+        await _groupService.AddTimeAsync(new AddTimeDto
+        {
+            GroupId = SelectedGroup.Id,
+            Time = NewTime
+        });
 
         Times.Add(time);
         Times = new ObservableCollection<string>(Times.OrderBy(t => t));
-
+        
         NewTime = string.Empty;
-
+        
         AllTimes.Add(time);
         AllTimes = new ObservableCollection<string>(AllTimes.OrderBy(t => t));
     }
 
     [RelayCommand]
-    void DeleteTimeAsync() 
+    async void DeleteTimeAsync() 
     {
-        if (SelectedTime is null)
-            return;
+        await _groupService.RemoveTimeAsync(new RemoveTimeDto
+        {
+            GroupId = SelectedGroup.Id,
+            Time = SelectedTime
+        });
 
-         _schedulingService.RemoveTimeAsync(SelectedGroup.GroupName, SelectedTime);
-
-        Times.Remove(SelectedTime);
+        SelectedGroup.Times.Remove(SelectedTime);
         BtnDeleteEnabled = false;
 
+        Times.Remove(SelectedTime);
         AllTimes.Clear();
 
-        var all =  _schedulingService.GetAllTimes().Result.OrderBy(t => t);
-        foreach (var time in all)
-        {
-            AllTimes.Add(time);
-        }
+        await LoadAllTimes();
     }
 
     [RelayCommand]
     async Task AddNewGroup(string groupName)
     {
-        if (groupName == null)
-            return;
+        var dto = new CreateGroupDto { Name = NewGroupName, Color = "#FFFFFF" };
 
-        var group = new GroupModel
-        {
-            GroupName = groupName,
-            Color = "#FFFFFF"
-        };
+        var created = await _groupService.CreateGroupAsync(dto);
 
-        await _groupService.CreateGroupAsync(groupName);
-
-        Groups.Add(new GroupModel { GroupName = groupName, Color = "#FFFFFF" });
+        Groups.Add(new GroupModel(created));
 
         NewGroupName = string.Empty;
     }
@@ -200,12 +199,14 @@ public partial class SchedulerViewModel  : ViewModel
     [RelayCommand]
     void DeleteGroupAsync()
     {
-        if (SelectedGroup is null || SelectedGroup.GroupName == "None")
+        if (SelectedGroup is null || SelectedGroup.Name == "None")
             return;
-
-        _schedulingService.RemoveGroupAsync(SelectedGroup.GroupName);
-
-        Groups.Remove(SelectedGroup);
-
+        
+       _groupService.RemoveGroupAsync(new RemoveGroupDto
+       {
+           GroupName = SelectedGroup.Name
+       });
+       
+       Groups.Remove(SelectedGroup);
     }
 }

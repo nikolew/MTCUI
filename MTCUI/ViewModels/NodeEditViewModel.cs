@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Group = MTCCore.Domain.Enums.Group;
 
 namespace MTCUI.ViewModels
 {
@@ -29,7 +28,7 @@ namespace MTCUI.ViewModels
         private TargetType _targetType;
 
         [ObservableProperty]
-        private Group _group;
+        private int _groupId;
 
         [ObservableProperty]
         private LightMode _lightMode;
@@ -37,15 +36,18 @@ namespace MTCUI.ViewModels
         [ObservableProperty]
         private bool _enabled;
 
+        [ObservableProperty]
+        private string _selectedGroupName;
 
         private readonly IGroupService _groupService;
 
         public Array TargetTypes { get; }= Enum.GetValues<TargetType>();
-        public Array TargetGroups { get; } = Enum.GetValues<Group>();
         public Array LightModes { get; } = Enum.GetValues<LightMode>();
 
         [ObservableProperty]
         private List<string> _groups = new();
+
+        private List<GroupModel2> _groupModels = new();
 
         public NodeEditViewModel(IGroupService groupService)
         {
@@ -56,7 +58,7 @@ namespace MTCUI.ViewModels
         {
             _dispatcher = dispatcher;
 
-            Enabled = false;
+            Enabled = true;
 
             _core = Ioc.Default.GetRequiredService<CoreService>();
 
@@ -66,8 +68,9 @@ namespace MTCUI.ViewModels
 
             _dispatcher.TryEnqueue(() =>
             {
-                var t = _groupService.GetAllGroupsAsync().Result;
-                var te = t.Select(x => x.GroupName).ToList();
+                _groupModels = _groupService.GetAllGroupsAsync().Result;
+                var te = _groupModels.Select(x => x.GroupName).ToList();
+                
                 Groups = te;
             });
 
@@ -76,21 +79,23 @@ namespace MTCUI.ViewModels
 
         private void OnNodeConfigReceived(NodeConfigModel nodeConfig)
         {
+            var group = _groupModels.FirstOrDefault(x => x.GroupId == nodeConfig.GroupId);
+
             _dispatcher.TryEnqueue(() =>
             {
                 //if (nodeConfig.Id != Convert.ToInt32(Item.TargetId))
                 //    return;
                 Enabled = true;
-                Group = nodeConfig.Group;
+                SelectedGroupName = group.GroupName;
                 LightMode = nodeConfig.Light;
 
             });
 
             var node = new NodeModel
             {
-                UniqueId = Item.UniqueId,
-                TargetId = Item.TargetId,
-                Group = nodeConfig.Group,
+                UniqueNodeId = Item.UniqueId,
+                NodeId = Item.TargetId,
+                GroupId = nodeConfig.GroupId,
                 TargetType = Item.TargetType,
                 Distance = Item.Distance,
                 Position = Item.Position
@@ -98,6 +103,7 @@ namespace MTCUI.ViewModels
             };
             _core.UpdateNode(node);
         }
+
 
         [RelayCommand]
         async void GetConfig()
@@ -108,19 +114,24 @@ namespace MTCUI.ViewModels
             await _core.SendNodeReadConfig(Convert.ToInt32(Item.TargetId));
         }
 
+
         [RelayCommand]
         void Save()
         {
             Enabled = false;
+
+            var group = _groupModels.FirstOrDefault(x => x.GroupName == SelectedGroupName);
+
             var config = new NodeConfigModel
             {
-                Id = Convert.ToInt32(Item.TargetId),
-                Group = Group,
+                NodeId = Convert.ToInt32(Item.TargetId),
+                GroupId = group.GroupId,
                 Light = LightMode
             };
 
             WeakReferenceMessenger.Default.Send(new NodeSetConfigMessage(config));
         }
+
 
         [RelayCommand]
         void Close()

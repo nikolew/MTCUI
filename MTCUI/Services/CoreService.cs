@@ -8,6 +8,7 @@ using MTCCore.Messages.Timer;
 using MTCCore.Models;
 using MTCCore.Repositories;
 using MTCCore.Services.Common;
+using MTCCore.Services.Groups;
 using MTCCore.Services.Nodes;
 using MTCUI.Models;
 using MTCUI.ViewModels;
@@ -28,20 +29,20 @@ namespace MTCUI.Services
         private readonly ITimeRepository _timeRepository;
         private readonly INodeService _nodeService;
         private readonly Clock _scheduler;
-        private readonly IGroupRepository _groupRepository;
+        private readonly IGroupService _groupService;
 
         private List<TimeEntity> _times;
-        private List<GroupEntity> _groups;
+        private List<GroupModel2> _groups;
 
         public CoreService(BluetoothLEService bluetoothService, ITimeRepository timeRepository,
-            INodeService nodeService, Clock scheduler, IGroupRepository groupRepository)
+            INodeService nodeService, Clock scheduler, IGroupService groupService)
         {
 
             _bluetoothService = bluetoothService;
             _timeRepository = timeRepository;
             _nodeService = nodeService;
             _scheduler = scheduler;
-            _groupRepository = groupRepository;
+            _groupService = groupService;
 
             WeakReferenceMessenger.Default.Register<NodeSendCommandMessage>(this, (r, m) => { OnNodeClick(m.Id); });
             WeakReferenceMessenger.Default.Register<MasterCommandMessage>(this, (r, m) => { OnCommand(m.Command); });
@@ -51,15 +52,15 @@ namespace MTCUI.Services
             WeakReferenceMessenger.Default.Register<NodeSetConfigMessage>(this, (r, m) => { SendNodeConfiguration(m.NodeConfig); });
         }
 
-        private async void OnTimerTick(System.TimeSpan timeSpan)
+        private async void OnTimerTick(TimeSpan timeSpan)
         {
             var time = timeSpan.ToString(@"mm\:ss");
-            var group = _groups.SingleOrDefault(g => g.Times.Any(t => t.Time == time));
+            //var group = _groups.SingleOrDefault(g => g.Times.Any(t => t.Time == time));
 
-            if (group != null)
-            {
-                await SendGroupCommand(group.Id);
-            }
+           // if (group != null)
+           // {
+           //     await SendGroupCommand(group.Id);
+           // }
         }
 
         private async void OnCommand(int value)
@@ -123,7 +124,7 @@ namespace MTCUI.Services
 
                     WeakReferenceMessenger.Default.Send(new NodeUpdateStatusMessage(new NodeModel
                     {
-                        TargetId = Convert.ToString(status.Id),
+                        NodeId = Convert.ToString(status.Id),
                         State = state,
                         Rssi = status.Rssi,
                         Snr = status.Snr,
@@ -145,11 +146,10 @@ namespace MTCUI.Services
                         }
                         else
                         {
-
                             _nodeService.AddNodeAsync(1, new NodeModel
                             {
-                                UniqueId = nuid,
-                                TargetId = Convert.ToString(item.NodeId),
+                                UniqueNodeId = nuid,
+                                NodeId = Convert.ToString(item.NodeId),
                                 Position = new Point(100, 100),
                                 TargetType = TargetType.Default,
                                 State = TargetState.TargetFolded
@@ -181,9 +181,9 @@ namespace MTCUI.Services
                     var nodeConfig = packet.NodeConfig;
                     WeakReferenceMessenger.Default.Send(new NodeGetConfigMessage(new NodeConfigModel
                     {
-                        Id = nodeConfig.Id,
+                        NodeId = nodeConfig.Id,
                         Light = (LightMode)nodeConfig.LightMode,
-                        Group = (Group)nodeConfig.GroupId
+                        GroupId = nodeConfig.GroupId
                     }));
                     break;
             }
@@ -197,7 +197,7 @@ namespace MTCUI.Services
             var listNodes = new List<NodeModel>();
             listNodes = nodes.Select(n => new NodeModel
             {
-                UniqueId = n.Node.UniqueId,
+                UniqueNodeId = n.Node.UniqueNodeId,
                 //TargetId = n.Node.TargetId,
                 Position = n.Node.Position,
                 TargetType = n.Node.TargetType,
@@ -211,7 +211,7 @@ namespace MTCUI.Services
 
         public void StartTimer()
         {
-            _groups = _groupRepository.GetAll();
+            _groups = _groupService.GetAllGroupsAsync().Result;
             _scheduler.Start();
         }
 
@@ -262,9 +262,9 @@ namespace MTCUI.Services
                 CommandType = CommandType.CMD_NODESETCONFIG,
                 NodeConfig = new NodeConfig
                 {
-                    Id = node.Id,
+                    Id = node.NodeId,
                     LightMode = (int)node.Light,
-                    GroupId = (int)node.Group
+                    GroupId = node.GroupId
                 }
             };
             await _bluetoothService.Send(packet);

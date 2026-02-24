@@ -38,8 +38,8 @@ namespace MTCCore.Services.Nodes
 
             var nodeEntity = new NodeEntity
             {
-                NodeUniqueId = node.UniqueId,
-                NodeIdentity = int.Parse(node.TargetId),
+                NodeUniqueId = node.UniqueNodeId,
+                NodeIdentity = int.Parse(node.NodeId),
                 Distance = "0",
                 Position = positionEntity,
                 TargetType = TargetType.Default
@@ -65,8 +65,8 @@ namespace MTCCore.Services.Nodes
             {
                 GroupEnttityId = groupId,
                 GroupEnttity = groupExists,
-                NodeUniqueId = node.UniqueId,
-                NodeIdentity = int.Parse(node.TargetId),
+                NodeUniqueId = node.UniqueNodeId,
+                NodeIdentity = int.Parse(node.NodeId),
                 Distance = "0",
                 Position = positionEntity,
                 TargetType = TargetType.Default
@@ -88,8 +88,8 @@ namespace MTCCore.Services.Nodes
 
             var newNode = new NodeModel
             {
-                UniqueId = node.NodeUniqueId,
-                TargetId = node.NodeIdentity.ToString(),
+                UniqueNodeId = node.NodeUniqueId,
+                NodeId = node.NodeIdentity.ToString(),
                 Position = new Point(node.Position.X, node.Position.Y),
                 TargetType = node.TargetType,
                 State = TargetState.TargetRaised,
@@ -105,13 +105,13 @@ namespace MTCCore.Services.Nodes
 
             return nodes.Select(node => new NodeModel
                 {
-                    UniqueId = node.NodeUniqueId,
-                    TargetId = node.NodeIdentity.ToString(),
+                    UniqueNodeId = node.NodeUniqueId,
+                    NodeId = node.NodeIdentity.ToString(),
                     Position = new Point(node.Position.X, node.Position.Y),
                     TargetType = node.TargetType,
                     State = TargetState.TargetOffline,
                     Distance = node.Distance,
-                    Group = node.TargetGroup
+                    GroupId = node.GroupEnttityId
                 }).ToList();
         }
 
@@ -121,7 +121,7 @@ namespace MTCCore.Services.Nodes
             {
                 var nodeEntity = _dbContext.Nodes
                     .Include(a => a.Position)
-                    .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueId).Result;
+                    .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueNodeId).Result;
 
                 if (nodeEntity == null) 
                     continue;
@@ -142,7 +142,7 @@ namespace MTCCore.Services.Nodes
         {
             var nodeEntity = _dbContext.Nodes
                 .Include(a => a.Position)
-                .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueId).Result;
+                .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueNodeId).Result;
 
             if (nodeEntity == null) 
                 return;
@@ -151,7 +151,7 @@ namespace MTCCore.Services.Nodes
             nodeEntity.Position.Y = (int)node.Position.Y;
             nodeEntity.TargetType = node.TargetType;
             nodeEntity.Distance = node.Distance;
-            nodeEntity.TargetGroup = node.Group;
+            nodeEntity.GroupEnttityId = node.GroupId;
 
             _dbContext.Update(nodeEntity);
             await _dbContext.SaveChangesAsync();

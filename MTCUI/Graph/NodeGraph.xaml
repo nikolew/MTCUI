@@ -20,9 +20,12 @@
                                            Height="{TemplateBinding ActualHeight}">
                             
 
-                            <!--<local:GridControl Visibility="Visible">
+                            <local:GridControl Visibility="Visible"
+                                               MinWidth="{TemplateBinding ActualWidth}"
+                                               MinHeight="{TemplateBinding ActualHeight}"    >
                                 
-                            </local:GridControl>-->
+                            </local:GridControl>
+                            
                         </Canvas>
 
 
