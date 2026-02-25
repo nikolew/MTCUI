@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
 using MTCCore.Domain.Enums;
+using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
 using MTCCore.Services.Groups;
@@ -82,21 +83,26 @@ namespace MTCUI.ViewModels
                     Groups = te;
                 });
 
-                _nodeService.GetAllNodes().ForEach(node => {
+
+                await _nodeService.GetAllAsync().ContinueWith(task =>
+                {
+                    var nodes = task.Result;
                     _dispatcher.TryEnqueue(() =>
                     {
-                        var item = new ItemModel
+                        foreach (var node in nodes)
                         {
-                            UniqueId = node.UniqueNodeId,
-                            Position = node.Position,
-                            NodeId = node.NodeId,
-                            Status = "offline"
-                        };
-                        item.SaveAction += OnSaveAction;
-                        item.EditAction += OnEditAction;
-                        item.Load(node.TargetType, node.GroupId, node.Distance);
-                        
-                        Items.Add(item);                      
+                            var item = new ItemModel
+                            {
+                                UniqueId = node.UniqueNodeId,
+                                Position = node.Position,
+                                NodeId = node.NodeId,
+                                Status = "offline"
+                            };
+                            item.SaveAction += OnSaveAction;
+                            item.EditAction += OnEditAction;
+                            item.Load(node.TargetType, node.GroupId, node.Distance);
+                            Items.Add(item);
+                        }
                     });
                 });
             }
@@ -113,14 +119,11 @@ namespace MTCUI.ViewModels
 
         private void OnNodeEvent(NodeEventModel value)
         {
-          
             var node = Items.Where(x => x.NodeId == value.Id).SingleOrDefault();
 
             if (node == null)
-            {
                 return;
-            }
-
+            
             node.Status = value.Online ? "online" : "offline";
         }
 
@@ -141,7 +144,7 @@ namespace MTCUI.ViewModels
                 });
             }
 
-            _nodeService.UpdateNodes(nodesToSave);
+            //_nodeService.UpdateNodesAsync(nodesToSave);
         }
 
         internal void Clear()
@@ -151,7 +154,7 @@ namespace MTCUI.ViewModels
 
         private void OnSaveAction(ItemModel node)
         {
-            var updateNode = new NodeModel
+            var dto = new SaveNodeDto
             {
                 UniqueNodeId = node.UniqueId,
                 TargetType = node.TargetType,
@@ -160,10 +163,16 @@ namespace MTCUI.ViewModels
                 Distance = node.Distance,
                 GroupId = node.GroupId
             };
-            
-            _nodeService.UpdateNode(updateNode);
-            
-            WeakReferenceMessenger.Default.Send(new NodeUpdateMessage(updateNode.UniqueNodeId));
+
+            _nodeService.UpdateNodeAsync(dto);
+
+            var updateNode = new NodeModel
+            {
+                UniqueNodeId = node.UniqueId,
+                NodeId = node.NodeId,
+                TargetType= node.TargetType
+            };
+            WeakReferenceMessenger.Default.Send(new NodeUpdateMessage(updateNode));
         }
     }
 }

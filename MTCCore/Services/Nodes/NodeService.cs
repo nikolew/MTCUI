@@ -4,6 +4,7 @@ using MTCCore.Data;
 using MTCCore.Domain.Entities;
 using MTCCore.Domain.Enums;
 using MTCCore.DTO.Nodes;
+using MTCCore.Extensions.Nodes;
 using MTCCore.Messages.Master;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
@@ -15,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Windows.Foundation;
 
 namespace MTCCore.Services.Nodes
@@ -29,6 +29,7 @@ namespace MTCCore.Services.Nodes
             NodeListHandler nodeListHandler, 
             NodeStatusHandler nodeStatusHandler,
             NodeReadConfigHandler nodeReadConfigHandler,
+            NodeEventHandler nodeEventHandler,
             IBluetoothProtocolService bluetoothProtocol)
         {
             _dbContext = dbContext;
@@ -37,10 +38,26 @@ namespace MTCCore.Services.Nodes
             nodeListHandler.NodeListReceived += OnNodeListReceived;
             nodeStatusHandler.NodeStatusReceived += OnNodeStatusReceived;
             nodeReadConfigHandler.NodeConfigReceived += OnNodeConfigReceived;
+            nodeEventHandler.NodeEventReceived += OnNodeEventReceived;
 
             WeakReferenceMessenger.Default.Register<MasterCommandMessage>(this, (r, m) => { OnMasterCommand(m.Command); });
             WeakReferenceMessenger.Default.Register<NodeSendCommandMessage>(this, (r, m) => { OnNodeCommand(m.Id, m.CommandType); });
             WeakReferenceMessenger.Default.Register<NodeSetConfigMessage>(this, (r, m) => { SendNodeConfiguration(m.NodeConfig); });
+            WeakReferenceMessenger.Default.Register<NodeSaveMessage>(this, (r, m) => { SaveNodes(m.Nodes); });
+        }
+
+        
+        private void OnNodeEventReceived(object sender, NodeEventReceivedEventErgs e)
+        {
+            var nodeEventModel = new NodeEventModel
+            {
+                Id = e.NodeEvent.Id,
+                Online = e.NodeEvent.Online,
+                MissedFrames = e.NodeEvent.MissedFrames,
+                LastSeenMs = e.NodeEvent.LastSeenMs
+            };
+
+            WeakReferenceMessenger.Default.Send(new NodeEventMessage(nodeEventModel));
         }
 
         private async void SendNodeConfiguration(NodeConfigModel nodeConfig)
@@ -104,7 +121,6 @@ namespace MTCCore.Services.Nodes
         private void OnNodeListReceived(object sender, NodeListReceivedEventArgs e)
         {
             var updatedNodes = new List<ReadNodeDto>();
-
 
             foreach (var protoNode in e.NodeList.Nodes)
             {
@@ -209,13 +225,61 @@ namespace MTCCore.Services.Nodes
             await _bluetoothProtocol.SendDataAsync(packet);
         }
 
+        // 
+        public async Task UpdateNodesAsync(List<SaveNodeDto> nodes)
+        {
+            foreach (var node in nodes) 
+            {
+                var nodeEntity = _dbContext.Nodes
+                .Include(p => p.Position)
+                .SingleOrDefault(x => x.Id == node.NodeId);
+
+                if (nodeEntity == null)
+                    return;
+
+                nodeEntity.Distance = node.Distance;
+                nodeEntity.TargetType = node.TargetType;
+                nodeEntity.Position.X = (int)node.Position.X;
+                nodeEntity.Position.Y = (int)node.Position.Y;
+
+                _dbContext.Update(nodeEntity);
+            }
+
+            await _dbContext.SaveChangesAsync();
+        }
+        
+        public async Task UpdateNodeAsync(SaveNodeDto dto)
+        {
+            var nodeEntity = _dbContext.Nodes
+                .Include(p => p.Position)
+                .SingleOrDefault(x => x.Id == dto.NodeId);
+
+            if(nodeEntity == null) 
+                return;
+
+            nodeEntity.Distance = dto.Distance;
+            nodeEntity.TargetType = dto.TargetType;
+            nodeEntity.Position.X = (int)dto.Position.X;
+            nodeEntity.Position.Y = (int)dto.Position.Y;
+
+            _dbContext.Update(nodeEntity);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<ReadNodeDto>> GetAllAsync()
+        {
+            var nodes = _dbContext.Nodes
+                .Include(a => a.Position)
+                .ToListAsync().Result;
+
+            return nodes.Select(n => n.ToReadDto()).ToList();
+        }
 
 
-
-
-
-
-
+        private async void SaveNodes(List<SaveNodeDto> nodes)
+        {
+            await UpdateNodesAsync(nodes);
+        }
 
 
 
@@ -249,6 +313,7 @@ namespace MTCCore.Services.Nodes
             return node != null;
         }
 
+        
 
         public List<NodeModel> GetAllNodes()
         {
@@ -329,5 +394,7 @@ namespace MTCCore.Services.Nodes
             _dbContext.Nodes.Add(newnode);
             await _dbContext.SaveChangesAsync();
         }
+
+        
     }
 }

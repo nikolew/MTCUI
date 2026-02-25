@@ -16,6 +16,12 @@ namespace MTCCore.Services.Nodes
         Task UpdateNode(NodeModel node);
 
 
+
+
+        Task<List<ReadNodeDto>> GetAllAsync();
+
         Task CreateNodeAsync(CreateNodeDto dto);
+        Task UpdateNodeAsync(SaveNodeDto dto);
+        Task UpdateNodesAsync(List<SaveNodeDto> dto);
     }
 }

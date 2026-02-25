@@ -19,8 +19,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-
-
 namespace MTCUI.ViewModels
 {
     public partial class MainViewModel : ViewModel
@@ -92,9 +90,8 @@ namespace MTCUI.ViewModels
                 });
             });
 
-            WeakReferenceMessenger.Default.Register<NodeUpdateMessage>(this, (r, m) => UpdateNode(m.Id));
+            WeakReferenceMessenger.Default.Register<NodeUpdateMessage>(this, (r, m) => UpdateNodeOnGraph(m.Node));
             WeakReferenceMessenger.Default.Register<NodeListRequestMessage>(this, (r, m) => OnNodeListRequest(m.NodeListRequest));
-           
         }
 
         private void OnNodeListRequest(List<ReadNodeDto> nodeListRequest)
@@ -129,32 +126,26 @@ namespace MTCUI.ViewModels
             }
         }
 
-        private void UpdateNode(string id)
+        private void UpdateNodeOnGraph(NodeModel node)
         {
-            //var nodeModel = _core.GetNodebyUniqueId(id);
-            //if (nodeModel is null)
-            //{
-            //    return;
-            //}
+            if (CurrentView is not GraphViewModel graphVM)
+                return;
 
-            //if (CurrentView is not GraphViewModel graphVM)
-            //    return;
+            foreach (var nodeVm in graphVM.NodesViewModel)
+            {
+                if (nodeVm.Node.NodeId != node.NodeId)
+                    continue;
 
-            //foreach (var nodeVm in graphVM.NodesViewModel)
-            //{
-            //    if (nodeVm.Node.UniqueNodeId != id)
-            //        continue;
+                graphVM.RemoveNode(nodeVm);
 
-            //    graphVM.RemoveNode(nodeVm);
-
-            //    _dispatcher.TryEnqueue(() =>
-            //    {
-            //        var nodeViewModel = new NodeViewModel() { Node = nodeModel };
-            //        nodeViewModel.InitTemplateView();
-            //        graphVM.AddNode(nodeViewModel);
-            //    });
-            //    break;
-            //}
+                _dispatcher.TryEnqueue(() =>
+                {
+                    var nodeViewModel = new NodeViewModel() { Node = node };
+                    nodeViewModel.InitTemplateView();
+                    graphVM.AddNode(nodeViewModel);
+                });
+                break;
+            }
         }
 
         private void OnNodeEvent(NodeEventModel value)
@@ -163,8 +154,6 @@ namespace MTCUI.ViewModels
             var n = CurrentView as GraphViewModel;
             foreach (var node in n.NodesViewModel)
             {
-
-               
                 if (node.Node.NodeId == value.Id)
                 {
                     _dispatcher.TryEnqueue(() =>
@@ -239,7 +228,21 @@ namespace MTCUI.ViewModels
             var gr = CurrentView as GraphViewModel;
             var nodes = gr.NodesViewModel;
 
-            //_core.Save(nodes);
+            var nodesSave = new List<SaveNodeDto>();
+
+            foreach(var item in nodes)
+            {
+                nodesSave.Add(new SaveNodeDto
+                {
+                    UniqueNodeId = item.Node.UniqueNodeId,
+                    NodeId = item.Node.NodeId,
+                    Position = item.Node.Position,
+                    TargetType = item.Node.TargetType,
+                    GroupId = item.Node.GroupId,
+                });
+            }
+
+            WeakReferenceMessenger.Default.Send(new NodeSaveMessage(nodesSave));
         }
 
         [RelayCommand]
