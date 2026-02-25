@@ -56,7 +56,7 @@
             <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
-                               Text="{Binding Node.TargetId}"/>
+                               Text="{Binding Node.NodeId}"/>
                 </StackPanel>
             </Border>
         </Canvas>
@@ -71,7 +71,7 @@
             <Border Style="{StaticResource TargetBorder}" Margin="18 70 0 0" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
-                           Text="{Binding Node.TargetId}"/>
+                           Text="{Binding Node.NodeId}"/>
                 </StackPanel>
             </Border>
         </Canvas>
@@ -87,7 +87,7 @@
             <Border Style="{StaticResource TargetBorder}" Margin="25 70 0 0" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
-                       Text="{Binding Node.TargetId}"/>
+                       Text="{Binding Node.NodeId}"/>
                 </StackPanel>
             </Border>
         </Canvas>
@@ -103,7 +103,7 @@
             <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
-                   Text="{Binding Node.TargetId}"/>
+                        Text="{Binding Node.NodeId}"/>
                 </StackPanel>
             </Border>
         </Canvas>
@@ -119,7 +119,7 @@
             <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
-               Text="{Binding Node.TargetId}"/>
+                        Text="{Binding Node.NodeId}"/>
                 </StackPanel>
             </Border>
         </Canvas>
@@ -134,7 +134,7 @@
             <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
-           Text="{Binding Node.TargetId}"/>
+                        Text="{Binding Node.NodeId}"/>
                 </StackPanel>
             </Border>
             <ToolTipService.ToolTip>

@@ -11,6 +11,7 @@ using MTCUI.Models;
 using ProtoBuf;
 using CommunityToolkit.Mvvm.Messaging;
 using MTCCore.Messages.Bluetooth;
+using MTCCore.Protocol;
 
 
 namespace MTCUI.Services;
@@ -158,6 +159,9 @@ public class BluetoothLEService
         
         WeakReferenceMessenger.Default.Send(new BluetoothResponseMessage(data));
     }
+
+
+
 
     public async Task SendPingAsync(uint id, string payload)
     {

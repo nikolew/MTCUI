@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
+using MTCCore.Protocol;
 
 namespace MTCUI.ViewModels
 {
@@ -14,18 +15,7 @@ namespace MTCUI.ViewModels
         [ObservableProperty] private DataTemplate _targetTypeView;
         [ObservableProperty] private Style _targetStateView;
 
-        // Replaced generated observable field with an explicit property to avoid MVVMTK0045 (AOT/WinRT compatibility).
-        private NodeModel _node;
-        public NodeModel Node
-        {
-            get => _node;
-            set => SetProperty(ref _node, value);
-        }
-
-        public NodeViewModel()
-        {
-          
-        }
+        [ObservableProperty] private NodeModel _node;
 
         public void InitTemplateView()
         {
@@ -35,8 +25,7 @@ namespace MTCUI.ViewModels
 
         public void MouseDoubleClick()
         {
-            var id = Node.NodeId;
-            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(id));
+            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(Node.NodeId, CommandType.CMD_NODECMD));
         }
     }
 }

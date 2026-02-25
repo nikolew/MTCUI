@@ -1,9 +1,9 @@
 ﻿using MTCCore.Domain.Enums;
 using Windows.Foundation;
 
-namespace MTCCore.Models
+namespace MTCCore.DTO.Nodes
 {
-    public class NodeModel
+    public class CreateNodeDto
     {
         public string UniqueNodeId { get; set; }
         public int NodeId { get; set; }

@@ -52,7 +52,7 @@ namespace MTCUI.ViewModels
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
             {
-                var node = Items.SingleOrDefault(x => x.TargetId == m.Node.NodeId);
+                var node = Items.SingleOrDefault(x => x.NodeId == m.Node.NodeId);
                 if (node != null)
                 {
                     _dispatcher.TryEnqueue(() =>
@@ -77,8 +77,8 @@ namespace MTCUI.ViewModels
 
                 _dispatcher.TryEnqueue(() =>
                 {
-                    var t  = _groupService.GetAllGroupsAsync().Result;
-                    var te = t.Select(x=>x.GroupName).ToList();
+                    var t  = _groupService.GetAllAsync().Result;
+                    var te = t.Select(x=>x.Name).ToList();
                     Groups = te;
                 });
 
@@ -89,7 +89,7 @@ namespace MTCUI.ViewModels
                         {
                             UniqueId = node.UniqueNodeId,
                             Position = node.Position,
-                            TargetId = node.NodeId,
+                            NodeId = node.NodeId,
                             Status = "offline"
                         };
                         item.SaveAction += OnSaveAction;
@@ -113,8 +113,8 @@ namespace MTCUI.ViewModels
 
         private void OnNodeEvent(NodeEventModel value)
         {
-            var id = Convert.ToString(value.Id);
-            var node = Items.Where(x => x.TargetId == id).SingleOrDefault();
+          
+            var node = Items.Where(x => x.NodeId == value.Id).SingleOrDefault();
 
             if (node == null)
             {
@@ -135,7 +135,7 @@ namespace MTCUI.ViewModels
                     UniqueNodeId = node.UniqueId,
                     TargetType = node.TargetType,
                     Position = node.Position,
-                    NodeId = node.TargetId,
+                    NodeId = node.NodeId,
                     Distance = node.Distance,
                     GroupId = node.GroupId
                 });
@@ -156,7 +156,7 @@ namespace MTCUI.ViewModels
                 UniqueNodeId = node.UniqueId,
                 TargetType = node.TargetType,
                 Position = node.Position,
-                NodeId = node.TargetId,
+                NodeId = node.NodeId,
                 Distance = node.Distance,
                 GroupId = node.GroupId
             };

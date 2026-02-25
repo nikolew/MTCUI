@@ -1,4 +1,5 @@
-﻿using MTCCore.Models;
+﻿using MTCCore.DTO.Nodes;
+using MTCCore.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,7 +7,6 @@ namespace MTCCore.Services.Nodes
 {
     public interface INodeService
     {
-        void AddNode(NodeModel node);
         Task AddNodeAsync(int groupId, NodeModel node);
 
         bool NodeExists(string uniqueId);
@@ -14,5 +14,8 @@ namespace MTCCore.Services.Nodes
         List<NodeModel> GetAllNodes();
         Task UpdateNodes(IEnumerable<NodeModel> nodes);
         Task UpdateNode(NodeModel node);
+
+
+        Task CreateNodeAsync(CreateNodeDto dto);
     }
 }

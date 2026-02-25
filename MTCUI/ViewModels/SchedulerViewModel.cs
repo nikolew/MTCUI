@@ -3,18 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Dispatching;
 using MTCCore.DTO.Grups;
 using MTCCore.DTO.Times;
-using MTCCore.Models;
-using MTCCore.Repositories;
 using MTCCore.Services.Groups;
-using MTCCore.Services.Scheduling;
-using MTCUI.Graph;
 using MTCUI.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace MTCUI.ViewModels;
 
@@ -44,7 +38,7 @@ public partial class SchedulerViewModel  : ViewModel
     private DispatcherQueue _dispatcherQueue;
 
     private IGroupService _groupService;
-    private readonly ISchedulingService _schedulingService;
+
 
     [ObservableProperty]
     private bool _controlEnabled;
@@ -52,10 +46,9 @@ public partial class SchedulerViewModel  : ViewModel
     [ObservableProperty]
     private bool _btnDeleteEnabled;
 
-    public SchedulerViewModel(IGroupService groupService, ISchedulingService schedulingService)
+    public SchedulerViewModel(IGroupService groupService)
     {
         _groupService = groupService;
-        _schedulingService = schedulingService;
     }
 
     public async Task InitializeAsync(DispatcherQueue dispatcher)

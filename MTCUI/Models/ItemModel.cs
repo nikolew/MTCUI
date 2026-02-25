@@ -20,7 +20,7 @@ namespace MTCUI.Models
         private string _uniqueId;
 
         [ObservableProperty]
-        private string _targetId;
+        private int _nodeId;
 
         [ObservableProperty]
         private Point _position;

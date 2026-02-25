@@ -4,16 +4,21 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using MTCCore.Domain.Enums;
+using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Bluetooth;
 using MTCCore.Messages.Master;
 using MTCCore.Messages.Nodes;
 using MTCCore.Messages.Timer;
 using MTCCore.Models;
+using MTCCore.Protocol;
+using MTCCore.Services.Common;
 using MTCUI.Services;
 using MTCUI.Views;
-using System;
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+
 
 
 namespace MTCUI.ViewModels
@@ -22,7 +27,6 @@ namespace MTCUI.ViewModels
     {
         private bool _initialized;
 
-        private readonly CoreService _core;
 
         [ObservableProperty]
         private object _currentView;
@@ -42,19 +46,21 @@ namespace MTCUI.ViewModels
 
         private readonly IWindowService _windowService;
         private readonly NodeManagerViewModel _nodeManagerViewModel;
+        private readonly Clock _clock;
 
         private DispatcherQueue _dispatcher;
 
 
-        public MainViewModel(CoreService core, GraphViewModel graphViewModel,
-            IWindowService windowService, NodeManagerViewModel nodeManagerViewModel)
+        public MainViewModel(
+            GraphViewModel graphViewModel,
+            IWindowService windowService, 
+            NodeManagerViewModel nodeManagerViewModel,
+            Clock clock)
         {
-            _core = core;
-
             CurrentView = graphViewModel;
-
             _windowService = windowService;
             _nodeManagerViewModel = nodeManagerViewModel;
+            _clock = clock;
         }
 
         public async Task InitializeAsync(DispatcherQueue dispatcherQueue, object o)
@@ -66,7 +72,8 @@ namespace MTCUI.ViewModels
 
             _dispatcher = dispatcherQueue;
 
-            WeakReferenceMessenger.Default.Register<NodeAddToViewGraphMessage>(this, (r, m) => AddNodeToGraph(m.Node));
+            ConnectionStatus = "Опит за свързване...";
+
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => UpdateNodeStatus(m.Node));
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<BluetoothStatusMessage>(this, (r, m) =>
@@ -86,36 +93,68 @@ namespace MTCUI.ViewModels
             });
 
             WeakReferenceMessenger.Default.Register<NodeUpdateMessage>(this, (r, m) => UpdateNode(m.Id));
+            WeakReferenceMessenger.Default.Register<NodeListRequestMessage>(this, (r, m) => OnNodeListRequest(m.NodeListRequest));
+           
+        }
 
-            await ConnectBluetoothAsync();
+        private void OnNodeListRequest(List<ReadNodeDto> nodeListRequest)
+        {
+            if (CurrentView is not GraphViewModel graphVM)
+                return;
+
+            foreach (ReadNodeDto node in nodeListRequest)
+            {
+                _dispatcher.TryEnqueue(() =>
+                {
+                    var nodeViewModel = new NodeViewModel() 
+                    { 
+                        Node = new NodeModel
+                        {
+                            UniqueNodeId = node.UniqueNodeId,
+                            NodeId = node.NodeId,
+                            Distance = node.Distance,
+                            Position = node.Position,
+                            GroupId = node.GroupId,
+                            Rssi = node.Rssi,
+                            Snr = node.Snr,
+                            BattVoltage = node.BattVoltage,
+                            TargetType = node.TargetType,
+                            State = node.State
+                        } 
+                    };
+
+                    nodeViewModel.InitTemplateView();
+                    graphVM.AddNode(nodeViewModel);
+                });
+            }
         }
 
         private void UpdateNode(string id)
         {
-            var nodeModel = _core.GetNodebyUniqueId(id);
-            if (nodeModel is null)
-            {
-                return;
-            }
+            //var nodeModel = _core.GetNodebyUniqueId(id);
+            //if (nodeModel is null)
+            //{
+            //    return;
+            //}
 
-            if (CurrentView is not GraphViewModel graphVM)
-                return;
+            //if (CurrentView is not GraphViewModel graphVM)
+            //    return;
 
-            foreach (var nodeVm in graphVM.NodesViewModel)
-            {
-                if (nodeVm.Node.UniqueNodeId != id)
-                    continue;
+            //foreach (var nodeVm in graphVM.NodesViewModel)
+            //{
+            //    if (nodeVm.Node.UniqueNodeId != id)
+            //        continue;
 
-                graphVM.RemoveNode(nodeVm);
+            //    graphVM.RemoveNode(nodeVm);
 
-                _dispatcher.TryEnqueue(() =>
-                {
-                    var nodeViewModel = new NodeViewModel() { Node = nodeModel };
-                    nodeViewModel.InitTemplateView();
-                    graphVM.AddNode(nodeViewModel);
-                });
-                break;
-            }
+            //    _dispatcher.TryEnqueue(() =>
+            //    {
+            //        var nodeViewModel = new NodeViewModel() { Node = nodeModel };
+            //        nodeViewModel.InitTemplateView();
+            //        graphVM.AddNode(nodeViewModel);
+            //    });
+            //    break;
+            //}
         }
 
         private void OnNodeEvent(NodeEventModel value)
@@ -125,8 +164,8 @@ namespace MTCUI.ViewModels
             foreach (var node in n.NodesViewModel)
             {
 
-                var id = Convert.ToString(value.Id);
-                if (node.Node.NodeId == id)
+               
+                if (node.Node.NodeId == value.Id)
                 {
                     _dispatcher.TryEnqueue(() =>
                     {
@@ -158,27 +197,6 @@ namespace MTCUI.ViewModels
             }
         }
 
-        private async Task AddNodeToGraph(NodeModel node)
-        {
-            if (CurrentView is not GraphViewModel graphVM)
-                return;
-
-            _dispatcher.TryEnqueue(() =>
-            {
-                var nodeViewModel = new NodeViewModel() { Node = node };
-
-                nodeViewModel.InitTemplateView();
-                graphVM.AddNode(nodeViewModel);
-            });
-        }
-
-        private async Task ConnectBluetoothAsync()
-        {
-            ConnectionStatus = "Опит за свързване...";
-
-            WeakReferenceMessenger.Default.Send(new BluetoothConnectMessage());
-        }
-
         [RelayCommand]
         void Load()
         {
@@ -199,7 +217,7 @@ namespace MTCUI.ViewModels
                     Position = new Windows.Foundation.Point(100, 100),
                     TargetType = TargetType.Target8,
                     State = TargetState.TargetFolded,
-                    NodeId = "4"
+                    NodeId = 4
                 };
 
                 var nodeViewModel = new NodeViewModel() { Node = node };
@@ -221,13 +239,13 @@ namespace MTCUI.ViewModels
             var gr = CurrentView as GraphViewModel;
             var nodes = gr.NodesViewModel;
 
-            _core.Save(nodes);
+            //_core.Save(nodes);
         }
 
         [RelayCommand]
         void ResetNodes() 
         { 
-            _core.SendResetNodes();
+            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(255, CommandType.CMD_NODERST));
         }
 
         [RelayCommand]
@@ -240,18 +258,18 @@ namespace MTCUI.ViewModels
         [RelayCommand]
         void StartTimer()
         {
-            _core.StartTimer();
+            _clock.Start();
         }
 
         [RelayCommand]
         void StopTimer()
         {
-            _core.StopTimer();
+            _clock.Stop();
         }
         [RelayCommand]
         void ResetTimer()
         {
-            _core.ResetTimer();
+            _clock.Reset();
         }
         #endregion
     }

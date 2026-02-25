@@ -68,8 +68,6 @@ namespace MTCCore.Services.Common
             var step = TimeSpan.FromMilliseconds(1000);
             _time += step;
 
-            //OnTimeTick?.Invoke(_time);
-
             WeakReferenceMessenger.Default.Send(new TimerTickMessage(_time));
         }
 

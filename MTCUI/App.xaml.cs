@@ -3,9 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using MTCCore.Infrastructure;
+using MTCCore.Services.Communication;
 using MTCUI.Services;
 using MTCUI.ViewModels;
 using MTCUI.Views;
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -19,6 +21,8 @@ namespace MTCUI
     {
         private Window? _window;
         public IConfiguration Configuration { get; }
+
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -45,7 +49,8 @@ namespace MTCUI
 
                 .RegisterService(Configuration)
                 .BuildServiceProvider());
-   
+
+            WireBluetooth();
         }
 
 
@@ -59,6 +64,24 @@ namespace MTCUI
             var windowService = Ioc.Default.GetRequiredService<IWindowService>();
             windowService.OpenWindow<MainWindow>(null);
 
+
+            var bt = Ioc.Default.GetRequiredService<IBluetoothService>();
+
+             bt.StartDiscoveryAsync();
+        }
+
+        private void WireBluetooth()
+        {
+            var bt = Ioc.Default.GetRequiredService<IBluetoothService>();
+            var protocol = Ioc.Default.GetRequiredService<IBluetoothProtocolService>();
+
+            bt.ConnectionStateChanged += (_, connected) =>
+            {
+                if (connected)
+                    protocol.Start();
+                else
+                    protocol.Stop();
+            };
         }
     }
 }

@@ -1,14 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
 using MTCCore.Domain.Enums;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
+using MTCCore.Protocol;
 using MTCCore.Services.Groups;
 using MTCUI.Models;
-using MTCUI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,6 @@ namespace MTCUI.ViewModels
     public partial class NodeEditViewModel : ViewModel
     {
         private DispatcherQueue _dispatcher;
-        private CoreService _core;
 
         [ObservableProperty]
         private ItemModel _item;
@@ -47,7 +45,7 @@ namespace MTCUI.ViewModels
         [ObservableProperty]
         private List<string> _groups = new();
 
-        private List<GroupModel2> _groupModels = new();
+        private List<GroupModel> _groupModels = new();
 
         public NodeEditViewModel(IGroupService groupService)
         {
@@ -60,18 +58,21 @@ namespace MTCUI.ViewModels
 
             Enabled = true;
 
-            _core = Ioc.Default.GetRequiredService<CoreService>();
-
             Item = o as ItemModel;
 
             TargetType = Item.TargetType;
 
             _dispatcher.TryEnqueue(() =>
             {
-                _groupModels = _groupService.GetAllGroupsAsync().Result;
-                var te = _groupModels.Select(x => x.GroupName).ToList();
+               
+
+                var grups = _groupService.GetAllAsync().Result;
+                foreach (var dto in grups)
+                    _groupModels.Add(new GroupModel(dto));
+
                 
-                Groups = te;
+                Groups = _groupModels.Select(x => x.Name).ToList(); ;
+                SelectedGroupName = Groups.FirstOrDefault(x => x == "None");
             });
 
             WeakReferenceMessenger.Default.Register<NodeGetConfigMessage>(this, (r, m) => { OnNodeConfigReceived(m.NodeConfig); });
@@ -79,39 +80,37 @@ namespace MTCUI.ViewModels
 
         private void OnNodeConfigReceived(NodeConfigModel nodeConfig)
         {
-            var group = _groupModels.FirstOrDefault(x => x.GroupId == nodeConfig.GroupId);
+            var group = _groupModels.FirstOrDefault(x => x.Id == nodeConfig.GroupId);
 
             _dispatcher.TryEnqueue(() =>
             {
                 //if (nodeConfig.Id != Convert.ToInt32(Item.TargetId))
                 //    return;
                 Enabled = true;
-                SelectedGroupName = group.GroupName;
+                SelectedGroupName = group.Name;
                 LightMode = nodeConfig.Light;
 
             });
 
-            var node = new NodeModel
-            {
-                UniqueNodeId = Item.UniqueId,
-                NodeId = Item.TargetId,
-                GroupId = nodeConfig.GroupId,
-                TargetType = Item.TargetType,
-                Distance = Item.Distance,
-                Position = Item.Position
+            //var node = new NodeModel
+            //{
+            //    UniqueNodeId = Item.UniqueId,
+            //    NodeId = Item.NodeId,
+            //    GroupId = nodeConfig.GroupId,
+            //    TargetType = Item.TargetType,
+            //    Distance = Item.Distance,
+            //    Position = Item.Position
                 
-            };
-            _core.UpdateNode(node);
+            //};
+            //_core.UpdateNode(node);
         }
 
 
         [RelayCommand]
-        async void GetConfig()
+       void GetConfig()
         {
             Enabled = false;
-            var id = Convert.ToInt32(Item.TargetId);
-
-            await _core.SendNodeReadConfig(Convert.ToInt32(Item.TargetId));
+            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(Item.NodeId, CommandType.CMD_NODEREADCONFIG));
         }
 
 
@@ -120,12 +119,12 @@ namespace MTCUI.ViewModels
         {
             Enabled = false;
 
-            var group = _groupModels.FirstOrDefault(x => x.GroupName == SelectedGroupName);
+            var group = _groupModels.FirstOrDefault(x => x.Name == SelectedGroupName);
 
             var config = new NodeConfigModel
             {
-                NodeId = Convert.ToInt32(Item.TargetId),
-                GroupId = group.GroupId,
+                NodeId = Convert.ToInt32(Item.NodeId),
+                GroupId = group.Id,
                 Light = LightMode
             };
 

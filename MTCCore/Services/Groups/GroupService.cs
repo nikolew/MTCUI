@@ -1,10 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ABI.System;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.EntityFrameworkCore;
 using MTCCore.Data;
 using MTCCore.Domain.Entities;
 using MTCCore.DTO.Grups;
 using MTCCore.DTO.Times;
 using MTCCore.Extensions.Groups;
+using MTCCore.Messages.Timer;
 using MTCCore.Models;
+using MTCCore.Protocol;
+using MTCCore.Services.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,46 +17,55 @@ using System.Threading.Tasks;
 
 namespace MTCCore.Services.Groups;
 
-
 public class GroupService : IGroupService
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly IBluetoothProtocolService _bluetoothProtocol;
 
-    public GroupService(ApplicationDbContext dbContext)
+    private List<GroupReadDto> _groups = new();
+
+    public GroupService(ApplicationDbContext dbContext, IBluetoothProtocolService bluetoothProtocol)
     {
         _dbContext = dbContext;
+        _bluetoothProtocol = bluetoothProtocol;
+
+        WeakReferenceMessenger.Default.Register<TimerTickMessage>(this, this.OnTimerTick);
+
+        ReloadGroups();
     }
 
-    public async Task<List<GroupModel2>> GetAllGroupsAsync()
+    // Timer tick handler to check if any group has a matching time and send the command
+    private async void OnTimerTick(object recipient, TimerTickMessage timeSpan)
     {
-        var groups = _dbContext.Groups;
+        var time = timeSpan.Time.ToString(@"mm\:ss");
 
-        return [.. groups.Select(group => new GroupModel2
+        var group = _groups.SingleOrDefault(g => g.Times.Any(t => t == time));
+        if (group is not null)
         {
-            GroupId = group.Id,
-            GroupName = group.GroupName,
-            Color = group.Color
-        })];
+             await SendGroupCommand(group.Id);
+        }
     }
 
-    public async Task<int> CreateGroupAsync(string name)
+    // Helper method to reload groups from the database
+    private void ReloadGroups()
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Group name is required");
+        _groups = GetAllAsync().Result;
+    }
 
-        var group = new GroupEntity
+    // Method to send a command to a group via Bluetooth
+    public async Task SendGroupCommand(int groupId)
+    {
+        var packet = new Packet
         {
-            GroupName = name,
-            Color = "#FFFFFF" // Default color, can be changed later
+            CommandType = CommandType.CMD_GROUPCMD,
+            TargetGroup = new TargetGroup
+            {
+                TargetGroupId = groupId
+            }
         };
 
-        _dbContext.Groups.Add(group);
-        await _dbContext.SaveChangesAsync();
-
-        return group.Id;
+        await _bluetoothProtocol.SendDataAsync(packet);
     }
-
-
 
     // New method to create a group using a DTO
     public async Task<GroupReadDto> CreateGroupAsync(CreateGroupDto dto)
@@ -72,6 +86,8 @@ public class GroupService : IGroupService
 
         _dbContext.Groups.Add(entity);
         await _dbContext.SaveChangesAsync();
+
+        ReloadGroups();
 
         return entity.ToReadDto();
     }
@@ -110,6 +126,8 @@ public class GroupService : IGroupService
         });
 
         await _dbContext.SaveChangesAsync();
+
+        ReloadGroups();
     }
 
     // Method to remove a time from a group
@@ -125,8 +143,11 @@ public class GroupService : IGroupService
 
         _dbContext.Times.Remove(time);
         await _dbContext.SaveChangesAsync();
+
+        ReloadGroups() ;
     }
 
+    // Method to remove a group
     public async Task RemoveGroupAsync(RemoveGroupDto dto)
     {
         var group = await _dbContext.Groups
@@ -137,5 +158,7 @@ public class GroupService : IGroupService
         
         _dbContext.Groups.Remove(group);
         await _dbContext.SaveChangesAsync();
+
+        ReloadGroups();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MTCCore.Protocol;
 using MTCCore.Domain.Entities;
 using MTCCore.Domain.Enums;
 using MTCCore.Messages.Bluetooth;
@@ -8,6 +9,7 @@ using MTCCore.Messages.Timer;
 using MTCCore.Models;
 using MTCCore.Repositories;
 using MTCCore.Services.Common;
+using MTCCore.Services.Communication;
 using MTCCore.Services.Groups;
 using MTCCore.Services.Nodes;
 using MTCUI.Models;
@@ -30,12 +32,12 @@ namespace MTCUI.Services
         private readonly INodeService _nodeService;
         private readonly Clock _scheduler;
         private readonly IGroupService _groupService;
-
+        private readonly IBluetoothProtocolService _bluetoothProtocol;
         private List<TimeEntity> _times;
         private List<GroupModel2> _groups;
 
         public CoreService(BluetoothLEService bluetoothService, ITimeRepository timeRepository,
-            INodeService nodeService, Clock scheduler, IGroupService groupService)
+            INodeService nodeService, Clock scheduler, IGroupService groupService, IBluetoothProtocolService bluetoothProtocol)
         {
 
             _bluetoothService = bluetoothService;
@@ -43,8 +45,9 @@ namespace MTCUI.Services
             _nodeService = nodeService;
             _scheduler = scheduler;
             _groupService = groupService;
+            _bluetoothProtocol = bluetoothProtocol;
 
-            WeakReferenceMessenger.Default.Register<NodeSendCommandMessage>(this, (r, m) => { OnNodeClick(m.Id); });
+           // WeakReferenceMessenger.Default.Register<NodeSendCommandMessage>(this, (r, m) => { OnNodeClick(m.Id); });
             WeakReferenceMessenger.Default.Register<MasterCommandMessage>(this, (r, m) => { OnCommand(m.Command); });
             WeakReferenceMessenger.Default.Register<BluetoothConnectMessage>(this, (r, m) => { OnTryClientConnect(); });
             WeakReferenceMessenger.Default.Register<BluetoothResponseMessage>(this, (r, m) => { OnBluetoothResponse(m.Response); });
@@ -88,7 +91,9 @@ namespace MTCUI.Services
 
         private void OnTryClientConnect()
         {
-            _bluetoothService.StartDiscovery();
+            //_bluetoothService.StartDiscovery();
+
+            //_bluetoothProtocol.Start();
         }
 
         private void OnBluetoothResponse(byte[] data)
@@ -124,7 +129,7 @@ namespace MTCUI.Services
 
                     WeakReferenceMessenger.Default.Send(new NodeUpdateStatusMessage(new NodeModel
                     {
-                        NodeId = Convert.ToString(status.Id),
+                        NodeId = status.Id,
                         State = state,
                         Rssi = status.Rssi,
                         Snr = status.Snr,
@@ -149,7 +154,7 @@ namespace MTCUI.Services
                             _nodeService.AddNodeAsync(1, new NodeModel
                             {
                                 UniqueNodeId = nuid,
-                                NodeId = Convert.ToString(item.NodeId),
+                                NodeId =item.NodeId,
                                 Position = new Point(100, 100),
                                 TargetType = TargetType.Default,
                                 State = TargetState.TargetFolded
@@ -211,7 +216,7 @@ namespace MTCUI.Services
 
         public void StartTimer()
         {
-            _groups = _groupService.GetAllGroupsAsync().Result;
+            //_groups = _groupService.GetAllGroupsAsync().Result;
             _scheduler.Start();
         }
 

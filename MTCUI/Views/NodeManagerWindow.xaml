@@ -89,7 +89,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                <TextBlock Text="{x:Bind TargetId}" />
+                                <TextBlock Text="{x:Bind NodeId}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
                                 <TextBlock Text="{x:Bind UniqueId}" />

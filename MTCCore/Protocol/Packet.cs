@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace MTCUI.Models;
+namespace MTCCore.Protocol;
 
 [ProtoContract]
 public enum CommandType {
