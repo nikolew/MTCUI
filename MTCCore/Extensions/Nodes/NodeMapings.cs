@@ -1,8 +1,6 @@
 ﻿using MTCCore.Domain.Entities;
 using MTCCore.DTO.Nodes;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace MTCCore.Extensions.Nodes
 {
@@ -17,6 +15,7 @@ namespace MTCCore.Extensions.Nodes
                 Distance = e.Distance,
                 GroupId = e.GroupEnttityId,
                 TargetType = e.TargetType,
+                Position = new Windows.Foundation.Point(e.Position.X, e.Position.Y)
             };
         }
     }

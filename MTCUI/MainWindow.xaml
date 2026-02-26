@@ -17,8 +17,9 @@
 
 
     <Grid x:Name="RootGrid">
+        
         <Grid.RowDefinitions>
-            <RowDefinition Height="32" />
+            <RowDefinition Height="25" />
             <RowDefinition Height="40"/>
             <RowDefinition />
         </Grid.RowDefinitions>
@@ -34,9 +35,22 @@
                        VerticalAlignment="Center"
                        Margin="32 0 0 0"/>
         </Grid>
+
+        <MenuBar Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" >
+            <MenuBarItem Title="File">
+                <MenuFlyoutItem Text="Load Scene" Click="LoadNodes_Click" />
+                <MenuFlyoutItem Text="Save" Click="SaveScene_Click" />
+            </MenuBarItem>
+            <MenuBarItem Title="Config">
+                <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
+                <MenuFlyoutItem Text="Scheduler" Click="Scheduler_Click" />
+            </MenuBarItem>
+            <MenuBarItem>
+                <MenuFlyoutItem Text="Reset" Click="Reset_Click" />
+            </MenuBarItem>
+        </MenuBar>
         
-      
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <!--<StackPanel Grid.Row="1" Orientation="Horizontal">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="680"/>
@@ -125,7 +139,7 @@
                 </StackPanel>
             </Grid>
            
-        </StackPanel>
+        </StackPanel>-->
         <ContentControl Grid.Row="2" Content="{Binding CurrentView}" 
             ContentTemplate="{StaticResource garphTemplate}"/>  
     </Grid>

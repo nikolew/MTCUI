@@ -71,5 +71,30 @@ namespace MTCUI
         {
             return MainViewModel.InitializeAsync(dispatcher, o);
         }
+
+        private void NodeManager_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.ConfigNodeCommand.Execute(null);
+        }
+
+        private void LoadNodes_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.LoadCommand.Execute(null);
+        }
+
+        private void SaveScene_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.SaveSceneCommand.Execute(null);
+        }
+
+        private void Scheduler_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel?.SchedulerCommand.Execute(null);
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.ResetNodesCommand.Execute(null);
+        }
     }
 }

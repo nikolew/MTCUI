@@ -130,19 +130,19 @@ namespace MTCUI.ViewModels
         [RelayCommand]
         void Save()
         {
-            var nodesToSave = new List<NodeModel>();
-            foreach (var node in Items) { 
+        //    var nodesToSave = new List<NodeModel>();
+        //    foreach (var node in Items) { 
             
-                nodesToSave.Add(new NodeModel
-                {
-                    UniqueNodeId = node.UniqueId,
-                    TargetType = node.TargetType,
-                    Position = node.Position,
-                    NodeId = node.NodeId,
-                    Distance = node.Distance,
-                    GroupId = node.GroupId
-                });
-            }
+        //        nodesToSave.Add(new NodeModel
+        //        {
+        //            UniqueNodeId = node.UniqueId,
+        //            TargetType = node.TargetType,
+        //            Position = node.Position,
+        //            NodeId = node.NodeId,
+        //            Distance = node.Distance,
+        //            GroupId = node.GroupId
+        //        });
+        //    }
 
             //_nodeService.UpdateNodesAsync(nodesToSave);
         }
@@ -170,8 +170,10 @@ namespace MTCUI.ViewModels
             {
                 UniqueNodeId = node.UniqueId,
                 NodeId = node.NodeId,
-                TargetType= node.TargetType
+                TargetType= node.TargetType,
+                Position = node.Position
             };
+
             WeakReferenceMessenger.Default.Send(new NodeUpdateMessage(updateNode));
         }
     }
