@@ -3,10 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
 using MTCCore.Domain.Enums;
+using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
 using MTCCore.Protocol;
 using MTCCore.Services.Groups;
+using MTCCore.Services.Nodes;
 using MTCUI.Models;
 using System;
 using System.Collections.Generic;
@@ -38,6 +40,7 @@ namespace MTCUI.ViewModels
         private string _selectedGroupName;
 
         private readonly IGroupService _groupService;
+        private readonly INodeService _nodeService;
 
         public Array TargetTypes { get; }= Enum.GetValues<TargetType>();
         public Array LightModes { get; } = Enum.GetValues<LightMode>();
@@ -47,9 +50,10 @@ namespace MTCUI.ViewModels
 
         private List<GroupModel> _groupModels = new();
 
-        public NodeEditViewModel(IGroupService groupService)
+        public NodeEditViewModel(IGroupService groupService, INodeService nodeService)
         {
             _groupService = groupService;
+            _nodeService = nodeService;
         }
 
         internal async Task InitializeAsync(DispatcherQueue dispatcher, object o)
@@ -59,12 +63,12 @@ namespace MTCUI.ViewModels
             Enabled = true;
 
             Item = o as ItemModel;
-
             TargetType = Item.TargetType;
 
-            _dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(async () =>
             {
-               
+                Groups.Clear();
+                _groupModels.Clear();
 
                 var grups = _groupService.GetAllAsync().Result;
                 foreach (var dto in grups)
@@ -73,6 +77,10 @@ namespace MTCUI.ViewModels
                 
                 Groups = _groupModels.Select(x => x.Name).ToList(); ;
                 SelectedGroupName = Groups.FirstOrDefault(x => x == "None");
+
+                var node = await _nodeService.GetNodeByUniqueIdAsync(Item.NodeId);
+
+
             });
 
             WeakReferenceMessenger.Default.Register<NodeGetConfigMessage>(this, (r, m) => { OnNodeConfigReceived(m.NodeConfig); });
@@ -82,27 +90,51 @@ namespace MTCUI.ViewModels
         {
             var group = _groupModels.FirstOrDefault(x => x.Id == nodeConfig.GroupId);
 
-            _dispatcher.TryEnqueue(() =>
+            if (group != null)
             {
-                //if (nodeConfig.Id != Convert.ToInt32(Item.TargetId))
-                //    return;
-                Enabled = true;
-                SelectedGroupName = group.Name;
-                LightMode = nodeConfig.Light;
+                _dispatcher.TryEnqueue(() =>
+                {
+                    Enabled = true;
+                    SelectedGroupName = group.Name;
+                    LightMode = nodeConfig.Light;
 
-            });
+                });
 
-            //var node = new NodeModel
-            //{
-            //    UniqueNodeId = Item.UniqueId,
-            //    NodeId = Item.NodeId,
-            //    GroupId = nodeConfig.GroupId,
-            //    TargetType = Item.TargetType,
-            //    Distance = Item.Distance,
-            //    Position = Item.Position
-                
-            //};
-            //_core.UpdateNode(node);
+                var node = new SaveNodeDto
+                {
+                    UniqueNodeId = Item.UniqueId,
+                    NodeId = Item.NodeId,
+                    GroupId = nodeConfig.GroupId,
+                    TargetType = Item.TargetType,
+                    Distance = Item.Distance,
+                    Position = Item.Position
+                };
+
+                _nodeService.UpdateNodeAsync(node);
+            }
+            else
+            {
+                _dispatcher.TryEnqueue(() =>
+                {
+                    Enabled = true;
+                    SelectedGroupName = "None";
+                    LightMode = nodeConfig.Light;
+
+                });
+
+                var node = new SaveNodeDto
+                {
+                    UniqueNodeId = Item.UniqueId,
+                    NodeId = Item.NodeId,
+                    GroupId = 1,
+                    GroupName = SelectedGroupName,
+                    TargetType = Item.TargetType,
+                    Distance = Item.Distance,
+                    Position = Item.Position
+                };
+
+                _nodeService.UpdateNodeAsync(node);
+            }
         }
 
 

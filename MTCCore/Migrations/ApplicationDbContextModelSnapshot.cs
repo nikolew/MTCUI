@@ -63,16 +63,14 @@ namespace MTCCore.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GroupEnttityId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("GroupId");
 
                     b.Property<int>("NodeIdentity")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("NodeUniqueId")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("TargetGroup")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("TargetType")
                         .HasColumnType("INTEGER");

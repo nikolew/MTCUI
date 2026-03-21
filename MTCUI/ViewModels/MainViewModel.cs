@@ -111,7 +111,7 @@ namespace MTCUI.ViewModels
                             NodeId = node.NodeId,
                             Distance = node.Distance,
                             Position = node.Position,
-                            GroupId = node.GroupId,
+                            GroupName = node.GroupName,
                             Rssi = node.Rssi,
                             Snr = node.Snr,
                             BattVoltage = node.BattVoltage,
@@ -219,7 +219,8 @@ namespace MTCUI.ViewModels
         [RelayCommand]
         void ConfigNode()
         {
-            _windowService.OpenWindow<NodeManagerWindow>(null);
+            //_windowService.OpenWindow<NodeManagerWindow>(null);
+            _windowService.OpenWindow<NodeServiceWindow>(null);
         }
 
         [RelayCommand]
@@ -238,7 +239,8 @@ namespace MTCUI.ViewModels
                     NodeId = item.Node.NodeId,
                     Position = item.Node.Position,
                     TargetType = item.Node.TargetType,
-                    GroupId = item.Node.GroupId,
+                    GroupName = item.Node.GroupName,
+                    Distance = item.Node.Distance
                 });
             }
 
@@ -248,7 +250,7 @@ namespace MTCUI.ViewModels
         [RelayCommand]
         void ResetNodes() 
         { 
-            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(255, CommandType.CMD_NODERST));
+            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(0, CommandType.CMD_NODERST));
         }
 
         [RelayCommand]

@@ -7,13 +7,13 @@ namespace MTCCore.Services.Nodes
 {
     public interface INodeService
     {
-        Task AddNodeAsync(int groupId, NodeModel node);
+        //Task AddNodeAsync(int groupId, NodeModel node);
 
-        bool NodeExists(string uniqueId);
-        NodeModel GetNodeByUniqueId(string uniqueId);
-        List<NodeModel> GetAllNodes();
-        Task UpdateNodes(IEnumerable<NodeModel> nodes);
-        Task UpdateNode(NodeModel node);
+        //bool NodeExists(string uniqueId);
+        //NodeModel GetNodeByUniqueId(string uniqueId);
+        //List<NodeModel> GetAllNodes();
+        //Task UpdateNodes(IEnumerable<NodeModel> nodes);
+        //Task UpdateNode(NodeModel node);
 
 
 
@@ -23,5 +23,6 @@ namespace MTCCore.Services.Nodes
         Task CreateNodeAsync(CreateNodeDto dto);
         Task UpdateNodeAsync(SaveNodeDto dto);
         Task UpdateNodesAsync(List<SaveNodeDto> dto);
+        Task<ReadNodeDto> GetNodeByUniqueIdAsync(int uniqueId);
     }
 }

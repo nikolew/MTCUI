@@ -11,9 +11,9 @@ namespace MTCCore.Extensions.Nodes
             return new ReadNodeDto
             {
                 UniqueNodeId = e.NodeUniqueId,
-                NodeId = e.Id,
+                NodeId = e.NodeIdentity,
                 Distance = e.Distance,
-                GroupId = e.GroupEnttityId,
+                GroupName = e.GroupEnttity.GroupName,
                 TargetType = e.TargetType,
                 Position = new Windows.Foundation.Point(e.Position.X, e.Position.Y)
             };

@@ -35,7 +35,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Margin="10 5 0 5" Orientation="Horizontal">
                 <TextBlock Text="Target Id:" Margin="5 0 0 0" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Item.TargetId}" Margin="10 0 0 0"/>
+                <TextBlock Text="{Binding Item.NodeId}" Margin="10 0 0 0"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Margin="10 5 0 5">
                 <TextBlock Text="Target Type" Margin="5 0 0 0"/>

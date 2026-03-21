@@ -17,11 +17,11 @@
 
 
     <Grid x:Name="RootGrid">
-        
         <Grid.RowDefinitions>
-            <RowDefinition Height="25" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="40"/>
-            <RowDefinition />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="22"/>
         </Grid.RowDefinitions>
         <Grid x:Name="AppTitleBar">
             <Image Source="/Assets/icon.ico" 
@@ -36,19 +36,56 @@
                        Margin="32 0 0 0"/>
         </Grid>
 
-        <MenuBar Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" >
-            <MenuBarItem Title="File">
-                <MenuFlyoutItem Text="Load Scene" Click="LoadNodes_Click" />
-                <MenuFlyoutItem Text="Save" Click="SaveScene_Click" />
-            </MenuBarItem>
-            <MenuBarItem Title="Config">
-                <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
-                <MenuFlyoutItem Text="Scheduler" Click="Scheduler_Click" />
-            </MenuBarItem>
-            <MenuBarItem>
-                <MenuFlyoutItem Text="Reset" Click="Reset_Click" />
-            </MenuBarItem>
-        </MenuBar>
+        <StackPanel Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Left">
+                    <MenuBar  VerticalAlignment="Top" HorizontalAlignment="Left" >
+                        <MenuBarItem Title="File" FontFamily="Segoe UI Variable" FontSize="15">
+                            <MenuFlyoutItem Text="Load Scene" FontFamily="Segoe UI Variable" Click="LoadNodes_Click" />
+                            <MenuFlyoutItem Text="Save" Click="SaveScene_Click" />
+                        </MenuBarItem>
+                        <MenuBarItem Title="Config" FontFamily="Segoe UI Variable">
+                            <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
+                            <MenuFlyoutItem Text="Scheduler" Click="Scheduler_Click" />
+                        </MenuBarItem>
+                        <MenuBarItem>
+                            <MenuFlyoutItem Text="Reset" Click="Reset_Click" />
+                        </MenuBarItem>
+                    </MenuBar>
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="0 3 0 0">
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <Button Content="Старт" FontSize="13"
+                            Width="70" 
+                            Height="30" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Margin="5,0,0,0" Command="{x:Bind MainViewModel.StartTimerCommand}" />  
+                        <Button Content="Стоп" FontSize="13"
+                            Width="70" 
+                            Height="30" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Margin="5 0 0 0" Command="{x:Bind MainViewModel.StopTimerCommand}" />
+                            <Button Content="Нулиране" FontSize="13"
+                            Width="85" 
+                            Height="30" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Margin="5 0 0 0" Command="{x:Bind MainViewModel.ResetTimerCommand}"/>
+                        <TextBlock Text="{Binding TimerText}" FontSize="25" 
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" 
+                            Margin="10 0 10 0"/>
+                    </StackPanel>
+                    
+                </StackPanel>
+            </Grid>
+        </StackPanel>
         
         <!--<StackPanel Grid.Row="1" Orientation="Horizontal">
             <Grid>
@@ -140,8 +177,18 @@
             </Grid>
            
         </StackPanel>-->
-        <ContentControl Grid.Row="2" Content="{Binding CurrentView}" 
-            ContentTemplate="{StaticResource garphTemplate}"/>  
+
+        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Margin="1 0 1 0">
+            <ContentControl  Content="{Binding CurrentView}" 
+                ContentTemplate="{StaticResource garphTemplate}"/>
+        </Border>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <TextBlock Text="{Binding ConnectionStatus}"    
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center" 
+                Margin="10 0 0 0"/>
+        </StackPanel>
     </Grid>
    
 </Window>

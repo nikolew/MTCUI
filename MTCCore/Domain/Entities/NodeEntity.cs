@@ -1,4 +1,5 @@
 ﻿using MTCCore.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MTCCore.Domain.Entities
 {
@@ -13,7 +14,7 @@ namespace MTCCore.Domain.Entities
 
         public PositionEntity Position { get; set; }
 
-
+        [Column("GroupId")]
         public int GroupEnttityId { get; set; }
         public GroupEntity GroupEnttity { get; set; }
     }

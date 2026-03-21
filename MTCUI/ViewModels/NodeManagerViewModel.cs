@@ -38,11 +38,15 @@ namespace MTCUI.ViewModels
 
         private static readonly ObservableCollection<ItemModel> itemModels = new();
         private readonly IGroupService _groupService;
+
         [ObservableProperty]
         private ObservableCollection<ItemModel> _items = itemModels;
 
         [ObservableProperty]
         private List<string> _groups = new();
+
+        [ObservableProperty]
+        private ItemModel _selectedItemModel;
 
         public NodeManagerViewModel(IGroupService groupService)
         {
@@ -100,7 +104,7 @@ namespace MTCUI.ViewModels
                             };
                             item.SaveAction += OnSaveAction;
                             item.EditAction += OnEditAction;
-                            item.Load(node.TargetType, node.GroupId, node.Distance);
+                            item.Load(node.TargetType, node.GroupName, node.Distance);
                             Items.Add(item);
                         }
                     });
@@ -161,7 +165,7 @@ namespace MTCUI.ViewModels
                 Position = node.Position,
                 NodeId = node.NodeId,
                 Distance = node.Distance,
-                GroupId = node.GroupId
+                GroupName = node.GroupName
             };
 
             _nodeService.UpdateNodeAsync(dto);

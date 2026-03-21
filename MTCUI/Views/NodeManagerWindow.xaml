@@ -32,7 +32,7 @@
         <StackPanel Grid.Row="1" Padding="10 20 10 10">
             <ListView x:Name="MyList" ItemsSource="{x:Bind NodeManagerVm.Items}">
                 
-                 <!--HEADER--> 
+               
                 <ListView.Header>
                     <Grid Padding="15,0,0,8">
                         <Grid.ColumnDefinitions>
@@ -108,14 +108,15 @@
                             <TextBox Text="{x:Bind Distance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="5" 
                                      TextAlignment="Center" Margin="0 0 10 0"/>
                             
-                            <!--<ComboBox Grid.Column="6"
+                            <ComboBox Grid.Column="6"
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetGroups}"
-                                SelectedItem="{x:Bind Group, Mode=TwoWay}"
-                                Width="100" />-->
+                                
+                                Width="100" />
                             <ComboBox Grid.Column="6" 
                                       ItemsSource="{Binding ElementName=MyList, Path=DataContext.Groups, Mode=TwoWay}" 
                                       Width="100" />
-                            <TextBlock Text="{x:Bind GroupContent}" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="6" Text="{Binding GroupId}" />
+                            <TextBlock Text="{x:Bind GroupName}" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             
                             <StackPanel Grid.Column="7" VerticalAlignment="Center" HorizontalAlignment="Left">
                                 <TextBlock Text="{x:Bind Rssi, Mode=TwoWay}"  />

@@ -9,7 +9,7 @@ namespace MTCCore.Models
         public int NodeId { get; set; }
         public string Distance { get; set; }
         public Point Position { get; set; }
-        public int GroupId { get; set; }
+        public string GroupName { get; set; }
         public int Rssi { get; set; }
         public int Snr { get; set; }
         public float BattVoltage { get; set; }

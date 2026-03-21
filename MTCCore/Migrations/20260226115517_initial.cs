@@ -35,16 +35,15 @@ namespace MTCCore.Migrations
                     NodeIdentity = table.Column<int>(type: "INTEGER", nullable: false),
                     NodeUniqueId = table.Column<string>(type: "TEXT", nullable: true),
                     Distance = table.Column<string>(type: "TEXT", nullable: true),
-                    TargetGroup = table.Column<int>(type: "INTEGER", nullable: false),
                     TargetType = table.Column<int>(type: "INTEGER", nullable: false),
-                    GroupEnttityId = table.Column<int>(type: "INTEGER", nullable: false)
+                    GroupId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Nodes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Nodes_Groups_GroupEnttityId",
-                        column: x => x.GroupEnttityId,
+                        name: "FK_Nodes_Groups_GroupId",
+                        column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -96,9 +95,9 @@ namespace MTCCore.Migrations
                 columns: new[] { "Id", "Color", "GroupName" },
                 values: new object[,]
                 {
-                    { 1, "#FF0000", null },
-                    { 2, "#00FF00", null },
-                    { 3, "#0000FF", null }
+                    { 1, "#FF0000", "None" },
+                    { 2, "#00FF00", "Група 1" },
+                    { 3, "#0000FF", "Група 2" }
                 });
 
             migrationBuilder.InsertData(
@@ -113,9 +112,9 @@ namespace MTCCore.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Nodes_GroupEnttityId",
+                name: "IX_Nodes_GroupId",
                 table: "Nodes",
-                column: "GroupEnttityId");
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Positions_NodeId",

@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using Windows.Foundation;
 
 namespace MTCCore.Services.Nodes
@@ -43,7 +45,7 @@ namespace MTCCore.Services.Nodes
             WeakReferenceMessenger.Default.Register<MasterCommandMessage>(this, (r, m) => { OnMasterCommand(m.Command); });
             WeakReferenceMessenger.Default.Register<NodeSendCommandMessage>(this, (r, m) => { OnNodeCommand(m.Id, m.CommandType); });
             WeakReferenceMessenger.Default.Register<NodeSetConfigMessage>(this, (r, m) => { SendNodeConfiguration(m.NodeConfig); });
-            WeakReferenceMessenger.Default.Register<NodeSaveMessage>(this, (r, m) => { SaveNodes(m.Nodes); });
+            WeakReferenceMessenger.Default.Register<NodeSaveMessage>(this, (r, m) => { SaveScene(m.Nodes); });
         }
 
         
@@ -120,24 +122,31 @@ namespace MTCCore.Services.Nodes
         // Handler for receiving the list of nodes from the Bluetooth protocol
         private void OnNodeListReceived(object sender, NodeListReceivedEventArgs e)
         {
+            bool saveFlag = false;  
+
             var updatedNodes = new List<ReadNodeDto>();
+
+            var nodes = _dbContext.Nodes
+                    .Include(a => a.Position)
+                    .Include(b => b.GroupEnttity).ToList();
+                    
 
             foreach (var protoNode in e.NodeList.Nodes)
             {
                 var uniqueId = Convert.ToHexString(protoNode.UniqueId);
 
-                var node = _dbContext.Nodes
-                    .Include(a => a.Position)
-                    .SingleOrDefaultAsync(x => x.NodeUniqueId == uniqueId).Result;
+                //var node = _dbContext.Nodes
+                //    .Include(a => a.Position)
+                //    .Include(b => b.GroupEnttity)
+                //    .SingleOrDefaultAsync(x => x.NodeUniqueId == uniqueId).Result;
+
+                var node = nodes.Where(x => x.NodeUniqueId == uniqueId) .FirstOrDefault();
 
                 if (node == null)
                 {
-                    var positionEntity = new PositionEntity
-                    {
-                        X = (int)node.Position.X,
-                        Y = (int)node.Position.Y
-                    };
-
+                    var positionEntity = new PositionEntity { X = 50, Y = 50 };
+                    var groupEntity = _dbContext.Groups.FirstOrDefault(x => x.GroupName == "None");
+                    
                     node = new NodeEntity
                     {
                         GroupEnttityId = 1,
@@ -145,35 +154,48 @@ namespace MTCCore.Services.Nodes
                         NodeIdentity = protoNode.NodeId,
                         Distance = "0",
                         Position = positionEntity,
-                        TargetType = TargetType.Default
+                        TargetType = TargetType.Default,
+                        GroupEnttity = groupEntity
                     };
 
                     _dbContext.Nodes.Add(node);
+                    saveFlag = true;
+
+                    updatedNodes.Add(new ReadNodeDto
+                    {
+                        UniqueNodeId = uniqueId,
+                        TargetType = node.TargetType,
+                        GroupName = node.GroupEnttity.GroupName,
+                        Distance = node.Distance,
+                        NodeId = node.NodeIdentity,
+                        State = TargetState.TargetRaised,
+                        Position = new Point(node.Position.X, node.Position.Y)
+                    });
                 }
                 else
                 {
-                    // 🔄 update
-                   // node.NodeIdentity = protoNode.NodeId;
-                   // node.NodeUniqueId = uniqueId              
+                    var grEntity = _dbContext. Groups.FirstOrDefault(x => x.Id == node.GroupEnttityId);
+                    updatedNodes.Add(new ReadNodeDto
+                    {
+                        UniqueNodeId = uniqueId,
+                        TargetType = node.TargetType,
+                        GroupName = grEntity.GroupName,
+                        Distance = node.Distance,
+                        NodeId = node.NodeIdentity,
+                        State = TargetState.TargetRaised,
+                        Position = new Point(node.Position.X, node.Position.Y)
+                    });
                 }
-
-                updatedNodes.Add(new ReadNodeDto
-                {
-                    UniqueNodeId = uniqueId,
-                    TargetType = node.TargetType,
-                    GroupId = node.GroupEnttityId,
-                    Distance = node.Distance,
-                    NodeId = node.NodeIdentity,
-                    State = TargetState.TargetRaised,
-                    Position = new Point(node.Position.X, node.Position.Y)
-                });
             }
 
-            _dbContext.SaveChanges();
+            if (saveFlag) 
+                _dbContext.SaveChanges();
 
             // 📤 notify UI
             WeakReferenceMessenger.Default.Send(new NodeListRequestMessage(updatedNodes));
+
         }
+       
 
         // Method to add a new node to a group
         public async Task AddNodeAsync(int groupId, NodeModel node)
@@ -230,39 +252,36 @@ namespace MTCCore.Services.Nodes
         {
             foreach (var node in nodes) 
             {
+                //var n = await _dbContext.Nodes.FindAsync(4);
+
                 var nodeEntity = _dbContext.Nodes
-                .Include(p => p.Position)
-                .SingleOrDefault(x => x.Id == node.NodeId);
+                    .Include(p => p.Position)
+                    .SingleOrDefault(x => x.NodeIdentity == node.NodeId);
 
                 if (nodeEntity == null)
                     return;
 
-                nodeEntity.Distance = node.Distance;
-                nodeEntity.TargetType = node.TargetType;
                 nodeEntity.Position.X = (int)node.Position.X;
                 nodeEntity.Position.Y = (int)node.Position.Y;
 
-                _dbContext.Update(nodeEntity);
+                await _dbContext.SaveChangesAsync();
             }
 
-            await _dbContext.SaveChangesAsync();
+            
         }
         
         public async Task UpdateNodeAsync(SaveNodeDto dto)
         {
             var nodeEntity = _dbContext.Nodes
                 .Include(p => p.Position)
-                .SingleOrDefault(x => x.Id == dto.NodeId);
+                .Include(g =>g.GroupEnttity).Where(x =>x.GroupEnttity.GroupName==dto.GroupName)
+                .SingleOrDefault(x => x.NodeIdentity == dto.NodeId);
 
             if(nodeEntity == null) 
                 return;
 
-            nodeEntity.Distance = dto.Distance;
             nodeEntity.TargetType = dto.TargetType;
-            nodeEntity.Position.X = (int)dto.Position.X;
-            nodeEntity.Position.Y = (int)dto.Position.Y;
 
-            _dbContext.Update(nodeEntity);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -270,35 +289,48 @@ namespace MTCCore.Services.Nodes
         {
             var nodes = _dbContext.Nodes
                 .Include(a => a.Position)
+                .Include(g => g.GroupEnttity)
                 .ToListAsync().Result;
 
             return nodes.Select(n => n.ToReadDto()).ToList();
         }
 
 
-        private async void SaveNodes(List<SaveNodeDto> nodes)
+        private async void SaveScene(List<SaveNodeDto> nodes)
         {
-            await UpdateNodesAsync(nodes);
+            foreach (var node in nodes)
+            { 
+                var nodeEntity = _dbContext.Nodes
+                    .Include(p => p.Position)
+                    .SingleOrDefault(x => x.NodeIdentity == node.NodeId);
+
+                if (nodeEntity == null)
+                    return;
+
+                nodeEntity.Position.X = (int)node.Position.X;
+                nodeEntity.Position.Y = (int)node.Position.Y;
+
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
 
 
-        public NodeModel GetNodeByUniqueId(string uniqueId)
+        public async Task<ReadNodeDto> GetNodeByUniqueIdAsync(int uniqueId)
         {
             var node = _dbContext.Nodes
                 .Include(a => a.Position)
-                .SingleOrDefaultAsync(x => x.NodeUniqueId == uniqueId).Result;
+                .SingleOrDefaultAsync(x => x.NodeIdentity == uniqueId).Result;
 
             if (node == null)
                 return null;
 
-            var newNode = new NodeModel
+            var newNode = new ReadNodeDto
             {
                 UniqueNodeId = node.NodeUniqueId,
                 NodeId = node.NodeIdentity,
                 Position = new Point(node.Position.X, node.Position.Y),
                 TargetType = node.TargetType,
-                State = TargetState.TargetRaised,
                 Distance = node.Distance
             };
 
@@ -327,7 +359,7 @@ namespace MTCCore.Services.Nodes
                 TargetType = node.TargetType,
                 State = TargetState.TargetOffline,
                 Distance = node.Distance,
-                GroupId = node.GroupEnttityId
+                GroupName = node.GroupEnttity.GroupName
             }).ToList();
         }
 
@@ -354,24 +386,25 @@ namespace MTCCore.Services.Nodes
 
         }
 
-        public async Task UpdateNode(NodeModel node)
-        {
-            var nodeEntity = _dbContext.Nodes
-                .Include(a => a.Position)
-                .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueNodeId).Result;
+        //public async Task UpdateNode(NodeModel node)
+        //{
+        //    var nodeEntity = _dbContext.Nodes
+        //        .Include(a => a.Position)
+        //        .SingleOrDefaultAsync(x => x.NodeUniqueId == node.UniqueNodeId).Result;
 
-            if (nodeEntity == null)
-                return;
+        //    if (nodeEntity == null)
+        //        return;
 
-            nodeEntity.Position.X = (int)node.Position.X;
-            nodeEntity.Position.Y = (int)node.Position.Y;
-            nodeEntity.TargetType = node.TargetType;
-            nodeEntity.Distance = node.Distance;
-            nodeEntity.GroupEnttityId = node.GroupId;
+            
+        //    nodeEntity.Position.X = (int)node.Position.X;
+        //    nodeEntity.Position.Y = (int)node.Position.Y;
+        //    nodeEntity.TargetType = node.TargetType;
+        //    nodeEntity.Distance = node.Distance;
+        //    nodeEntity.GroupEnttityId = node.GroupId;
 
-            _dbContext.Update(nodeEntity);
-            await _dbContext.SaveChangesAsync();
-        }
+        //    _dbContext.Update(nodeEntity);
+        //    await _dbContext.SaveChangesAsync();
+        //}
 
         public async Task CreateNodeAsync(CreateNodeDto dto)
         {
@@ -395,6 +428,5 @@ namespace MTCCore.Services.Nodes
             await _dbContext.SaveChangesAsync();
         }
 
-        
     }
 }

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTCCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260219132716_mig1")]
-    partial class mig1
+    [Migration("20260226115517_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,16 +66,14 @@ namespace MTCCore.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GroupEnttityId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("GroupId");
 
                     b.Property<int>("NodeIdentity")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("NodeUniqueId")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("TargetGroup")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("TargetType")
                         .HasColumnType("INTEGER");

@@ -45,7 +45,8 @@ namespace MTCUI
                 .AddSingleton<SchedulerViewModel>()
                 .AddSingleton<BluetoothLEService>()
                 .AddSingleton<IWindowService, WindowService>()
-
+                .AddTransient<NodeServiceWindow>()
+                .AddSingleton<NodeServiceViewModel>()
                 .RegisterService(Configuration)
                 .BuildServiceProvider());
 

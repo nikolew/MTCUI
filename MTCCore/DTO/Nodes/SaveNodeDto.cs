@@ -11,8 +11,8 @@ namespace MTCCore.DTO.Nodes
         public int NodeId { get; set; }
         public string Distance { get; set; }
         public Point Position { get; set; }
-        public int GroupId { get; set; }
-
         public TargetType TargetType { get; set; }
+        public string GroupName { get; set; }
+        public int GroupId { get; set; }
     }
 }
