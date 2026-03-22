@@ -47,6 +47,7 @@ namespace MTCUI
                 .AddSingleton<IWindowService, WindowService>()
                 .AddTransient<NodeServiceWindow>()
                 .AddSingleton<NodeServiceViewModel>()
+                .AddSingleton<TimerViewModel>()
                 .RegisterService(Configuration)
                 .BuildServiceProvider());
 

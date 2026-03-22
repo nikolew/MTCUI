@@ -1,18 +1,9 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI;
@@ -71,7 +62,7 @@ namespace MTCUI.Views
                 DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest) is not { } displayArea) 
                 return;
         
-            appWindow.Resize(new SizeInt32(1000, 800));
+            appWindow.Resize(new SizeInt32(1000, 750));
             var centeredPosition = appWindow.Position;
             centeredPosition.X = (displayArea.WorkArea.Width - appWindow.Size.Width) / 2;
             centeredPosition.Y = (displayArea.WorkArea.Height - appWindow.Size.Height) / 2;

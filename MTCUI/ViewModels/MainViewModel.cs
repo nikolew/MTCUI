@@ -12,6 +12,7 @@ using MTCCore.Messages.Timer;
 using MTCCore.Models;
 using MTCCore.Protocol;
 using MTCCore.Services.Common;
+using MTCUI.Controls;
 using MTCUI.Services;
 using MTCUI.Views;
 
@@ -72,6 +73,8 @@ namespace MTCUI.ViewModels
 
             ConnectionStatus = "Опит за свързване...";
 
+
+
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => UpdateNodeStatus(m.Node));
             WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<BluetoothStatusMessage>(this, (r, m) =>
@@ -82,16 +85,10 @@ namespace MTCUI.ViewModels
                 });
             });
 
-            WeakReferenceMessenger.Default.Register<TimerTickMessage>(this, (r, m) =>
-            {
-                _dispatcher.TryEnqueue(() =>
-                {
-                    TimerText = m.Time.ToString(@"hh\:mm\:ss");
-                });
-            });
-
             WeakReferenceMessenger.Default.Register<NodeUpdateMessage>(this, (r, m) => UpdateNodeOnGraph(m.Node));
             WeakReferenceMessenger.Default.Register<NodeListRequestMessage>(this, (r, m) => OnNodeListRequest(m.NodeListRequest));
+        
+            
         }
 
         private void OnNodeListRequest(List<ReadNodeDto> nodeListRequest)
@@ -258,24 +255,5 @@ namespace MTCUI.ViewModels
         {
             _windowService.OpenWindow<SchedulerWindow>(null);
         }
-        
-        #region Timer
-        [RelayCommand]
-        void StartTimer()
-        {
-            _clock.Start();
-        }
-
-        [RelayCommand]
-        void StopTimer()
-        {
-            _clock.Stop();
-        }
-        [RelayCommand]
-        void ResetTimer()
-        {
-            _clock.Reset();
-        }
-        #endregion
     }
 }

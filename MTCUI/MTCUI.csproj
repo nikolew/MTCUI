@@ -17,9 +17,11 @@
     <None Remove="Controls\GraphViewControl.xaml" />
     <None Remove="Controls\InfoRow.xaml" />
     <None Remove="Controls\NodeEditControl.xaml" />
+    <None Remove="Controls\TimerControl.xaml" />
     <None Remove="Graph\DefaultNode.xaml" />
     <None Remove="Graph\GridControl.xaml" />
     <None Remove="Graph\NodeGraph.xaml" />
+    <None Remove="Styles\ButtonStyles.xaml" />
     <None Remove="Styles\DataTemplate.xaml" />
     <None Remove="Styles\TargetStyles.xaml" />
     <None Remove="Views\GroupManagerWindow.xaml" />
@@ -79,6 +81,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MTCCore\MTCCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\ButtonStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\TimerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\InfoRow.xaml">

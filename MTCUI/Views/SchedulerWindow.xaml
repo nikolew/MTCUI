@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:MTCUI.ViewModels"
     mc:Ignorable="d"
-    Title="GroupManagerWindow" >
+    Title="GroupManagerWindow">
 
     <Window.SystemBackdrop>
         <MicaBackdrop />
@@ -24,7 +24,7 @@
 
         <StackPanel Grid.Column="0" Margin="10" Orientation="Vertical">
             <ListBox  BorderBrush="Black" BorderThickness="1"
-                Width="120" Height="400" 
+                Width="120" Height="350" 
                 ItemsSource="{Binding Groups}" 
                 SelectedItem="{Binding SelectedGroup, Mode=TwoWay}" >
                 <ListBox.ItemTemplate>
@@ -35,23 +35,25 @@
             </ListBox>
             <TextBlock Text="Group Name:" Margin="0,10,0,0"  Width="120"/>
             <TextBox Text="{Binding NewGroupName, Mode=TwoWay}" Margin="0,5,0,0"  Width="120"/>
-            <Button Content="Add Group" Margin="0,10,0,0"  Width="120"
+            <Button Content="Add Group" Margin="0,10,0,0"  Width="120" Height="30" 
+                    Style="{StaticResource PrimaryButtonStyle}"
                     Command="{Binding AddNewGroupCommand}" 
                     CommandParameter="{Binding NewGroupName}"/>
-            <Button Content="Delete Group" Command="{Binding DeleteGroupAsyncCommand}" Width="120"/>
+            <Button Content="Delete Group" Command="{Binding DeleteGroupAsyncCommand}" Margin="0 5 0 0"
+                    Width="120" Height="30" Style="{StaticResource PrimaryButtonStyle}"/>
         </StackPanel>
         <StackPanel Grid.Column="1" >
             <TextBlock Text="Time:" Margin="0,10,0,0" />
             <TextBox Text="{Binding NewTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                      Margin="0,5,0,0" TextChanging="TextBox_TextChanging" MaxLength="5"
                      IsEnabled="{Binding ControlEnabled, Mode=OneWay}"/>
-            <Button Content="Add Time" Margin="0,10,0,0" 
-                    IsEnabled="{Binding ControlEnabled , Mode=OneWay}" 
+            <Button Content="Add Time" Margin="0,10,0,0" Style="{StaticResource PrimaryButtonStyle}"
+                    IsEnabled="{Binding ControlEnabled , Mode=OneWay}" Width="100" Height="30"
                     Command="{Binding AddTimeAsyncCommand}" />
         </StackPanel >
         <StackPanel Grid.Column="2" Margin="10">
             <ListBox BorderBrush="Black" BorderThickness="1"
-                Width="120" Height="400"
+                Width="120" Height="350"
                 ItemsSource="{Binding Times}" 
                 SelectedItem="{Binding SelectedTime, Mode=TwoWay}" >
                 <ListBox.ItemTemplate>
@@ -66,7 +68,7 @@
         </StackPanel>
         <StackPanel Grid.Column="3" Margin="20 10 0 0">
             <ListBox BorderBrush="Black" BorderThickness="1"
-                     Width="120" Height="400" ItemsSource="{Binding AllTimes}">
+                     Width="120" Height="350" ItemsSource="{Binding AllTimes}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding }" />

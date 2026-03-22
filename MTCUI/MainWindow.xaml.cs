@@ -67,9 +67,11 @@ namespace MTCUI
             return AppWindow.GetFromWindowId(windowId);
         }
 
-        public Task InitializeAsync(DispatcherQueue dispatcher, object o)
+        public async Task InitializeAsync(DispatcherQueue dispatcher, object o)
         {
-            return MainViewModel.InitializeAsync(dispatcher, o);
+            await MainViewModel.InitializeAsync(dispatcher, o);
+            await TimerPanel.TimerVM.InitializeAsync(dispatcher);
+            
         }
 
         private void NodeManager_Click(object sender, RoutedEventArgs e)
@@ -95,6 +97,17 @@ namespace MTCUI
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             MainViewModel.ResetNodesCommand.Execute(null);
+        }
+
+        private void ShowTimer_Click(object sender, RoutedEventArgs e)
+        {
+            if (TimerPanel.Visibility == Visibility.Visible)
+            { 
+                TimerPanel.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            TimerPanel.Visibility = Visibility.Visible;
         }
     }
 }

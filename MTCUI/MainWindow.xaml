@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:MTCUI"
+    xmlns:control="using:MTCUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -44,11 +45,14 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" HorizontalAlignment="Left">
                     <MenuBar  VerticalAlignment="Top" HorizontalAlignment="Left" >
-                        <MenuBarItem Title="File" FontFamily="Segoe UI Variable" FontSize="15">
+                        <MenuBarItem Title="File" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Load Scene" FontFamily="Segoe UI Variable" Click="LoadNodes_Click" />
                             <MenuFlyoutItem Text="Save" Click="SaveScene_Click" />
                         </MenuBarItem>
-                        <MenuBarItem Title="Config" FontFamily="Segoe UI Variable">
+                        <MenuBarItem Title="View" FontFamily="Segoe UI Variable" FontSize="14">
+                            <MenuFlyoutItem Text="Timer" FontFamily="Segoe UI Variable" Click="ShowTimer_Click"/>
+                        </MenuBarItem>
+                        <MenuBarItem Title="Config" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
                             <MenuFlyoutItem Text="Scheduler" Click="Scheduler_Click" />
                         </MenuBarItem>
@@ -57,33 +61,7 @@
                         </MenuBarItem>
                     </MenuBar>
                 </StackPanel>
-                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="0 3 0 0">
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <Button Content="Старт" FontSize="13"
-                            Width="70" 
-                            Height="30" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Center" 
-                            Margin="5,0,0,0" Command="{x:Bind MainViewModel.StartTimerCommand}" />  
-                        <Button Content="Стоп" FontSize="13"
-                            Width="70" 
-                            Height="30" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Center" 
-                            Margin="5 0 0 0" Command="{x:Bind MainViewModel.StopTimerCommand}" />
-                            <Button Content="Нулиране" FontSize="13"
-                            Width="85" 
-                            Height="30" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Center" 
-                            Margin="5 0 0 0" Command="{x:Bind MainViewModel.ResetTimerCommand}"/>
-                        <TextBlock Text="{Binding TimerText}" FontSize="25" 
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" 
-                            Margin="10 0 10 0"/>
-                    </StackPanel>
-                    
-                </StackPanel>
+                
             </Grid>
         </StackPanel>
         
@@ -179,10 +157,16 @@
         </StackPanel>-->
 
         <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Margin="1 0 1 0">
-            <ContentControl  Content="{Binding CurrentView}" 
-                ContentTemplate="{StaticResource garphTemplate}"/>
+            <StackPanel>
+                <ContentControl  Content="{Binding CurrentView}" 
+                    ContentTemplate="{StaticResource garphTemplate}"/>
+                <control:TimerControl x:Name="TimerPanel" 
+                                      HorizontalAlignment="Right" 
+                                      Visibility="Visible"/>
+            </StackPanel>
+            
         </Border>
-
+        
         <StackPanel Grid.Row="3" Orientation="Horizontal">
             <TextBlock Text="{Binding ConnectionStatus}"    
                 HorizontalAlignment="Left"
