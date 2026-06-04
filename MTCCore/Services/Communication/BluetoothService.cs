@@ -2,6 +2,7 @@
 using MTCCore.Messages.Bluetooth;
 using System;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
@@ -17,12 +18,18 @@ namespace MTCCore.Services.Communication
 
         private const string TargetName = "MTC-01";
 
-        private readonly Guid ServiceUuid = Guid.Parse("000000ff-0000-1000-8000-00805f9b34fb");
-        private readonly Guid CharUuid = Guid.Parse("0000ff01-0000-1000-8000-00805f9b34fb");
+        //private readonly Guid ServiceUuid = Guid.Parse("000000ff-0000-1000-8000-00805f9b34fb");
+        //private readonly Guid CharUuid = Guid.Parse("0000ff01-0000-1000-8000-00805f9b34fb");
+
+        private readonly Guid ServiceUuid = BluetoothUuidHelper.FromShortId(0x1820);
+        private static readonly Guid WriteCharGuid = BluetoothUuidHelper.FromShortId(0x2A06);
+        private static readonly Guid NotifyCharGuid = BluetoothUuidHelper.FromShortId(0x2A07);
 
         private BluetoothLEAdvertisementWatcher _watcher;
         private BluetoothLEDevice _device;
         private GattCharacteristic _characteristic;
+        private GattCharacteristic? _writeChar;
+        private GattCharacteristic? _notifyChar;
 
         private ulong _lastAddress;
         private bool _isReconnecting;
@@ -70,23 +77,34 @@ namespace MTCCore.Services.Communication
                 if (servicesResult.Status != GattCommunicationStatus.Success)
                     return;
 
-                var service = servicesResult.Services
-                    .FirstOrDefault(s => s.Uuid == ServiceUuid);
+                var service = servicesResult.Services.FirstOrDefault(s => s.Uuid == ServiceUuid);
                 if (service == null)
                     return;
 
-                var charsResult = await service.GetCharacteristicsAsync();
-                _characteristic = charsResult.Characteristics
-                    .FirstOrDefault(c => c.Uuid == CharUuid);
+                // Write характеристика
+                var writeResult = await service.GetCharacteristicsForUuidAsync(WriteCharGuid, BluetoothCacheMode.Uncached);
 
-                if (_characteristic == null)
-                    return;
+                if (writeResult.Status != GattCommunicationStatus.Success ||
+                    writeResult.Characteristics.Count == 0)
+                    throw new InvalidOperationException("Write characteristic not found.");
+                _writeChar = writeResult.Characteristics[0];
 
-                _characteristic.ValueChanged += OnValueChanged;
+                // Notify характеристика
+                var notifyResult = await service.GetCharacteristicsForUuidAsync(
+                    NotifyCharGuid, BluetoothCacheMode.Uncached);
+                if (notifyResult.Status != GattCommunicationStatus.Success ||
+                    notifyResult.Characteristics.Count == 0)
+                    throw new InvalidOperationException("Notify characteristic not found.");
+                _notifyChar = notifyResult.Characteristics[0];
 
-                await _characteristic
-                    .WriteClientCharacteristicConfigurationDescriptorAsync(
+                // Абонираме се за notify
+                _notifyChar.ValueChanged += OnNotifyValueChanged;
+                var cccdStatus = await _notifyChar.WriteClientCharacteristicConfigurationDescriptorAsync(
                         GattClientCharacteristicConfigurationDescriptorValue.Notify);
+
+                if (cccdStatus != GattCommunicationStatus.Success)
+                    throw new InvalidOperationException(
+                        $"Cannot enable notify: {cccdStatus}");
 
                 WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Ready."));
                 ConnectionStateChanged?.Invoke(this, true);
@@ -135,7 +153,7 @@ namespace MTCCore.Services.Communication
         // ===============================
         // Receiving
         // ===============================
-        private void OnValueChanged(
+        private void OnNotifyValueChanged(
             GattCharacteristic sender,
             GattValueChangedEventArgs args)
         {
@@ -151,13 +169,13 @@ namespace MTCCore.Services.Communication
         // ===============================
         public async Task SendAsync(byte[] data)
         {
-            if (_characteristic == null)
+            if (_writeChar == null)
                 return;
 
             var writer = new DataWriter();
             writer.WriteBytes(data);
 
-            await _characteristic.WriteValueAsync(
+            await _writeChar.WriteValueAsync(
                 writer.DetachBuffer(),
                 GattWriteOption.WriteWithoutResponse);
         }
@@ -169,7 +187,7 @@ namespace MTCCore.Services.Communication
         {
             try
             {
-                _characteristic.ValueChanged -= OnValueChanged;
+                _writeChar.ValueChanged -= OnNotifyValueChanged;
                 _device.ConnectionStatusChanged -= OnConnectionStatusChanged;
 
                 _device?.Dispose();
@@ -177,7 +195,7 @@ namespace MTCCore.Services.Communication
             catch { }
 
             _device = null;
-            _characteristic = null;
+            _writeChar = null;
 
             ConnectionStateChanged?.Invoke(this, false);
         }

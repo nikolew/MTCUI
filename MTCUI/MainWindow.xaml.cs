@@ -58,7 +58,10 @@ namespace MTCUI
             presenter.Maximize();
 
             Closed += (s, e) => _windowService.CloseAll();
+
         }
+
+        
 
         public static AppWindow GetAppWindow(Window window)
         {
@@ -84,9 +87,10 @@ namespace MTCUI
             MainViewModel.LoadCommand.Execute(null);
         }
 
-        private void SaveScene_Click(object sender, RoutedEventArgs e)
+        private async void SaveScene_Click(object sender, RoutedEventArgs e)
         {
             MainViewModel.SaveSceneCommand.Execute(null);
+            await MainViewModel.ShowNotificationAsync("Запис", "Сцената беше записана успешно!", InfoBarSeverity.Success);
         }
 
         private void Scheduler_Click(object sender, RoutedEventArgs e)
@@ -97,6 +101,7 @@ namespace MTCUI
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             MainViewModel.ResetNodesCommand.Execute(null);
+            
         }
 
         private void ShowTimer_Click(object sender, RoutedEventArgs e)
@@ -108,6 +113,12 @@ namespace MTCUI
             }
 
             TimerPanel.Visibility = Visibility.Visible;
+        }
+
+        private async void ResetMaster_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.ResetMasterCommand.Execute(null);
+           // await MainViewModel.ShowNotificationAsync("Нулиране", "Системата беше рестартирана.", InfoBarSeverity.Warning);
         }
     }
 }

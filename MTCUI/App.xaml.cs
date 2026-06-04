@@ -43,7 +43,6 @@ namespace MTCUI
                 .AddSingleton<GroupManagerViewModel>()
                 .AddTransient<SchedulerWindow>()
                 .AddSingleton<SchedulerViewModel>()
-                .AddSingleton<BluetoothLEService>()
                 .AddSingleton<IWindowService, WindowService>()
                 .AddTransient<NodeServiceWindow>()
                 .AddSingleton<NodeServiceViewModel>()

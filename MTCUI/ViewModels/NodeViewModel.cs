@@ -1,14 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI.Xaml;
-using MTCCore.Messages.Nodes;
 using MTCCore.Models;
 using MTCCore.Protocol;
+using MTCCore.Services.Nodes;
+using System;
 
 namespace MTCUI.ViewModels
 {
     public partial class NodeViewModel : ViewModel
     {
+       
         [ObservableProperty] private int _width;
         [ObservableProperty] private int _height;
         [ObservableProperty] private bool _isSelected;
@@ -16,6 +18,13 @@ namespace MTCUI.ViewModels
         [ObservableProperty] private Style _targetStateView;
 
         [ObservableProperty] private NodeModel _node;
+
+        private INodeService _nodeService;
+
+        public NodeViewModel()
+        {
+            _nodeService = Ioc.Default.GetRequiredService<INodeService>();
+        }
 
         public void InitTemplateView()
         {
@@ -25,7 +34,18 @@ namespace MTCUI.ViewModels
 
         public void MouseDoubleClick()
         {
-            WeakReferenceMessenger.Default.Send(new NodeSendCommandMessage(Node.NodeId, CommandType.CMD_NODECMD));
+            var packet = new Envelope
+            {
+                Seq = 1,
+                TsMs = (uint)Environment.TickCount,
+                SendNodeCommandReq = new SendNodeCommandReq
+                {
+                    NodeId = Node.NodeId,
+                    NodeCommand = NodeCommand.CMD_GPIO_SET,    
+                }
+            };
+
+            _nodeService.NodeCommand(packet);
         }
     }
 }

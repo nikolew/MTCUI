@@ -7,6 +7,7 @@ using MTCCore.Services.Communication;
 using MTCCore.Services.Groups;
 using MTCCore.Services.Nodes;
 using MTCCore.Services.Scheduling;
+using MTCCore.Protocol.Events;
 
 namespace MTCCore.Infrastructure
 {
@@ -33,6 +34,20 @@ namespace MTCCore.Infrastructure
             services.AddSingleton<IPacketHandler>(sp=>sp.GetRequiredService<NodeEventHandler>());
 
             services.AddSingleton<IPacketHandler, PingHandler>();
+
+
+            services.AddSingleton<IEnvelopeHandler, PingEnvelopeHandler>();
+            services.AddSingleton<IEnvelopeHandler, NetworkStatusHandler>();
+            services.AddSingleton<NodeListEnvelopeHandler>();
+            services.AddSingleton<NodeDataEnvelopeHandler>();
+            services.AddSingleton<ConfigAckEnvelopeHandler>();
+            services.AddSingleton<NodeConfigEnvelopeHandler>();
+
+            services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<NodeListEnvelopeHandler>());
+            services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<NodeDataEnvelopeHandler>());
+            services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<ConfigAckEnvelopeHandler>());
+            services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<NodeConfigEnvelopeHandler>());
+
             return services;
         }
     }

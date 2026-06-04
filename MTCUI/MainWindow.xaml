@@ -17,7 +17,7 @@
     </Window.SystemBackdrop>
 
 
-    <Grid x:Name="RootGrid">
+    <Grid x:Name="RootGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition Height="40"/>
@@ -55,6 +55,7 @@
                         <MenuBarItem Title="Config" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
                             <MenuFlyoutItem Text="Scheduler" Click="Scheduler_Click" />
+                            <MenuFlyoutItem Text="Reset Master" Click="ResetMaster_Click"/>
                         </MenuBarItem>
                         <MenuBarItem>
                             <MenuFlyoutItem Text="Reset" Click="Reset_Click" />
@@ -156,23 +157,36 @@
            
         </StackPanel>-->
 
-        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Margin="1 0 1 0">
+
+        <Border Grid.Row="2"  BorderBrush="LightGray" BorderThickness="1" Margin="1 0 1 0">
             <StackPanel>
                 <ContentControl  Content="{Binding CurrentView}" 
                     ContentTemplate="{StaticResource garphTemplate}"/>
                 <control:TimerControl x:Name="TimerPanel" 
                                       HorizontalAlignment="Right" 
                                       Visibility="Visible"/>
+
             </StackPanel>
-            
         </Border>
-        
+
+        <InfoBar Grid.Row="2" Grid.RowSpan="2"
+         Title="{x:Bind MainViewModel.InfoBarTitle, Mode=OneWay}"
+         Message="{x:Bind MainViewModel.InfoBarMessage, Mode=OneWay}"
+         IsOpen="{x:Bind MainViewModel.IsInfoBarOpen, Mode=TwoWay}" 
+         Severity="{x:Bind MainViewModel.InfoBarSeverity, Mode=OneWay}"
+         HorizontalAlignment="Right"
+         VerticalAlignment="Bottom"
+         Margin="0,0,20,20" />
+
         <StackPanel Grid.Row="3" Orientation="Horizontal">
             <TextBlock Text="{Binding ConnectionStatus}"    
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center" 
                 Margin="10 0 0 0"/>
         </StackPanel>
+
+        
+
     </Grid>
    
 </Window>

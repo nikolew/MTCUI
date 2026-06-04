@@ -108,13 +108,12 @@
                             <TextBox Text="{x:Bind Distance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="5" 
                                      TextAlignment="Center" Margin="0 0 10 0"/>
                             
-                            <ComboBox Grid.Column="6"
-                                ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetGroups}"
-                                
-                                Width="100" />
-                            <ComboBox Grid.Column="6" 
+                            <!--<ComboBox Grid.Column="6"
+                                ItemsSource="{Binding ElementName=MyList, Path=DataContext.TargetGroups}"                              
+                                Width="100" />-->
+                            <!--<ComboBox Grid.Column="6" 
                                       ItemsSource="{Binding ElementName=MyList, Path=DataContext.Groups, Mode=TwoWay}" 
-                                      Width="100" />
+                                      Width="100" />-->
                             <TextBlock Grid.Column="6" Text="{Binding GroupId}" />
                             <TextBlock Text="{x:Bind GroupName}" Grid.Column="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             
@@ -129,10 +128,12 @@
                             
                             <TextBlock Text="{x:Bind Status}" Grid.Column="10" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                            <ComboBox Grid.Column="11"
+                            <!--<ComboBox Grid.Column="11"
                                 ItemsSource="{Binding ElementName=MyList, Path=DataContext.LightMode}"
                                 SelectedItem="{x:Bind Light, Mode=TwoWay}"
-                                Width="80" />
+                                Width="80" />-->
+                            <TextBlock Grid.Column="11" Text="{x:Bind Light}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
                             <StackPanel Grid.Column="12" HorizontalAlignment="Right" Orientation="Horizontal">
                                 <Button  Content="Save" 
                                          Command="{x:Bind SaveCommand}" 

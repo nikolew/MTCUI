@@ -100,7 +100,9 @@ namespace MTCUI.ViewModels
                                 UniqueId = node.UniqueNodeId,
                                 Position = node.Position,
                                 NodeId = node.NodeId,
-                                Status = "offline"
+                                Status = "offline",
+                                GroupName = node.GroupName,
+                               
                             };
                             item.SaveAction += OnSaveAction;
                             item.EditAction += OnEditAction;

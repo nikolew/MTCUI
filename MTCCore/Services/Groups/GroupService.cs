@@ -13,6 +13,8 @@ using MTCCore.Services.Communication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MTCCore.Services.Groups;
@@ -55,12 +57,15 @@ public class GroupService : IGroupService
     // Method to send a command to a group via Bluetooth
     public async Task SendGroupCommand(int groupId)
     {
-        var packet = new Packet
+        var packet = new Envelope
         {
-            CommandType = CommandType.CMD_GROUPCMD,
-            TargetGroup = new TargetGroup
+            Seq = 1,
+            TsMs = (uint)Environment.TickCount,
+            SendNodeCommandReq = new SendNodeCommandReq
             {
-                TargetGroupId = groupId
+                NodeId = 0xFE, // broadcast
+                NodeCommand = NodeCommand.CMD_GROUP,
+                Param = BitConverter.GetBytes(groupId)
             }
         };
 

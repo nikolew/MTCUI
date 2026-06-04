@@ -23,12 +23,16 @@ namespace MTCCore.Services.Communication
         private CancellationTokenSource _cts;
 
         private readonly Dictionary<CommandType, IPacketHandler> _handlers;
+        private readonly Dictionary<Type, IEnvelopeHandler> _envelopeHandlers;
 
-        public BluetoothProtocolService(IBluetoothService bluetoothService, IEnumerable<IPacketHandler> handlers)
+        public BluetoothProtocolService(IBluetoothService bluetoothService, 
+            IEnumerable<IPacketHandler> handlers, 
+            IEnumerable<IEnvelopeHandler> ehandlers)
         {
             _bluetooth = bluetoothService;
 
             _handlers = handlers.ToDictionary(h => h.PayloadType);
+            _envelopeHandlers = ehandlers.ToDictionary(h => h.GetType());
 
             _bluetooth.PacketReceived += OnPacketReceived;
         }
@@ -42,10 +46,26 @@ namespace MTCCore.Services.Communication
             await _bluetooth.SendAsync(data);
         }
 
+        public async Task SendDataAsync(Envelope packet)
+        {
+            using var ms = new MemoryStream();
+            Serializer.Serialize(ms, packet);
+            var data = ms.ToArray();
+
+            await _bluetooth.SendAsync(data);
+        }
+
         private async Task SendPingAsync()
         {
-            var ping = new Packet() { CommandType = CommandType.CMD_PING };
-            await SendDataAsync(ping);
+            var pingReq = new PingReq { Payload = 12345 };
+            var packet = new Envelope
+            {
+                Seq = 1,
+                TsMs = (uint)Environment.TickCount,
+                Ping = pingReq
+            };
+
+            await SendDataAsync(packet);
         }
 
         public void Start()
@@ -73,19 +93,26 @@ namespace MTCCore.Services.Communication
         private void OnPacketReceived(object sender, byte[] data)
         {
             _lastPong = DateTime.Now;
-            var packet = Serializer.Deserialize<Packet>(new MemoryStream(data));    
+            byte[] payload = new byte[data.Length - 2];
+            Array.Copy(data, 2, payload, 0, payload.Length);
+
+            var packet = Serializer.Deserialize<Envelope>(new MemoryStream(payload));    
             Dispatch(packet);
         }
 
-        private void Dispatch(Packet packet)
+        private void Dispatch(Envelope packet)
         {
-            if (_handlers.TryGetValue(packet.CommandType, out var handler))
+            var type = packet.Pong != null ? typeof(PingEnvelopeHandler) :
+                       packet.NetworkStatus != null ? typeof(NetworkStatusHandler) :
+                       packet.NodeList != null ? typeof(NodeListEnvelopeHandler) :
+                       packet.NodeData != null ? typeof(NodeDataEnvelopeHandler) :
+                       packet.ConfigAck != null ? typeof(ConfigAckEnvelopeHandler):
+                       packet.ConfigNode != null ? typeof(NodeConfigEnvelopeHandler):
+                       null;
+
+            if (_envelopeHandlers.TryGetValue(type, out var handler))
             {
                 handler.Handle(packet);
-            }
-            else
-            {
-                // unknown packet
             }
         }
 
@@ -102,9 +129,7 @@ namespace MTCCore.Services.Communication
 
                 if (DateTime.Now - _lastPong > _heartbeatTimeout)
                 {
-                    WeakReferenceMessenger.Default.Send(
-                        new BluetoothStatusMessage("Protocol heartbeat timeout")
-                    );
+                    WeakReferenceMessenger.Default.Send(new BluetoothStatusMessage("Protocol heartbeat timeout"));
 
                     Stop();
                     return;

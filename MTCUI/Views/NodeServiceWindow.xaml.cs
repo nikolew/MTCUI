@@ -44,6 +44,7 @@ public sealed partial class NodeServiceWindow : Window, IInitializableWindow
         InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
+
         SetTitleBar(AppTitleBar);
 
         _nodeServiceVM = Ioc.Default.GetRequiredService<NodeServiceViewModel>();
@@ -117,6 +118,7 @@ public sealed partial class NodeServiceWindow : Window, IInitializableWindow
         ConfigColumn.Width = new GridLength(320);
 
         DevEUIRow.Value = node.UniqueId;
+        DevId.Value = Convert.ToString(node.NodeId);
     }
 
     private void CloseConfig_Click(object sender, RoutedEventArgs e)

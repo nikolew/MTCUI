@@ -1,11 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Dispatching;
+using MTCCore.Messages.Nodes;
+using MTCCore.Models;
 using MTCCore.Services.Nodes;
 using MTCUI.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +20,7 @@ namespace MTCUI.ViewModels
         private DispatcherQueue _dispatcher;
         private readonly INodeService _nodeService;
 
-        private static readonly ObservableCollection<NodeInfo> nodesInfo= new();
+        private static readonly ObservableCollection<NodeInfo> nodesInfo = new();
 
         [ObservableProperty]
         private ObservableCollection<NodeInfo> _nodes = nodesInfo;
@@ -27,7 +31,11 @@ namespace MTCUI.ViewModels
         public NodeServiceViewModel()
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
+
+            WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => UpdateNodeStatus(m.Node));
         }
+
+       
 
         public async Task InitializeAsync(DispatcherQueue dispatcher)
         {
@@ -55,6 +63,29 @@ namespace MTCUI.ViewModels
                     }
                 });
             });
+        }
+
+        private void UpdateNodeStatus(NodeModel node)
+        {
+            //var n = Nodes.SingleOrDefault(x => x.NodeId == node.NodeId);
+
+            foreach(var n in Nodes)
+            {
+                if(n.NodeId == node.NodeId)
+                {
+                    var snr = Convert.ToString(node.Snr);
+                    var rssi = Convert.ToString(node.Rssi);
+
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        n.Snr = $"{snr} dB";
+                        n.Rssi = $"{rssi} dBm";
+
+                        //node.BattVoltage = $"{m.Node.BattVoltage} V";
+                    });
+                }
+            }
+
         }
     }
 }
