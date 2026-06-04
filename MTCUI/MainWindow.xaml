@@ -16,7 +16,6 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-
     <Grid x:Name="RootGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
