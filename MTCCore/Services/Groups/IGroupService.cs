@@ -1,7 +1,9 @@
 ﻿using MTCCore.DTO.Grups;
 using MTCCore.DTO.Times;
 using System.Collections.Generic;
+
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace MTCCore.Services.Groups
 {
@@ -12,5 +14,7 @@ namespace MTCCore.Services.Groups
         Task<List<GroupReadDto>> GetAllAsync();
         Task RemoveTimeAsync(RemoveTimeDto dto);
         Task RemoveGroupAsync(RemoveGroupDto dto);
+        Task<int> GetGrupIdByName(string name);
+        Task<Color> GetColorGrupByName(string name);
     }
 }

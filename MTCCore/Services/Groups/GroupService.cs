@@ -1,5 +1,4 @@
-﻿using ABI.System;
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.EntityFrameworkCore;
 using MTCCore.Data;
 using MTCCore.Domain.Entities;
@@ -7,15 +6,17 @@ using MTCCore.DTO.Grups;
 using MTCCore.DTO.Times;
 using MTCCore.Extensions.Groups;
 using MTCCore.Messages.Timer;
-using MTCCore.Models;
 using MTCCore.Protocol;
 using MTCCore.Services.Communication;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI;
+using Color = Windows.UI.Color;
+
+
 
 namespace MTCCore.Services.Groups;
 
@@ -165,5 +166,25 @@ public class GroupService : IGroupService
         await _dbContext.SaveChangesAsync();
 
         ReloadGroups();
+    }
+
+    public async Task<int> GetGrupIdByName(string name)
+    {
+        var id = await _dbContext.Groups
+            .Where(g => g.GroupName == name)
+            .Select(g => g.Id)
+            .FirstOrDefaultAsync();
+        return id;
+    }
+
+    public async Task<Color> GetColorGrupByName(string name)
+    {
+        var color = await _dbContext.Groups
+            .Where(g => g.GroupName == name)
+            .Select(g => g.GroupColor)
+            .FirstOrDefaultAsync();
+
+        var t = Color.FromArgb(color.A, color.R, color.G, color.B);
+        return t;
     }
 }

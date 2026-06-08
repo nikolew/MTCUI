@@ -170,7 +170,6 @@ namespace MTCUI.ViewModels
                     TargetType = Item.TargetType,
                     Distance = Item.Distance,
                     Position = Item.Position,
-                    GroupName = group.Name
                 };
 
                 _nodeService.UpdateNodeAsync(node);

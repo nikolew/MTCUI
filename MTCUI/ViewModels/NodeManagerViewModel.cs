@@ -2,7 +2,9 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Media;
 using MTCCore.Domain.Enums;
 using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Nodes;
@@ -17,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace MTCUI.ViewModels
 {
@@ -54,7 +57,7 @@ namespace MTCUI.ViewModels
             _windowService = Ioc.Default.GetRequiredService<IWindowService>();
             _groupService = groupService;
 
-            WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
+            //WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
             {
                 var node = Items.SingleOrDefault(x => x.NodeId == m.Node.NodeId);
@@ -62,6 +65,7 @@ namespace MTCUI.ViewModels
                 {
                     _dispatcher.TryEnqueue(() =>
                     {
+                        node.VoltageColor = m.Node.BattVoltage < 10.4 ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Green);
                         node.Snr = $"{m.Node.Snr} dB";
                         node.Rssi = $"{m.Node.Rssi} dBm";
                         node.Status = "online";
@@ -95,6 +99,7 @@ namespace MTCUI.ViewModels
                     {
                         foreach (var node in nodes)
                         {
+                            var groupColor = _groupService.GetColorGrupByName(node.GroupName).Result;
                             var item = new ItemModel
                             {
                                 UniqueId = node.UniqueNodeId,
@@ -102,7 +107,8 @@ namespace MTCUI.ViewModels
                                 NodeId = node.NodeId,
                                 Status = "offline",
                                 GroupName = node.GroupName,
-                               
+                                VoltageColor = new SolidColorBrush(Colors.Green),
+                                GroupColor = new SolidColorBrush(groupColor)
                             };
                             item.SaveAction += OnSaveAction;
                             item.EditAction += OnEditAction;
@@ -123,15 +129,6 @@ namespace MTCUI.ViewModels
             _windowService.OpenWindow<NodeEditWindow>(model);
         }
 
-        private void OnNodeEvent(NodeEventModel value)
-        {
-            var node = Items.Where(x => x.NodeId == value.Id).SingleOrDefault();
-
-            if (node == null)
-                return;
-            
-            node.Status = value.Online ? "online" : "offline";
-        }
 
         [RelayCommand]
         void Save()
@@ -160,6 +157,7 @@ namespace MTCUI.ViewModels
 
         private void OnSaveAction(ItemModel node)
         {
+            var grupId = _groupService.GetGrupIdByName(node.GroupName).Result;
             var dto = new SaveNodeDto
             {
                 UniqueNodeId = node.UniqueId,
@@ -167,7 +165,7 @@ namespace MTCUI.ViewModels
                 Position = node.Position,
                 NodeId = node.NodeId,
                 Distance = node.Distance,
-                GroupName = node.GroupName
+                GroupId = grupId
             };
 
             _nodeService.UpdateNodeAsync(dto);

@@ -373,7 +373,6 @@ namespace MTCUI.ViewModels
                     NodeId = item.Node.NodeId,
                     Position = item.Node.Position,
                     TargetType = item.Node.TargetType,
-                    GroupName = item.Node.GroupName,
                     Distance = item.Node.Distance
                 });
             }

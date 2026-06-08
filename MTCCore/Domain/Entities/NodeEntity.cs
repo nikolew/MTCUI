@@ -9,7 +9,7 @@ namespace MTCCore.Domain.Entities
         public int NodeIdentity { get; set; }
         public string NodeUniqueId { get; set; }
         public string Distance { get; set; }
-        //public Group TargetGroup { get; set; }
+       
         public TargetType TargetType { get; set; }
 
         public PositionEntity Position { get; set; }

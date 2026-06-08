@@ -1,8 +1,10 @@
-﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Windows.Foundation;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml.Media;
 using MTCCore.Domain.Enums;
+using System;
+using Windows.Foundation;
+
 
 namespace MTCUI.Models
 {
@@ -64,11 +66,17 @@ namespace MTCUI.Models
         [ObservableProperty]
         private string _groupContent;
 
+        [ObservableProperty]
+        private Brush _voltageColor;
+
+        [ObservableProperty]
+        private Brush _groupColor;
+
         private static string Norm(string? s) => (s ?? "").Trim();
         
         public bool IsDirty =>
             TargetType != _origTargetType ||
-           // GroupName  != _origGroup ||
+            //GroupName  != _origGroup ||
             Norm(Distance) != _origDistance ||
             Light != _originalLight;
 
@@ -77,11 +85,11 @@ namespace MTCUI.Models
         public void Load(TargetType target, string groupName, string? distance)
         {
             _origTargetType = target;
-            _origGroup  = groupName;
+            //_origGroup  = groupName;
             _origDistance = Norm(distance);
             
             TargetType = _origTargetType;
-            GroupName = _origGroup;
+           // GroupName = _origGroup;
             Distance = _origDistance;
 
             //GroupContent = Enum.GetName(typeof(Group), GroupId);
