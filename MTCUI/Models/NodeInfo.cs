@@ -30,5 +30,8 @@ namespace MTCUI.Models
 
         [ObservableProperty]
         private string _battVoltage;
+
+        [ObservableProperty]
+        private int _baterrySoc;
     }
 }

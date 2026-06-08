@@ -13,6 +13,7 @@ namespace MTCCore.Models
         public int Rssi { get; set; }
         public int Snr { get; set; }
         public float BattVoltage { get; set; }
+        public int BattSoc { get; set; }
         public TargetType TargetType { get; set; }
         public TargetState State { get; set; }
     }

@@ -207,7 +207,7 @@ public class SensorReading
     public int State { get; set; }
 
     [ProtoMember(3)]
-    public int VoltageMv { get; set; }
+    public float VoltageMv { get; set; }
 
     [ProtoMember(4)]
     public int GpioState { get; set; }
@@ -217,6 +217,9 @@ public class SensorReading
 
     [ProtoMember(6)]
     public int UptimeMs { get; set; }
+
+    [ProtoMember(7)]
+    public int Soc { get; set; }
 }
 
 [ProtoContract]

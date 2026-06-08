@@ -156,7 +156,8 @@ namespace MTCCore.Services.Nodes
                     State = targetState,
                     Rssi = e.NodeData.Rssi,
                     Snr = e.NodeData.Snr,
-                    BattVoltage = e.NodeData.Reading.VoltageMv
+                    BattVoltage = e.NodeData.Reading.VoltageMv,
+                    BattSoc = e.NodeData.Reading.Soc
                 }));
             }
 

@@ -65,7 +65,7 @@ namespace MTCUI.ViewModels
                         node.Snr = $"{m.Node.Snr} dB";
                         node.Rssi = $"{m.Node.Rssi} dBm";
                         node.Status = "online";
-                        node.BattVoltage = $"{m.Node.BattVoltage} V";
+                        node.BattVoltage = $"{m.Node.BattVoltage}V  {m.Node.BattSoc}%";
                     });
                 }
             });

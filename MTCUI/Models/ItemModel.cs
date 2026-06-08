@@ -54,6 +54,9 @@ namespace MTCUI.Models
         private string _battVoltage;
 
         [ObservableProperty]
+        private string _battSoc;
+
+        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDirty))]
         [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
         private LightMode _light;
