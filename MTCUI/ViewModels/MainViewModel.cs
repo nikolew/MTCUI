@@ -102,9 +102,7 @@ namespace MTCUI.ViewModels
             var bt = Ioc.Default.GetRequiredService<IBluetoothService>();
             bt.ConnectionStateChanged += Bt_ConnectionStateChanged;
         }
-
-        
-
+  
         public async Task InitializeAsync(DispatcherQueue dispatcherQueue, object o)
         {
             if (_initialized)
@@ -257,6 +255,9 @@ namespace MTCUI.ViewModels
                 await ShowNotificationAsync("Master","Не е свързано!", InfoBarSeverity.Error);
                 return;
             }
+
+            var gr = CurrentView as GraphViewModel;
+            gr.ClearNodes();
 
             _nodeService.LoadScene();
         }
