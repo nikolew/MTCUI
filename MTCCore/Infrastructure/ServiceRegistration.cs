@@ -42,12 +42,13 @@ namespace MTCCore.Infrastructure
             services.AddSingleton<NodeDataEnvelopeHandler>();
             services.AddSingleton<ConfigAckEnvelopeHandler>();
             services.AddSingleton<NodeConfigEnvelopeHandler>();
+            services.AddSingleton<NodeStatusEnvelopeHandler>();
 
             services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<NodeListEnvelopeHandler>());
             services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<NodeDataEnvelopeHandler>());
             services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<ConfigAckEnvelopeHandler>());
             services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<NodeConfigEnvelopeHandler>());
-
+            services.AddSingleton<IEnvelopeHandler>(sp => sp.GetRequiredService<NodeStatusEnvelopeHandler>());
             return services;
         }
     }

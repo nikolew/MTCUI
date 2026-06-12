@@ -97,7 +97,7 @@ public class Packet
     [ProtoMember(3)] public Node Node { get; set; }
     [ProtoMember(4)] public Response Response { get; set; }
     [ProtoMember(5)] public NodeList NodeList { get; set; }
-    [ProtoMember(6)] public NodeStatus NodeStatus { get; set; }
+    //[ProtoMember(6)] public NodeStatus NodeStatus { get; set; }
     [ProtoMember(7)] public NodeEvent NodeEvent { get; set; }
     [ProtoMember(8)] public TargetGroup TargetGroup { get; set; }
     [ProtoMember(9)] public NodeConfig NodeConfig { get; set; }

@@ -12,7 +12,7 @@ namespace MTCCore.Protocol.Handlers
 
         public void Handle(Packet packet)
         {
-            NodeStatusReceived.Invoke(this, new NodeStatusReceivedEventArgs(packet.NodeStatus));
+            //NodeStatusReceived.Invoke(this, new NodeStatusReceivedEventArgs(packet.NodeStatus));
         }
     }
 }

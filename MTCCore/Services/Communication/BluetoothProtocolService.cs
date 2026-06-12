@@ -108,6 +108,7 @@ namespace MTCCore.Services.Communication
                        packet.NodeData != null ? typeof(NodeDataEnvelopeHandler) :
                        packet.ConfigAck != null ? typeof(ConfigAckEnvelopeHandler):
                        packet.ConfigNode != null ? typeof(NodeConfigEnvelopeHandler):
+                       packet.NodeStatus != null ? typeof(NodeStatusEnvelopeHandler) :
                        null;
 
             if (_envelopeHandlers.TryGetValue(type, out var handler))

@@ -8,7 +8,6 @@ using Microsoft.UI.Xaml.Controls;
 using MTCCore.Domain.Enums;
 using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Bluetooth;
-using MTCCore.Messages.Master;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
 using MTCCore.Protocol;
@@ -22,9 +21,7 @@ using MTCUI.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 
 namespace MTCUI.ViewModels
@@ -79,6 +76,7 @@ namespace MTCUI.ViewModels
         private readonly INodeService _nodeService;
         private readonly ConfigAckEnvelopeHandler _config;
         private DispatcherQueue _dispatcher;
+        private NodeStatusEnvelopeHandler _nodeStatusHandler;
 
 
         public MainViewModel(
@@ -101,19 +99,19 @@ namespace MTCUI.ViewModels
 
             var bt = Ioc.Default.GetRequiredService<IBluetoothService>();
             bt.ConnectionStateChanged += Bt_ConnectionStateChanged;
+
+            _nodeStatusHandler = Ioc.Default.GetRequiredService<NodeStatusEnvelopeHandler>();
+            _nodeStatusHandler.NodeStatus += NodeStatusReceived;
         }
-  
+
         public async Task InitializeAsync(DispatcherQueue dispatcherQueue, object o)
         {
             if (_initialized)
                 return;
 
             _initialized = true;
-
             _dispatcher = dispatcherQueue;
-
             _config.ConfigAck += Master_ConfigAck;
-
             ConnectionStatus = "Опит за свързване...";
 
             WeakReferenceMessenger.Default.Register<BluetoothStatusMessage>(this, (r, m) =>
@@ -124,14 +122,7 @@ namespace MTCUI.ViewModels
                 });
             });
 
- 
-            WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => UpdateNodeStatus(m.Node));
             WeakReferenceMessenger.Default.Register<NodeListRequestMessage>(this, (r, m) => OnNodeListRequest(m.NodeListRequest));
-
-            // WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
-            // WeakReferenceMessenger.Default.Register<NodeUpdateMessage>(this, (r, m) => UpdateNodeOnGraph(m.Node));
-
-
         }
 
 
@@ -146,19 +137,18 @@ namespace MTCUI.ViewModels
             });
         }
 
-
-        private void UpdateNodeStatus(NodeModel value)
+        private void NodeStatusReceived(object sender, NodeStatusEnvelopeEventArgs e)
         {
             if (CurrentView is not GraphViewModel n)
                 return;
 
             foreach (var node in n.NodesViewModel)
             {
-                if (node.Node.NodeId == value.NodeId)
+                if (node.Node.NodeId == e.NodeStatus.NodeId)
                 {
                     _dispatcher.TryEnqueue(() =>
                     {
-                        node.Node.State = value.State;
+                        node.Node.State = TargetState.TargetOffline;
                         node.InitTemplateView();
                     });
                     break;
@@ -186,7 +176,7 @@ namespace MTCUI.ViewModels
 
 
         /// <summary>
-        /// Универсален метод за показване на известие с автоматично скриване след 5 секунди
+        /// метод за показване на известие с автоматично скриване след 5 секунди
         /// </summary>
         public async Task ShowNotificationAsync(string title, string message, InfoBarSeverity severity)
         {
@@ -252,7 +242,7 @@ namespace MTCUI.ViewModels
         {
             if(!BluetoothStatus)
             {
-                await ShowNotificationAsync("Master","Не е свързано!", InfoBarSeverity.Error);
+                await ShowNotificationAsync("Master","Няма връзка!", InfoBarSeverity.Error);
                 return;
             }
 
@@ -278,6 +268,51 @@ namespace MTCUI.ViewModels
 
             _nodeService.NodeCommand(packet);
         }
+        [RelayCommand]
+        void SaveScene()
+        {
+            var gr = CurrentView as GraphViewModel;
+            var nodes = gr.NodesViewModel;
+
+            var nodesSave = new List<SaveNodeDto>();
+
+            foreach (var item in nodes)
+            {
+                nodesSave.Add(new SaveNodeDto
+                {
+                    UniqueNodeId = item.Node.UniqueNodeId,
+                    NodeId = item.Node.NodeId,
+                    Position = item.Node.Position,
+                    TargetType = item.Node.TargetType,
+                    Distance = item.Node.Distance
+                });
+            }
+
+
+            _nodeService.SaveScene(nodesSave);
+        }
+
+        [RelayCommand]
+        void ResetMaster()
+        {
+            var msg = new Envelope
+            {
+                Seq = 1,
+                TsMs = (uint)Environment.TickCount,
+                ResetMaster = new ResetMasterReq
+                {
+                    DelayMs = 5000
+                }
+            };
+
+            _bluetooth.SendDataAsync(msg);
+        }
+
+        [RelayCommand]
+        void Scheduler()
+        {
+            _windowService.OpenWindow<SchedulerWindow>(null);
+        }
 
         // =====================================================================
 
@@ -285,50 +320,6 @@ namespace MTCUI.ViewModels
 
 
 
-        private void UpdateNodeOnGraph(NodeModel node)
-        {
-            if (CurrentView is not GraphViewModel graphVM)
-                return;
-
-            foreach (var nodeVm in graphVM.NodesViewModel)
-            {
-                if (nodeVm.Node.NodeId != node.NodeId)
-                    continue;
-
-                graphVM.RemoveNode(nodeVm);
-
-                _dispatcher.TryEnqueue(() =>
-                {
-                    var nodeViewModel = new NodeViewModel() { Node = node };
-                    nodeViewModel.InitTemplateView();
-                    graphVM.AddNode(nodeViewModel);
-                });
-                break;
-            }
-        }
-
-        private void OnNodeEvent(NodeEventModel value)
-        {
-            Debug.WriteLine($"Online: {value.Online}");
-            var n = CurrentView as GraphViewModel;
-            foreach (var node in n.NodesViewModel)
-            {
-                if (node.Node.NodeId == value.Id)
-                {
-                    _dispatcher.TryEnqueue(() =>
-                    {
-                        node.Node.State = TargetState.TargetOffline;
-                        node.InitTemplateView();
-                    });
-                    break;
-                }
-            }
-        }
-
-        
-
-
-        
 
 
         [RelayCommand]
@@ -358,52 +349,6 @@ namespace MTCUI.ViewModels
             //_windowService.OpenWindow<NodeServiceWindow>(null);
         }
 
-        [RelayCommand]
-        void SaveScene()
-        {
-            var gr = CurrentView as GraphViewModel;
-            var nodes = gr.NodesViewModel;
-
-            var nodesSave = new List<SaveNodeDto>();
-
-            foreach(var item in nodes)
-            {
-                nodesSave.Add(new SaveNodeDto
-                {
-                    UniqueNodeId = item.Node.UniqueNodeId,
-                    NodeId = item.Node.NodeId,
-                    Position = item.Node.Position,
-                    TargetType = item.Node.TargetType,
-                    Distance = item.Node.Distance
-                });
-            }
-
-         
-            _nodeService.SaveScene(nodesSave);
-        }
-
         
-
-        [RelayCommand]
-        void ResetMaster()
-        {
-            var msg = new Envelope
-            {
-                Seq = 1,
-                TsMs = (uint)Environment.TickCount,
-                ResetMaster = new ResetMasterReq
-                {
-                    DelayMs = 5000
-                }
-            };
-
-            _bluetooth.SendDataAsync(msg);
-        }
-
-        [RelayCommand]
-        void Scheduler()
-        {
-            _windowService.OpenWindow<SchedulerWindow>(null);
-        }
     }
 }

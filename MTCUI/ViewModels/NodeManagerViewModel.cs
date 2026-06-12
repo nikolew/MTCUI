@@ -9,6 +9,8 @@ using MTCCore.Domain.Enums;
 using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
+using MTCCore.Protocol.Events;
+using MTCCore.Protocol.Handlers;
 using MTCCore.Services.Groups;
 using MTCCore.Services.Nodes;
 using MTCUI.Models;
@@ -51,11 +53,14 @@ namespace MTCUI.ViewModels
         [ObservableProperty]
         private ItemModel _selectedItemModel;
 
+        private NodeStatusEnvelopeHandler _nodeStatus;
+
         public NodeManagerViewModel(IGroupService groupService)
         {
             _nodeService = Ioc.Default.GetRequiredService<INodeService>();
             _windowService = Ioc.Default.GetRequiredService<IWindowService>();
             _groupService = groupService;
+            _nodeStatus = Ioc.Default.GetRequiredService<NodeStatusEnvelopeHandler>();
 
             //WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
@@ -91,6 +96,7 @@ namespace MTCUI.ViewModels
                     Groups = te;
                 });
 
+                _nodeStatus.NodeStatus += OnNodeStatus;
 
                 await _nodeService.GetAllAsync().ContinueWith(task =>
                 {
@@ -122,6 +128,17 @@ namespace MTCUI.ViewModels
             {
                 System.Diagnostics.Trace.WriteLine($"Error initializing NodeManagerViewModel: {ex.Message}");
             }
+        }
+
+        private void OnNodeStatus(object sender, NodeStatusEnvelopeEventArgs e)
+        {
+            _dispatcher.TryEnqueue(() =>
+            {
+                var node = Items.Where(x => x.NodeId == e.NodeStatus.NodeId).FirstOrDefault();
+
+
+                //node.Status = "сдсда";
+            });
         }
 
         private void OnEditAction(ItemModel model)

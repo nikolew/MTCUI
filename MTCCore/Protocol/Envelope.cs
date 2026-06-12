@@ -258,6 +258,29 @@ public class ConfigNodeResp
 }
 
 [ProtoContract]
+public class NodeStatusEvent
+{
+    public enum ChangeType
+    {
+        REGISTERED = 0,
+        DEREGISTERED = 1,
+        TIMEOUT = 2,
+        RECONNECTED = 3
+    }
+
+    [ProtoMember(1)]
+    public int NodeId { get; set; }
+
+
+    [ProtoMember(2)]
+    public ChangeType Change_Type { get; set; }
+
+
+    [ProtoMember(3)]
+    public NodeInfo Info { get; set; }
+}
+
+[ProtoContract]
 public class Envelope
 {
     [ProtoMember(1)]
@@ -301,5 +324,8 @@ public class Envelope
 
     [ProtoMember(35)]
     public ConfigNodeResp ConfigNode { get; set; }
+
+    [ProtoMember(36)]
+    public NodeStatusEvent NodeStatus { get; set; }
 }
 
