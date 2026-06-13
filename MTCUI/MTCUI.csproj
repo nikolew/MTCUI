@@ -20,6 +20,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Controls\GraphViewControl.xaml" />
+    <None Remove="Controls\GroupControl.xaml" />
     <None Remove="Controls\InfoRow.xaml" />
     <None Remove="Controls\NodeEditControl.xaml" />
     <None Remove="Controls\TimerControl.xaml" />
@@ -86,6 +87,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MTCCore\MTCCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Controls\GroupControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Styles\ButtonStyles.xaml">

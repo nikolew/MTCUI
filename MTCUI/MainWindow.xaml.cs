@@ -58,10 +58,8 @@ namespace MTCUI
             presenter.Maximize();
 
             Closed += (s, e) => _windowService.CloseAll();
-
         }
 
-        
 
         public static AppWindow GetAppWindow(Window window)
         {
@@ -113,6 +111,17 @@ namespace MTCUI
             }
 
             TimerPanel.Visibility = Visibility.Visible;
+        }
+
+        private void ShowGroup_Click(object sender, RoutedEventArgs e)
+        {
+            if (GroupPanel.Visibility == Visibility.Visible)
+            {
+                GroupPanel.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            GroupPanel.Visibility = Visibility.Visible;
         }
 
         private async void ResetMaster_Click(object sender, RoutedEventArgs e)

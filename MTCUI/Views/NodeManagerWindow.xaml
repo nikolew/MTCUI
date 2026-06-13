@@ -70,7 +70,6 @@
                
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:ItemModel">
-
                         <Grid Padding="0 0 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="40"/>

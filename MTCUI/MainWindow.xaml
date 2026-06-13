@@ -50,6 +50,7 @@
                         </MenuBarItem>
                         <MenuBarItem Title="View" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Timer" FontFamily="Segoe UI Variable" Click="ShowTimer_Click"/>
+                            <MenuFlyoutItem Text="Group" FontFamily="Segoe UI Variable" Click="ShowGroup_Click"/>
                         </MenuBarItem>
                         <MenuBarItem Title="Config" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
@@ -157,16 +158,20 @@
         </StackPanel>-->
 
 
-        <Border Grid.Row="2"  BorderBrush="LightGray" BorderThickness="1" Margin="1 0 1 0">
+        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Margin="1 0 1 0">
             <StackPanel>
                 <ContentControl  Content="{Binding CurrentView}" 
                     ContentTemplate="{StaticResource garphTemplate}"/>
                 <control:TimerControl x:Name="TimerPanel" 
                                       HorizontalAlignment="Right" 
                                       Visibility="Visible"/>
-
+                <control:GroupControl x:Name="GroupPanel" 
+                                      HorizontalAlignment="Right" 
+                                      Visibility="Visible"/>
             </StackPanel>
-        </Border>
+        </Border >
+
+       
 
         <InfoBar Grid.Row="2" Grid.RowSpan="2"
          Title="{x:Bind MainViewModel.InfoBarTitle, Mode=OneWay}"

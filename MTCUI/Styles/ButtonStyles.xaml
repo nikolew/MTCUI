@@ -62,7 +62,78 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ButtonStyle1" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid"
+                        Background="{TemplateBinding Background}"
+                        RenderTransformOrigin="0.5,0.5">
 
+                        <Grid.RenderTransform>
+                            <ScaleTransform x:Name="ButtonScale"
+                                ScaleX="1"
+                                ScaleY="1"/>
+                        </Grid.RenderTransform>
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+
+                                <!-- Normal -->
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <DoubleAnimation
+                            Storyboard.TargetName="ButtonScale"
+                            Storyboard.TargetProperty="ScaleX"
+                            To="1"
+                            Duration="0:0:0.08"/>
+
+                                        <DoubleAnimation
+                            Storyboard.TargetName="ButtonScale"
+                            Storyboard.TargetProperty="ScaleY"
+                            To="1"
+                            Duration="0:0:0.08"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                                <!-- Hover (без ефект) -->
+                                <VisualState x:Name="PointerOver"/>
+
+                                <!-- Натискане -->
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <DoubleAnimation
+                            Storyboard.TargetName="ButtonScale"
+                            Storyboard.TargetProperty="ScaleX"
+                            To="0.90"
+                            Duration="0:0:0.05"/>
+
+                                        <DoubleAnimation
+                            Storyboard.TargetName="ButtonScale"
+                            Storyboard.TargetProperty="ScaleY"
+                            To="0.90"
+                            Duration="0:0:0.05"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                            </VisualStateGroup>
+
+                            <VisualStateGroup x:Name="FocusStates">
+                                <VisualState x:Name="Focused"/>
+                                <VisualState x:Name="Unfocused"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <ContentPresenter
+            Content="{TemplateBinding Content}"
+            ContentTemplate="{TemplateBinding ContentTemplate}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 
 </ResourceDictionary>

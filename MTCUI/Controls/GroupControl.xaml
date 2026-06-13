@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="MTCUI.Controls.GroupControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MTCUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MTCUI.Models"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Border Width="180" Margin="0 5 5 0" Background="AliceBlue" >
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Групови команди" FontSize="16" Margin="0 10 0 10"/>
+                
+                <ListView
+                    ItemsSource="{x:Bind GroupVM.Groups, Mode=OneWay}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Margin="5">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <ListViewItemPresenter
+                                            Content="{TemplateBinding Content}"
+                                            Background="{TemplateBinding Background}"
+                                            Foreground="{TemplateBinding Foreground}"
+                                            PointerOverBackground="{TemplateBinding Background}"
+                                            PointerOverForeground="{TemplateBinding Foreground}"
+                                            SelectedBackground="{TemplateBinding Background}"
+                                            SelectedForeground="{TemplateBinding Foreground}"
+                                            SelectedPointerOverBackground="{TemplateBinding Background}" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:GroupModel">
+                            <StackPanel Orientation="Horizontal" >
+                                <Grid Margin="5 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{x:Bind Name}" Grid.Column="0" FontSize="16" Margin="3"/>
+                                    <Button Grid.Column="1"
+                                            Width="30"
+                                            Height="30"
+                                            Background="{x:Bind GroupColor}"
+                                            BorderThickness="0"
+                                            Command="{Binding SelectGroupCommand}" 
+                                            Style="{StaticResource ButtonStyle1}">
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+            
+        </Border> 
+    </Grid>
+</UserControl>

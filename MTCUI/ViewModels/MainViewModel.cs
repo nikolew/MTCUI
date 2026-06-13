@@ -268,6 +268,7 @@ namespace MTCUI.ViewModels
 
             _nodeService.NodeCommand(packet);
         }
+
         [RelayCommand]
         void SaveScene()
         {
