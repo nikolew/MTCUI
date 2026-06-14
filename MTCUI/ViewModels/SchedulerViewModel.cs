@@ -64,7 +64,12 @@ public partial class SchedulerViewModel  : ViewModel
 
         var data = await _groupService.GetAllAsync();
         foreach (var dto in data)
-            Groups.Add(new GroupModel(dto));
+        {
+            if (dto.Name != "None")
+
+                Groups.Add(new GroupModel(dto));
+        }
+            
 
         await LoadAllTimes();
     }

@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using MTCCore.Domain.Enums;
 using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Bluetooth;
+using MTCCore.Messages.Groups;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
 using MTCCore.Protocol;
@@ -123,6 +124,8 @@ namespace MTCUI.ViewModels
             });
 
             WeakReferenceMessenger.Default.Register<NodeListRequestMessage>(this, (r, m) => OnNodeListRequest(m.NodeListRequest));
+        
+            
         }
 
 
@@ -313,6 +316,12 @@ namespace MTCUI.ViewModels
         void Scheduler()
         {
             _windowService.OpenWindow<SchedulerWindow>(null);
+        }
+
+        [RelayCommand]
+        void GroupManager()
+        {
+            _windowService.OpenWindow<GroupManagerWindow>(null);
         }
 
         // =====================================================================

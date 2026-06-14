@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using MTCCore.Messages.Groups;
 using MTCCore.Protocol;
 using MTCCore.Services.Groups;
 using MTCCore.Services.Nodes;
@@ -15,6 +17,7 @@ namespace MTCUI.ViewModels
     {
         private readonly IGroupService _groupService;
         private readonly INodeService _nodeService;
+
         [ObservableProperty]
         private ObservableCollection<GroupModel> _groups = new();
 
@@ -23,7 +26,19 @@ namespace MTCUI.ViewModels
             _groupService = groupService;
             _nodeService = nodeService;
 
-            var data =  _groupService.GetAllAsync().Result;
+            WeakReferenceMessenger.Default.Register<UpdateGroupMessage>(this, (r, m) =>
+            {
+                LoadGroups();
+            });
+
+            LoadGroups();
+        }
+
+
+        private void LoadGroups()
+        {
+            Groups.Clear();
+            var data = _groupService.GetAllAsync().Result;
             foreach (var dto in data)
             {
                 if (dto.Name != "None")
@@ -32,10 +47,8 @@ namespace MTCUI.ViewModels
                     gr.SelectGroupAction += SelectGroup;
                     Groups.Add(gr);
                 }
-            }     
+            }
         }
-
-
 
         [RelayCommand]
         public void SelectGroup(GroupModel groupModel)

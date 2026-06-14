@@ -55,6 +55,7 @@
                         <MenuBarItem Title="Config" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
                             <MenuFlyoutItem Text="Scheduler" Click="Scheduler_Click" />
+                            <MenuFlyoutItem Text="Group Manager" Click="Group_Click" />
                             <MenuFlyoutItem Text="Reset Master" Click="ResetMaster_Click"/>
                         </MenuBarItem>
                         <MenuBarItem>

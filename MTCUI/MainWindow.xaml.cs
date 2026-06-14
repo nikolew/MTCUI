@@ -102,6 +102,11 @@ namespace MTCUI
             
         }
 
+        private void Group_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel?.GroupManagerCommand.Execute(null);
+        }
+
         private void ShowTimer_Click(object sender, RoutedEventArgs e)
         {
             if (TimerPanel.Visibility == Visibility.Visible)

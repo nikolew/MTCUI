@@ -48,6 +48,8 @@ namespace MTCUI
                 .AddSingleton<NodeServiceViewModel>()
                 .AddSingleton<TimerViewModel>()
                 .AddSingleton<GroupControlViewModel>()
+                .AddTransient<GroupManagerWindow>()
+                .AddSingleton<GroupManagerViewModel>()
                 .RegisterService(Configuration)
                 .BuildServiceProvider());
 

@@ -104,6 +104,7 @@ public class GroupService : IGroupService
         var groups = await _dbContext.Groups
             .Include(g => g.Times)
             .AsNoTracking()
+            .OrderBy(g => g.GroupName)
             .ToListAsync();
 
         return groups.Select(g => g.ToReadDto()).ToList();

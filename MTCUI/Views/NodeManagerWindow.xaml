@@ -6,7 +6,6 @@
     xmlns:local="using:MTCUI.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
     mc:Ignorable="d"
     xmlns:models="using:MTCUI.Models" 
     xmlns:tv="using:WinUI.TableView" 
@@ -22,6 +21,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
+        
         <Grid x:Name="AppTitleBar">
             <Image Source="/Assets/icon.ico" 
                 HorizontalAlignment="Left" 
@@ -31,8 +31,6 @@
         
         <StackPanel Grid.Row="1" Padding="10 20 10 10">
             <ListView x:Name="MyList" ItemsSource="{x:Bind NodeManagerVm.Items}">
-                
-               
                 <ListView.Header>
                     <Grid Padding="15,0,0,8">
                         <Grid.ColumnDefinitions>

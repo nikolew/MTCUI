@@ -78,7 +78,6 @@ namespace MTCUI.ViewModels
                     });
                 }
             });
-            
         }
 
         internal async Task InitializeAsync(DispatcherQueue dispatcher)
@@ -135,7 +134,6 @@ namespace MTCUI.ViewModels
             _dispatcher.TryEnqueue(() =>
             {
                 var node = Items.Where(x => x.NodeId == e.NodeStatus.NodeId).FirstOrDefault();
-
 
                 //node.Status = "сдсда";
             });
