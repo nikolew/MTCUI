@@ -4,20 +4,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="TargetText" TargetType="TextBlock" >
-        <Setter Property="Foreground" Value="Green"/>
+        <Setter Property="Foreground" Value="Black"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="Opacity" Value="0.8"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Opacity" Value="0.9"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style x:Key="TargetBorder" TargetType="Border">
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderBrush" Value="Green"/>
-        <Setter Property="Background" Value="LightBlue"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <!--<Setter Property="Background" Value="LightBlue"/>-->
         <Setter Property="CornerRadius" Value="3"/>
-        <Setter Property="Opacity" Value="0.8"/>
+        <Setter Property="Opacity" Value="0.5"/>
         <Setter Property="Width" Value="30"/>
         <Setter Property="Height" Value="20"/>
     </Style>
@@ -53,7 +53,7 @@
                 Points="10 100, 0 75, 0 30, 15 30,15 15, 35 15, 35 30, 50 30, 50 75, 40 100"                             
                 Opacity="0.8">
             </Polygon>
-            <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" >
+            <Border Style="{StaticResource TargetBorder}" Background="{Binding GroupColor}" Margin="10 70 0 0" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
                                Text="{Binding Node.NodeId}"/>
@@ -68,7 +68,7 @@
             Points="0 100, 0 75, 10 75, 10 65, 30 65, 30 48, 50 48, 50 60, 60 60, 60 100"                             
             Opacity="0.8">
             </Polygon>
-            <Border Style="{StaticResource TargetBorder}" Margin="18 70 0 0" >
+            <Border Style="{StaticResource TargetBorder}" Margin="18 70 0 0" Background="{Binding GroupColor}" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
                            Text="{Binding Node.NodeId}"/>
@@ -84,7 +84,7 @@
                 Points="0 100, 0 65, 15 65, 15 50, 35 50, 35 60, 50 45, 50 30, 70 30, 70 45, 80 45, 80 100"                             
                 Opacity="0.8">
             </Polygon>
-            <Border Style="{StaticResource TargetBorder}" Margin="25 70 0 0" >
+            <Border Style="{StaticResource TargetBorder}" Margin="25 70 0 0" Background="{Binding GroupColor}" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
                        Text="{Binding Node.NodeId}"/>
@@ -100,7 +100,7 @@
                 Points="0 100, 0 65, 15 65, 15 50, 35 50, 35 65, 50 65, 50 100"                             
                 Opacity="0.8">
             </Polygon>
-            <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" >
+            <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" Background="{Binding GroupColor}" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
                         Text="{Binding Node.NodeId}"/>
@@ -116,7 +116,7 @@
                 Points="0 100, 0 40, 15 40,15 25, 35 25, 35 40, 50 40, 50 100"                             
                 Opacity="0.8">
             </Polygon>
-            <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" >
+            <Border Style="{StaticResource TargetBorder}" Margin="10 70 0 0" Background="{Binding GroupColor}" >
                 <StackPanel>
                     <TextBlock Style="{StaticResource TargetText}" 
                         Text="{Binding Node.NodeId}"/>

@@ -47,6 +47,7 @@
                         <MenuBarItem Title="File" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Load Scene" FontFamily="Segoe UI Variable" Click="LoadNodes_Click" />
                             <MenuFlyoutItem Text="Save" Click="SaveScene_Click" />
+                            <MenuFlyoutItem Text="Add Node" Command="{Binding AddNodeCommand}" />
                         </MenuBarItem>
                         <MenuBarItem Title="View" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Timer" FontFamily="Segoe UI Variable" Click="ShowTimer_Click"/>

@@ -66,10 +66,8 @@ public partial class SchedulerViewModel  : ViewModel
         foreach (var dto in data)
         {
             if (dto.Name != "None")
-
                 Groups.Add(new GroupModel(dto));
-        }
-            
+        }    
 
         await LoadAllTimes();
     }

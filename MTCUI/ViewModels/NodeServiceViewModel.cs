@@ -35,8 +35,6 @@ namespace MTCUI.ViewModels
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => UpdateNodeStatus(m.Node));
         }
 
-       
-
         public async Task InitializeAsync(DispatcherQueue dispatcher)
         {
             _dispatcher = dispatcher;

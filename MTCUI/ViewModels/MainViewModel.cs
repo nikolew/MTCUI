@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 
 namespace MTCUI.ViewModels
@@ -30,7 +31,7 @@ namespace MTCUI.ViewModels
     public partial class MainViewModel : ViewModel
     {
         private bool _initialized;
-
+        private int _nodeCounter = 1;
 
         [ObservableProperty]
         private object _currentView;
@@ -115,6 +116,8 @@ namespace MTCUI.ViewModels
             _config.ConfigAck += Master_ConfigAck;
             ConnectionStatus = "Опит за свързване...";
 
+           
+
             WeakReferenceMessenger.Default.Register<BluetoothStatusMessage>(this, (r, m) =>
             {
                 _dispatcher.TryEnqueue(() =>
@@ -124,8 +127,8 @@ namespace MTCUI.ViewModels
             });
 
             WeakReferenceMessenger.Default.Register<NodeListRequestMessage>(this, (r, m) => OnNodeListRequest(m.NodeListRequest));
-        
-            
+            WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => UpdateNodeStatus(m.Node));
+
         }
 
 
@@ -177,6 +180,24 @@ namespace MTCUI.ViewModels
             
         }
 
+        private void UpdateNodeStatus(NodeModel value)
+        {
+            if (CurrentView is not GraphViewModel n)
+                return;
+
+            foreach (var node in n.NodesViewModel)
+            {
+                if (node.Node.NodeId == value.NodeId)
+                {
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        node.Node.State = value.State;
+                        node.InitTemplateView();
+                    });
+                    break;
+                }
+            }
+        }
 
         /// <summary>
         /// метод за показване на известие с автоматично скриване след 5 секунди
@@ -330,25 +351,58 @@ namespace MTCUI.ViewModels
 
 
 
-
-
         [RelayCommand]
         void AddNode()
         {
             if (CurrentView is GraphViewModel graphVM)
             {
-                var node = new NodeModel
+                
+
+                for(int i = 0; i < 3; i++)
                 {
-                    Position = new Windows.Foundation.Point(100, 100),
-                    TargetType = TargetType.Target8,
-                    State = TargetState.TargetFolded,
-                    NodeId = 4
-                };
+                    var n = new NodeModel
+                    {
+                        Position = new Windows.Foundation.Point(100 + i * 100, 150),
+                        TargetType = TargetType.Target8,
+                        State = TargetState.TargetRaised,
+                        GroupName = "Група 1",
+                        NodeId = _nodeCounter++,
+                    };
+                    var nodeVM = new NodeViewModel() { Node = n };
+                    nodeVM.InitTemplateView();
+                    graphVM.AddNode(nodeVM);
+                }
 
-                var nodeViewModel = new NodeViewModel() { Node = node };
-                nodeViewModel.InitTemplateView();
+                for (int i = 0; i < 3; i++)
+                {
+                    var n = new NodeModel
+                    {
+                        Position = new Windows.Foundation.Point(200 + i * 100, 300),
+                        TargetType = TargetType.Target10A,
+                        State = TargetState.TargetRaised,
+                        GroupName = "Група 2",
+                        NodeId = _nodeCounter++,
+                    };
+                    var nodeVM = new NodeViewModel() { Node = n };
+                    nodeVM.InitTemplateView();
+                    graphVM.AddNode(nodeVM);
+                }
 
-                graphVM.AddNode(nodeViewModel);
+                for (int i = 0; i < 3; i++)
+                {
+                    var n = new NodeModel
+                    {
+                        Position = new Windows.Foundation.Point(200 + i * 100, 450),
+                        TargetType = TargetType.Target8,
+                        State = TargetState.TargetRaised,
+                        GroupName = "Група 3",
+                        NodeId = _nodeCounter++,
+                    };
+                    var nodeVM = new NodeViewModel() { Node = n };
+                    nodeVM.InitTemplateView();
+                    graphVM.AddNode(nodeVM);
+                }
+
             }
         }
 

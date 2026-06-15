@@ -11,18 +11,13 @@
 
     <UserControl.Resources>
         <Style x:Key="DefaultNodeStyle" TargetType="ctrl:DefaultNode" >
-            
-            <Setter Property="Position" Value="{Binding Position, Mode=TwoWay}" />
-            <!--<Setter Property="Canvas.Left" Value="{Binding Position.X, Mode=TwoWay}" />
-            <Setter Property="Canvas.Top" Value="{Binding Position.Y, Mode=TwoWay}" />-->
 
+            <Setter Property="Position" Value="{Binding Position, Mode=TwoWay}" />
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Width" Value="80"/>
             <Setter Property="Height" Value="101"/>
-            
-            <!--<Setter Property="Content" Value="{Binding}" />-->
             <Setter Property="TargetTemplateSelector" Value="{StaticResource TargetSelector}" />
 
         </Style>
@@ -31,7 +26,6 @@
                                    Target6="{StaticResource Target6}"
                                    Target7="{StaticResource Target7}"
                                    Target8="{StaticResource Target8}" 
-                                   
                                    Target10="{StaticResource Target10}"
                                    Target10A="{StaticResource Target10A}"
                                    Default="{StaticResource Default}"
@@ -42,14 +36,11 @@
         <ctrl:NodeGraph x:Name="NodeGraph" 
                         ItemsSource="{Binding NodesViewModel}"
                         ItemContainerStyle="{StaticResource DefaultNodeStyle}" >
-            
+
             <ctrl:NodeGraph.Style>
                 <Style TargetType="ctrl:NodeGraph" BasedOn="{StaticResource nodeGraph}">
                 </Style>
             </ctrl:NodeGraph.Style>
-            
-
         </ctrl:NodeGraph>
-            
     </Grid>
 </UserControl>

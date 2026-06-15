@@ -36,7 +36,7 @@
                 <TextBox Width="120" Height="30" Text="{Binding NewGroupName, Mode=TwoWay}"/>
                 <Button Width="30" Height="30" Margin="10 0 0 0" Style="{StaticResource ButtonStyle1}" BorderBrush="Gray" BorderThickness="1">
                     <Button.Background>
-                        <SolidColorBrush x:Name="SelectedBrush" Color="{Binding ColorBrush, Mode=TwoWay}" />
+                        <SolidColorBrush x:Name="SelectedBrush" Color="{Binding ColorBrush, Mode=TwoWay}" Opacity="0.6"/>
                     </Button.Background>
                     <Button.Flyout>
                         <Flyout Placement="Bottom">
@@ -70,7 +70,7 @@
                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                <Rectangle Width="40" Height="20" Fill="{Binding GroupColor}" Margin="5"/>
+                                <Rectangle Width="40" Height="20" Fill="{Binding GroupColor}" Margin="5"  Opacity="0.6"/>
                             </StackPanel>
 
                         </Grid>

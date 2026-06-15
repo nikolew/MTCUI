@@ -70,6 +70,9 @@ public sealed partial class NodeManagerWindow : Window, IInitializableWindow
     {
         try
         {
+            if(NodeManagerVm.Items.Count == 0)
+                return;
+
             if (NodeManagerVm.Items.Any(item => !item.IsDirty))
             {
                 return;
