@@ -5,7 +5,6 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="MTCCore/MTCCore.csproj" Id="165f4d79-ddd8-44e9-92ce-7185556e7d1a">
-    <BuildType Solution="Debug|x64" Project="Release" />
     <Platform Solution="Debug|x64" Project="x64" />
   </Project>
   <Project Path="MTCUI/MTCUI.csproj">

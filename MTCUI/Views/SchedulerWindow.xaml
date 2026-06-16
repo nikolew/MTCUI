@@ -45,11 +45,11 @@
              
         </StackPanel>
         <StackPanel Grid.Column="1" >
-            <TextBlock Text="Time:" Margin="0,10,0,0" />
+            <TextBlock Text="Време:" Margin="0,10,0,0" />
             <TextBox Text="{Binding NewTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                      Margin="0,5,0,0" TextChanging="TextBox_TextChanging" MaxLength="5"
                      IsEnabled="{Binding ControlEnabled, Mode=OneWay}"/>
-            <Button Content="Add Time" Margin="0,10,0,0" Style="{StaticResource PrimaryButtonStyle}"
+            <Button Content="Добави време" Margin="0,10,0,0" Style="{StaticResource PrimaryButtonStyle}"
                     IsEnabled="{Binding ControlEnabled , Mode=OneWay}" Width="100" Height="30"
                     Command="{Binding AddTimeAsyncCommand}" />
         </StackPanel >
@@ -64,7 +64,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Content="Delete time" Margin="0 10 0 0" Width="120"
+            <Button Content="Изтрий време" Margin="0 10 0 0" Width="120"
                     Command="{Binding DeleteTimeAsyncCommand}" 
                     IsEnabled="{Binding BtnDeleteEnabled, Mode=OneWay}"/>
         </StackPanel>
