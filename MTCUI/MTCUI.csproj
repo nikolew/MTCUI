@@ -13,10 +13,22 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>disable</Nullable>
 	<SelfContained>true</SelfContained>
-	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-	<PublishSingleFile>true</PublishSingleFile>
+	
+	
 	<PublishTrimmed>false</PublishTrimmed>
-	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	
+	  
+	    <WindowsPackageType>None</WindowsPackageType>
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+  
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+  
+         <!-- Разрешава извличането на native C++ dll-и на Windows App SDK в %TEMP% папка -->
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  
+        <!-- Изключва компресията на assemblies, тъй като WinUI 3 не я поддържа -->
+        <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Controls\GraphViewControl.xaml" />
@@ -27,6 +39,7 @@
     <None Remove="Graph\DefaultNode.xaml" />
     <None Remove="Graph\GridControl.xaml" />
     <None Remove="Graph\NodeGraph.xaml" />
+    <None Remove="mtc.db" />
     <None Remove="Styles\ButtonStyles.xaml" />
     <None Remove="Styles\DataTemplate.xaml" />
     <None Remove="Styles\TargetStyles.xaml" />
@@ -44,6 +57,9 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="mtc.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

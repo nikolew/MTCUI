@@ -13,10 +13,15 @@ namespace MTCCore.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string? exePath = System.Reflection.Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName;
-                string dir = Path.GetDirectoryName(exePath);
+                //string? exePath = System.Reflection.Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName;
+                //string dir = Path.GetDirectoryName(exePath);
 
-                var connectionString = $"DataSource={dir}\\mtc.db";
+                //var connectionString = $"DataSource={dir}\\mtc.db";
+                //optionsBuilder.UseSqlite(connectionString);
+
+                string dir = System.AppContext.BaseDirectory;
+
+                var connectionString = $"DataSource={System.IO.Path.Combine(dir, "mtc.db")}";
                 optionsBuilder.UseSqlite(connectionString);
             }
         }
