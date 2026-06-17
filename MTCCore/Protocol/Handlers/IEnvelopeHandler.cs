@@ -7,8 +7,6 @@ namespace MTCCore.Protocol.Handlers
 {
     public interface IEnvelopeHandler
     {
-        
-
         void Handle(Envelope envelope);
     }
 }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace MTCCore.Messages.Nodes
 {
-    public record NodeSendCommandMessage(int Id, CommandType CommandType);
+   
     public record NodeAddToViewGraphMessage(NodeModel Node);
    
     public record NodeUpdateMessage(NodeModel Node);

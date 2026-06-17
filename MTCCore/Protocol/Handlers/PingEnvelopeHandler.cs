@@ -7,10 +7,10 @@ namespace MTCCore.Protocol.Handlers
 {
     public class PingEnvelopeHandler : IEnvelopeHandler
     {
-        event EventHandler<PingReceivedEventArgs> PongReceived;
+        event EventHandler<PingReceivedEnvelopeEventArgs> PongReceived;
         public void Handle(Envelope envelope)
         {
-            PongReceived?.Invoke(this, new PingReceivedEventArgs());
+            PongReceived?.Invoke(this, new PingReceivedEnvelopeEventArgs());
         }
     }
 }

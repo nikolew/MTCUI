@@ -23,21 +23,9 @@ namespace MTCCore.Infrastructure
             services.AddSingleton<IBluetoothService, BluetoothService>();
             services.AddSingleton<IBluetoothProtocolService, BluetoothProtocolService>();
 
-            services.AddSingleton<NodeListHandler>();
-            services.AddSingleton<NodeStatusHandler>();
-            services.AddSingleton<NodeReadConfigHandler>();
-            services.AddSingleton<NodeEventHandler>();  
-
-            services.AddSingleton<IPacketHandler>(sp=>sp.GetRequiredService<NodeStatusHandler>());
-            services.AddSingleton<IPacketHandler>(sp=>sp.GetRequiredService<NodeListHandler>());
-            services.AddSingleton<IPacketHandler>(sp=>sp.GetRequiredService<NodeReadConfigHandler>());
-            services.AddSingleton<IPacketHandler>(sp=>sp.GetRequiredService<NodeEventHandler>());
-
-            services.AddSingleton<IPacketHandler, PingHandler>();
 
 
             services.AddSingleton<IEnvelopeHandler, PingEnvelopeHandler>();
-            services.AddSingleton<IEnvelopeHandler, NetworkStatusHandler>();
             services.AddSingleton<NodeListEnvelopeHandler>();
             services.AddSingleton<NodeDataEnvelopeHandler>();
             services.AddSingleton<ConfigAckEnvelopeHandler>();

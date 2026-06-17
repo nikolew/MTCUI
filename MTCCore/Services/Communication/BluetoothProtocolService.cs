@@ -22,28 +22,15 @@ namespace MTCCore.Services.Communication
         private DateTime _lastPong = DateTime.MinValue;
         private CancellationTokenSource _cts;
 
-        private readonly Dictionary<CommandType, IPacketHandler> _handlers;
         private readonly Dictionary<Type, IEnvelopeHandler> _envelopeHandlers;
 
-        public BluetoothProtocolService(IBluetoothService bluetoothService, 
-            IEnumerable<IPacketHandler> handlers, 
-            IEnumerable<IEnvelopeHandler> ehandlers)
+        public BluetoothProtocolService(IBluetoothService bluetoothService, IEnumerable<IEnvelopeHandler> ehandlers)
         {
             _bluetooth = bluetoothService;
 
-            _handlers = handlers.ToDictionary(h => h.PayloadType);
             _envelopeHandlers = ehandlers.ToDictionary(h => h.GetType());
 
             _bluetooth.PacketReceived += OnPacketReceived;
-        }
-
-        public async Task SendDataAsync(Packet packet)
-        {
-            using var ms = new MemoryStream();
-            Serializer.Serialize(ms, packet);
-            var data = ms.ToArray();
-
-            await _bluetooth.SendAsync(data);
         }
 
         public async Task SendDataAsync(Envelope packet)
@@ -103,7 +90,6 @@ namespace MTCCore.Services.Communication
         private void Dispatch(Envelope packet)
         {
             var type = packet.Pong != null ? typeof(PingEnvelopeHandler) :
-                       packet.NetworkStatus != null ? typeof(NetworkStatusHandler) :
                        packet.NodeList != null ? typeof(NodeListEnvelopeHandler) :
                        packet.NodeData != null ? typeof(NodeDataEnvelopeHandler) :
                        packet.ConfigAck != null ? typeof(ConfigAckEnvelopeHandler):

@@ -7,7 +7,7 @@ namespace MTCCore.Services.Communication
     {
         void Start();
         void Stop();
-        Task SendDataAsync(Packet packet);
+ 
         Task SendDataAsync(Envelope packet);
     }
 }
