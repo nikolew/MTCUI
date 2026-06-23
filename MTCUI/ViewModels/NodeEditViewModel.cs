@@ -65,8 +65,6 @@ namespace MTCUI.ViewModels
             _nodeConfig.NodeConfigEnvelopeReceived += NodeConfigEnvelopeReceived;
         }
 
-        
-
         internal async Task InitializeAsync(DispatcherQueue dispatcher, object o)
         {
             _dispatcher = dispatcher;

@@ -9,8 +9,10 @@ using MTCCore.Domain.Enums;
 using MTCCore.DTO.Nodes;
 using MTCCore.Messages.Nodes;
 using MTCCore.Models;
+using MTCCore.Protocol;
 using MTCCore.Protocol.Events;
 using MTCCore.Protocol.Handlers;
+using MTCCore.Services.Communication;
 using MTCCore.Services.Groups;
 using MTCCore.Services.Nodes;
 using MTCUI.Models;
@@ -29,6 +31,8 @@ namespace MTCUI.ViewModels
     {
         private readonly IWindowService _windowService;
         private readonly INodeService _nodeService;
+        private readonly IBluetoothProtocolService _bluetooth;
+
         private DispatcherQueue _dispatcher;
 
         public Array TargetTypes { get; } = Enum.GetValues(typeof(TargetType));
@@ -61,6 +65,7 @@ namespace MTCUI.ViewModels
             _windowService = Ioc.Default.GetRequiredService<IWindowService>();
             _groupService = groupService;
             _nodeStatus = Ioc.Default.GetRequiredService<NodeStatusEnvelopeHandler>();
+            _bluetooth = Ioc.Default.GetRequiredService<IBluetoothProtocolService>();
 
             //WeakReferenceMessenger.Default.Register<NodeEventMessage>(this, (r, m) => OnNodeEvent(m.NodeEvent));
             WeakReferenceMessenger.Default.Register<NodeUpdateStatusMessage>(this, (r, m) => 
@@ -163,6 +168,22 @@ namespace MTCUI.ViewModels
         //    }
 
             //_nodeService.UpdateNodesAsync(nodesToSave);
+        }
+
+        [RelayCommand]
+        void Discovery()
+        {
+            var msg = new Envelope
+            {
+                Seq = 1,
+                TsMs = (uint)Environment.TickCount,
+                StartDicovery = new StartDiscoveryReq
+                {
+                    Cicles = 10
+                }
+            };
+
+            _bluetooth.SendDataAsync(msg);
         }
 
         internal void Clear()

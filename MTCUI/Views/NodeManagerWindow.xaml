@@ -153,6 +153,7 @@
             <Button Content="Remove Node" Width="110" Margin="5" />
             <Button Content="Load Nodes" Width="110" Margin="5" />
             <Button Content="Save Nodes" Width="110" Margin="5" Command="{x:Bind NodeManagerVm.SaveCommand}"/>
+            <Button Content="Discovery" Width="110" Margin="5" Command="{x:Bind NodeManagerVm.DiscoveryCommand}"/>
         </StackPanel>
 
         

@@ -22,5 +22,6 @@ namespace MTCCore.Services.Nodes
         void LoadScene();
         Task SaveScene(List<SaveNodeDto> nodesSave);
         void NodeCommand(Envelope packet);
+
     }
 }
