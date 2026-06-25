@@ -35,11 +35,17 @@ namespace MTCCore.Services.Communication
 
         public async Task SendDataAsync(Envelope packet)
         {
-            using var ms = new MemoryStream();
-            Serializer.Serialize(ms, packet);
-            var data = ms.ToArray();
+            try
+            {
+                using var ms = new MemoryStream();
+                Serializer.Serialize(ms, packet);
+                var data = ms.ToArray();
 
-            await _bluetooth.SendAsync(data);
+                await _bluetooth.SendAsync(data);
+            }
+            catch (Exception ex)             
+            { 
+            }
         }
 
         private async Task SendPingAsync()

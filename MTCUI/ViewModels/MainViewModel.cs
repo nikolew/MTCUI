@@ -116,8 +116,6 @@ namespace MTCUI.ViewModels
             _config.ConfigAck += Master_ConfigAck;
             ConnectionStatus = "Опит за свързване...";
 
-           
-
             WeakReferenceMessenger.Default.Register<BluetoothStatusMessage>(this, (r, m) =>
             {
                 _dispatcher.TryEnqueue(() =>
@@ -131,9 +129,6 @@ namespace MTCUI.ViewModels
 
         }
 
-
-
-        // =====================================================================
 
         private void Master_ConfigAck(object sender, ConfigAckEnvelopeEventArgs e)
         {
@@ -234,6 +229,8 @@ namespace MTCUI.ViewModels
             if (CurrentView is not GraphViewModel graphVM)
                 return;
 
+            graphVM.ClearNodes();
+
             foreach (ReadNodeDto node in nodeListRequest)
             {
                 _dispatcher.TryEnqueue(() =>
@@ -261,17 +258,20 @@ namespace MTCUI.ViewModels
             }
         }
 
+
+        #region RelayCommand
+
         [RelayCommand]
         async Task Load()
         {
-            if(!BluetoothStatus)
+            if (!BluetoothStatus)
             {
-                await ShowNotificationAsync("Master","Няма връзка!", InfoBarSeverity.Error);
+                await ShowNotificationAsync("Master", "Няма връзка!", InfoBarSeverity.Error);
                 return;
             }
 
-            var gr = CurrentView as GraphViewModel;
-            gr.ClearNodes();
+            // var gr = CurrentView as GraphViewModel;
+            // gr.ClearNodes();
 
             _nodeService.LoadScene();
         }
@@ -284,7 +284,7 @@ namespace MTCUI.ViewModels
                 Seq = 1,
                 TsMs = (uint)Environment.TickCount,
                 SendNodeCommandReq = new SendNodeCommandReq
-                {     
+                {
                     NodeId = 0xFE, // broadcast
                     NodeCommand = NodeCommand.CMD_RESET,
                 }
@@ -345,74 +345,14 @@ namespace MTCUI.ViewModels
             _windowService.OpenWindow<GroupManagerWindow>(null);
         }
 
-        // =====================================================================
-
-
-
-
-
-        [RelayCommand]
-        void AddNode()
-        {
-            if (CurrentView is GraphViewModel graphVM)
-            {
-                
-
-                for(int i = 0; i < 3; i++)
-                {
-                    var n = new NodeModel
-                    {
-                        Position = new Windows.Foundation.Point(100 + i * 100, 150),
-                        TargetType = TargetType.Target8,
-                        State = TargetState.TargetRaised,
-                        GroupName = "Група 1",
-                        NodeId = _nodeCounter++,
-                    };
-                    var nodeVM = new NodeViewModel() { Node = n };
-                    nodeVM.InitTemplateView();
-                    graphVM.AddNode(nodeVM);
-                }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    var n = new NodeModel
-                    {
-                        Position = new Windows.Foundation.Point(200 + i * 100, 300),
-                        TargetType = TargetType.Target10A,
-                        State = TargetState.TargetRaised,
-                        GroupName = "Група 2",
-                        NodeId = _nodeCounter++,
-                    };
-                    var nodeVM = new NodeViewModel() { Node = n };
-                    nodeVM.InitTemplateView();
-                    graphVM.AddNode(nodeVM);
-                }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    var n = new NodeModel
-                    {
-                        Position = new Windows.Foundation.Point(200 + i * 100, 450),
-                        TargetType = TargetType.Target8,
-                        State = TargetState.TargetRaised,
-                        GroupName = "Група 3",
-                        NodeId = _nodeCounter++,
-                    };
-                    var nodeVM = new NodeViewModel() { Node = n };
-                    nodeVM.InitTemplateView();
-                    graphVM.AddNode(nodeVM);
-                }
-
-            }
-        }
 
         [RelayCommand]
         void ConfigNode()
         {
             _windowService.OpenWindow<NodeManagerWindow>(null);
             //_windowService.OpenWindow<NodeServiceWindow>(null);
-        }
+        } 
+        #endregion
 
-        
     }
 }

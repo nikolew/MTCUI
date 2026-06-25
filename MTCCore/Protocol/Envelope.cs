@@ -280,10 +280,17 @@ public class NodeStatusEvent
     public NodeInfo Info { get; set; }
 }
 
+[ProtoContract]
 public class StartDiscoveryReq
 {
     [ProtoMember(1)]
     public int Cicles { get; set; }
+}
+
+[ProtoContract]
+public class GetAllStatusReq
+{
+
 }
 
 [ProtoContract]
@@ -313,7 +320,8 @@ public class Envelope
     [ProtoMember(15)]
     public StartDiscoveryReq StartDicovery { get; set; }
 
-
+    [ProtoMember(16)]
+    public GetAllStatusReq GetAllStatus { get; set; }
 
 
     [ProtoMember(30)]

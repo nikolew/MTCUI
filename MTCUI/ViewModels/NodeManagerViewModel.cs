@@ -186,6 +186,23 @@ namespace MTCUI.ViewModels
             _bluetooth.SendDataAsync(msg);
         }
 
+        [RelayCommand]
+        void UpdateNodeStatus()
+        {
+            var msg = new Envelope
+            {
+                Seq = 1,
+                TsMs = (uint)Environment.TickCount,
+                GetAllStatus = new GetAllStatusReq
+                {
+                    
+                }
+            };
+
+            _bluetooth.SendDataAsync(msg);
+        }
+
+
         internal void Clear()
         {
             Items.Clear();
