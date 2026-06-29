@@ -31,6 +31,9 @@
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\Sounds\Ogan.mp3" />
+    <None Remove="Assets\Sounds\Otboi.mp3" />
+    <None Remove="Assets\Sounds\Vnimanie.mp3" />
     <None Remove="Controls\GraphViewControl.xaml" />
     <None Remove="Controls\GroupControl.xaml" />
     <None Remove="Controls\InfoRow.xaml" />
@@ -104,6 +107,22 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MTCCore\MTCCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\Sounds\Ogan.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Sounds\Otboi.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Sounds\Vnimanie.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Styles\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\SoundControl.xaml">

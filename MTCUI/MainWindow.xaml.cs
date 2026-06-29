@@ -72,7 +72,7 @@ namespace MTCUI
         {
             await MainViewModel.InitializeAsync(dispatcher, o);
             await TimerPanel.TimerVM.InitializeAsync(dispatcher);
-            
+            await SoundPanel.SoundVM.InitializeAsync(dispatcher);
         }
 
         private void NodeManager_Click(object sender, RoutedEventArgs e)
@@ -129,10 +129,23 @@ namespace MTCUI
             GroupPanel.Visibility = Visibility.Visible;
         }
 
+        private void Sound_Click(object sender, RoutedEventArgs e)
+        {
+            if (SoundPanel.Visibility == Visibility.Visible)
+            {
+                SoundPanel.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            SoundPanel.Visibility = Visibility.Visible;
+        }
+
         private async void ResetMaster_Click(object sender, RoutedEventArgs e)
         {
             MainViewModel.ResetMasterCommand.Execute(null);
            // await MainViewModel.ShowNotificationAsync("Нулиране", "Системата беше рестартирана.", InfoBarSeverity.Warning);
         }
+
+        
     }
 }

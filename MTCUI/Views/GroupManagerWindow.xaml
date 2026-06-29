@@ -17,7 +17,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>
             <RowDefinition Height="*"/>
-            
         </Grid.RowDefinitions>
         
         <Grid x:Name="AppTitleBar">
@@ -31,8 +30,7 @@
             <StackPanel Orientation="Horizontal">
                 <Button Content="Добави група" Margin="10" Width="120" Height="30" 
                         Style="{StaticResource PrimaryButtonStyle}"
-                        Command="{Binding AddNewGroupCommand}" 
-                        />
+                        Command="{Binding AddNewGroupCommand}" />
                 <TextBox Width="120" Height="30" Text="{Binding NewGroupName, Mode=TwoWay}"/>
                 <Button Width="30" Height="30" Margin="10 0 0 0" Style="{StaticResource ButtonStyle1}" BorderBrush="Gray" BorderThickness="1">
                     <Button.Background>
@@ -78,7 +76,5 @@
                 </ListView.ItemTemplate>
             </ListView>
         </StackPanel>
-        
-        
     </Grid>
 </Window>

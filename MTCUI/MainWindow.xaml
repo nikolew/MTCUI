@@ -49,9 +49,10 @@
                             <MenuFlyoutItem Text="Save" Click="SaveScene_Click" />
                             <MenuFlyoutItem Text="Add Node" Command="{Binding AddNodeCommand}" />
                         </MenuBarItem>
-                        <MenuBarItem Title="View" FontFamily="Segoe UI Variable" FontSize="14">
-                            <MenuFlyoutItem Text="Timer" FontFamily="Segoe UI Variable" Click="ShowTimer_Click"/>
-                            <MenuFlyoutItem Text="Group" FontFamily="Segoe UI Variable" Click="ShowGroup_Click"/>
+                        <MenuBarItem Title="Панели" FontFamily="Segoe UI Variable" FontSize="14">
+                            <MenuFlyoutItem Text="Брояч" FontFamily="Segoe UI Variable" Click="ShowTimer_Click"/>
+                            <MenuFlyoutItem Text="Групи" FontFamily="Segoe UI Variable" Click="ShowGroup_Click"/>
+                            <MenuFlyoutItem Text="Сигнали" FontFamily="Segoe UI Variable" Click="Sound_Click"/>
                         </MenuBarItem>
                         <MenuBarItem Title="Config" FontFamily="Segoe UI Variable" FontSize="14">
                             <MenuFlyoutItem Text="Node Manager" Click="NodeManager_Click" />
@@ -68,103 +69,17 @@
             </Grid>
         </StackPanel>
         
-        <!--<StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="680"/>
-                    <ColumnDefinition Width="400"/>
-                    <ColumnDefinition Width="450"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" Grid.Column="0">
-                    <Button Content="Load Nodes" FontSize="13"
-                            Width="100" 
-                            Height="30" 
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Top" 
-                            Margin="10 5 0 0"
-                            Command="{x:Bind MainViewModel.AddNodeCommand}"/>
-                    <Button Content="Config" FontSize="13"
-                            Width="100" 
-                            Height="30" 
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Top" 
-                            Margin="10,5,0,0"
-                            Command="{x:Bind  MainViewModel.ConfigNodeCommand}"/>
-                    <Button Content="Scheduler" FontSize="13"
-                            Width="100" 
-                            Height="30" 
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Top" 
-                            Margin="10,5,0,0"
-                            Command="{x:Bind  MainViewModel.SchedulerCommand}"/>
-                    <Button Content="Load" FontSize="13"
-                            Width="100" 
-                            Height="30" 
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Top" 
-                            Margin="10,5,0,0"
-                            Command="{x:Bind  MainViewModel.LoadCommand}"/>
-                    <Button Content="Save" FontSize="13"
-                            Width="100" 
-                            Height="30" 
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Top" 
-                            Margin="10,5,0,0"
-                            Command="{x:Bind  MainViewModel.SaveSceneCommand}"/>
-                    <Button Content="Нулиране" FontSize="13"
-                            Width="100" 
-                            Height="30" 
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Top" 
-                            Margin="10,5,0,0"
-                            Command="{x:Bind  MainViewModel.ResetNodesCommand}"/>
-
-
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <TextBlock Text="{Binding ConnectionStatus}"    
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center" 
-                        Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Border BorderThickness="1" BorderBrush="LightGray" HorizontalAlignment="Right">
-                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                            <Button Content="Старт" FontSize="13"
-                                    Width="70" 
-                                    Height="30" 
-                                    HorizontalAlignment="Center" 
-                                    VerticalAlignment="Center" 
-                                    Margin="5,0,0,0" Command="{x:Bind MainViewModel.StartTimerCommand}" />
-                            <Button Content="Стоп" FontSize="13"
-                                    Width="70" 
-                                    Height="30" 
-                                    HorizontalAlignment="Center" 
-                                    VerticalAlignment="Center" 
-                                    Margin="5 0 0 0" Command="{x:Bind MainViewModel.StopTimerCommand}" />
-                            <Button Content="Нулиране" FontSize="13"
-                                    Width="85" 
-                                    Height="30" 
-                                    HorizontalAlignment="Center" 
-                                    VerticalAlignment="Center" 
-                                    Margin="5 0 0 0" Command="{x:Bind MainViewModel.ResetTimerCommand}"/>
-                            <TextBlock Text="{Binding TimerText}" FontSize="25" 
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" 
-                                       Margin="10 0 10 0"/>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-            </Grid>
-           
-        </StackPanel>-->
-
+       
 
         <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Margin="1 0 1 0">
             <StackPanel>
                 <ContentControl  Content="{Binding CurrentView}" 
                     ContentTemplate="{StaticResource garphTemplate}"/>
+
                 <control:TimerControl x:Name="TimerPanel" 
+                                      HorizontalAlignment="Right" 
+                                      Visibility="Visible"/>
+                <control:SoundControl x:Name="SoundPanel" 
                                       HorizontalAlignment="Right" 
                                       Visibility="Visible"/>
                 <control:GroupControl x:Name="GroupPanel" 

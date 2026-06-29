@@ -10,10 +10,11 @@
     mc:Ignorable="d">
 
     <Grid>
-        <Border Width="180" Margin="0 5 5 0" Background="AliceBlue" >
+        <Border Width="180" Margin="0 10 5 0" Style="{StaticResource PanelStyle}" >
             <StackPanel>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Групови команди" FontSize="16" Margin="0 10 0 10"/>
-                
+                <TextBlock HorizontalAlignment="Center" 
+                           VerticalAlignment="Center" 
+                           Text="Групови команди" FontSize="16" Margin="0 10 0 10"/>
                 <ListView
                     ItemsSource="{x:Bind GroupVM.Groups, Mode=OneWay}"
                     HorizontalAlignment="Stretch"
@@ -48,7 +49,7 @@
                                         <ColumnDefinition Width="80"/>
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{x:Bind Name}" Grid.Column="0" FontSize="16" Margin="3" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind Name}" Grid.Column="0"  Margin="3" VerticalAlignment="Center"/>
                                     <Button Grid.Column="1" Opacity="0.6"
                                             Width="30"
                                             Height="30"

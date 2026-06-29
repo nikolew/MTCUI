@@ -33,7 +33,10 @@ namespace MTCUI.Views
         public SchedulerWindow()
         {
             InitializeComponent();
-            
+
+            ExtendsContentIntoTitleBar = true;
+            SetTitleBar(AppTitleBar);
+
             Activated += Window_Activated;
 
             SchedulerVm = Ioc.Default.GetRequiredService<SchedulerViewModel>();
@@ -62,7 +65,7 @@ namespace MTCUI.Views
                 DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest) is not { } displayArea) 
                 return;
         
-            appWindow.Resize(new SizeInt32(1000, 750));
+            appWindow.Resize(new SizeInt32(750, 650));
             var centeredPosition = appWindow.Position;
             centeredPosition.X = (displayArea.WorkArea.Width - appWindow.Size.Width) / 2;
             centeredPosition.Y = (displayArea.WorkArea.Height - appWindow.Size.Height) / 2;

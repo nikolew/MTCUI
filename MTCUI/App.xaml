@@ -14,6 +14,7 @@
                 <ResourceDictionary Source="/Graph/NodeGraph.xaml" />
                 <ResourceDictionary Source="/Graph/DefaultNode.xaml" />
                 <ResourceDictionary Source="/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/Generic.xaml"/>
 
                 <!--<ResourceDictionary Source="/GraphCore/NodeGraphCore.xaml" />
                 <ResourceDictionary Source="/GraphCore/DefaultNodeCore.xaml" />-->

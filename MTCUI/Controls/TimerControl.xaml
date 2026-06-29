@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
     <Grid>
-        <Border Width="220" Margin="0 5 5 0" Background="AliceBlue" >
+        <Border Width="180" Margin="0 10 5 0" Style="{StaticResource PanelStyle}" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
@@ -19,13 +19,13 @@
                            Text="{x:Bind TimerVM.TimerText, Mode=OneWay}" 
                            FontSize="32"/>
                 
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Background="AliceBlue" 
+                <StackPanel Grid.Row="1" Orientation="Horizontal" 
                             HorizontalAlignment="Center" Margin="0 0 0 5">
-                    <Button Width="100" Height="30" Content="{x:Bind TimerVM.StartStopText, Mode=OneWay}" 
+                    <Button Width="80" Height="30" Content="{x:Bind TimerVM.StartStopText, Mode=OneWay}" 
                             Style="{StaticResource PrimaryButtonStyle}"
                             Margin="10 0 10 0" 
                             Command="{x:Bind TimerVM.StartStopCommand}"/>
-                    <Button Width="100" Height="30" Content="НУЛИРАНЕ" Margin="0 0 10 0" 
+                    <Button Width="80" Height="30" Content="НУЛИРАНЕ" Margin="0 0 10 0" 
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{x:Bind TimerVM.ResetCommand}" />
                     

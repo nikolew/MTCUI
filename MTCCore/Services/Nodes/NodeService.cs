@@ -166,12 +166,15 @@ namespace MTCCore.Services.Nodes
 
         public void LoadScene()
         {
-            var nodes = new GetNodeListReq() { ActiveOnly = true };
+            
             var packet = new Envelope
             {
                 Seq = 1,
                 TsMs = (uint)Environment.TickCount,
-                GetNodeList = nodes
+                GetNodeList = new GetNodeListReq
+                {
+                    ActiveOnly = true
+                }
             };
 
             _bluetoothProtocol.SendDataAsync(packet);

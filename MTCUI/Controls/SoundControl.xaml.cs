@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -5,6 +6,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using MTCUI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,9 +22,18 @@ namespace MTCUI.Controls
 {
     public sealed partial class SoundControl : UserControl
     {
+        public SoundControlViewModel SoundVM { get; set; }
+
         public SoundControl()
         {
             InitializeComponent();
+
+            SoundVM = Ioc.Default.GetRequiredService<SoundControlViewModel>();
+        }
+
+        private void PlayerElement_Loaded(object sender, RoutedEventArgs e)
+        {
+            //PlayerElement.SetMediaPlayer(SoundVM.Player);
         }
     }
 }

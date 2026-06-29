@@ -83,14 +83,50 @@ namespace MTCCore.Services.Communication
             _cts = null;
         }
 
+        private readonly List<byte> _rxBuffer = new List<byte>();
+
         private void OnPacketReceived(object sender, byte[] data)
         {
-            _lastPong = DateTime.Now;
-            byte[] payload = new byte[data.Length - 2];
-            Array.Copy(data, 2, payload, 0, payload.Length);
+            //_lastPong = DateTime.Now;
+            //byte[] payload = new byte[data.Length - 2];
+            //Array.Copy(data, 2, payload, 0, payload.Length);
 
-            var packet = Serializer.Deserialize<Envelope>(new MemoryStream(payload));    
-            Dispatch(packet);
+            //var packet = Serializer.Deserialize<Envelope>(new MemoryStream(payload));    
+            //Dispatch(packet);
+
+            _lastPong = DateTime.Now;
+            _rxBuffer.AddRange(data);
+
+            // обработи всички цели съобщения в буфера
+            while (_rxBuffer.Count >= 2)
+            {
+                // length header = total size (включва 2-та байта, както master ги слага)
+                int total = _rxBuffer[0] | (_rxBuffer[1] << 8);
+
+                if (total < 2 || total > 4096)   // sanity
+                {
+                    _rxBuffer.Clear();           // повреден поток — ресет
+                    break;
+                }
+                if (_rxBuffer.Count < total)
+                    break;                        // още не е дошло цялото съобщение
+
+                // извади payload-а (без 2-та length байта)
+                byte[] payload = new byte[total - 2];
+                _rxBuffer.CopyTo(2, payload, 0, total - 2);
+                _rxBuffer.RemoveRange(0, total);
+
+                try
+                {
+                    var packet = Serializer.Deserialize<Envelope>(new MemoryStream(payload));
+                    Dispatch(packet);
+                }
+                catch (Exception ex)
+                {
+                    // лог; не чисти целия буфер — само това съобщение е лошо
+                    Console.WriteLine($"Deserialize failed: {ex.Message}");
+                }
+            }
         }
 
         private void Dispatch(Envelope packet)

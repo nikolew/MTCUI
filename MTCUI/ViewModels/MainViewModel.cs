@@ -31,7 +31,7 @@ namespace MTCUI.ViewModels
     public partial class MainViewModel : ViewModel
     {
         private bool _initialized;
-        private int _nodeCounter = 1;
+
 
         [ObservableProperty]
         private object _currentView;
@@ -229,12 +229,17 @@ namespace MTCUI.ViewModels
             if (CurrentView is not GraphViewModel graphVM)
                 return;
 
-            graphVM.ClearNodes();
+            _dispatcher.TryEnqueue(() =>
+            {
+                graphVM.ClearNodes();
+            });
 
             foreach (ReadNodeDto node in nodeListRequest)
             {
                 _dispatcher.TryEnqueue(() =>
                 {
+                    
+
                     var nodeViewModel = new NodeViewModel()
                     {
                         Node = new NodeModel
